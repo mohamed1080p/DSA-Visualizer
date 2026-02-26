@@ -1,0 +1,6 @@
+@DSA_Visualizer_HostAddress = http://localhost:5258
+
+GET {{DSA_Visualizer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

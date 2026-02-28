@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Persistence.Data;
 using Microsoft.Extensions.Configuration;
+using Persistence.Identity;
 
 namespace DSA_Visualizer
 {
@@ -19,6 +20,10 @@ namespace DSA_Visualizer
             builder.Services.AddDbContext<ApplicationDbContext>(a =>
             {
                 a.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+            builder.Services.AddDbContext<ApplicationIdentityDbContext>(a =>
+            {
+                a.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
 
             var app = builder.Build();

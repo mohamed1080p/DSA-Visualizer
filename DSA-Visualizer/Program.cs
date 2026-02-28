@@ -16,7 +16,9 @@ namespace DSA_Visualizer
             // Add services to the container.
 
             builder.Services.AddControllers();
-            builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            //builder.Services.AddOpenApi();
             builder.Services.AddDbContext<ApplicationDbContext>(a =>
             {
                 a.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -31,7 +33,8 @@ namespace DSA_Visualizer
             
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

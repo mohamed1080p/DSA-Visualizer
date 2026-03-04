@@ -1,13 +1,18 @@
-﻿using Shared.DTOs.IdentityDTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+using Shared.DTOs.IdentityDTOs;
 
 namespace ServicesAbstraction
 {
     public interface IAuthService
     {
-        Task<UserDTO> RegisterAsync(RegisterDTO registerDTO);
+        // login
         Task<UserDTO> LoginAsync(LoginDTO loginDTO);
+
+        // register
+        Task<UserDTO> RegisterAsync(RegisterDTO registerDTO);
+
+        // logout
+        Task LogOutAsync(string id);
+
     }
 }

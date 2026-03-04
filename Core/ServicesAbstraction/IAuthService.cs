@@ -12,7 +12,7 @@ namespace ServicesAbstraction
         Task<UserDTO> RegisterAsync(RegisterDTO registerDTO);
 
         // logout
-        Task LogOutAsync(string id);
+        Task LogoutAsync(string id);
 
     }
 }

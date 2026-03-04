@@ -125,7 +125,7 @@ namespace Services
 
         }
 
-        public async Task LogOutAsync(string id)
+        public async Task LogoutAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if(user is null)

@@ -7,7 +7,6 @@ namespace Domain.Contracts
     public interface IGenericRepository<TEntity,TKey> where TEntity:class
     {
         // get all
-
         Task<IEnumerable<TEntity>> GetAllAsync();
 
         // get by id

@@ -9,13 +9,13 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    public class AuthenticationController(IAuthService _authService):ControllerBase
+    public class AuthenticationController(IServiceManager _serviceManager):ControllerBase
     {
         // register
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register([FromBody] RegisterDTO registerDTO)
         {
-            var result = await _authService.RegisterAsync(registerDTO);
+            var result = await _serviceManager.AuthService.RegisterAsync(registerDTO);
             return Ok(result);
         }
 
@@ -23,7 +23,7 @@ namespace Presentation.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login([FromBody] LoginDTO loginDTO)
         {
-            var result = await _authService.LoginAsync(loginDTO);
+            var result = await _serviceManager.AuthService.LoginAsync(loginDTO);
             return Ok(result);
         }
 
@@ -37,7 +37,7 @@ namespace Presentation.Controllers
             {
                 return Unauthorized();
             }
-            await _authService.LogoutAsync(userId);
+            await _serviceManager.AuthService.LogoutAsync(userId);
             return Ok();
         }
     }

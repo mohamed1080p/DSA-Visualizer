@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Services
 {
-    public class AuthService(UserManager<ApplicationUser> _userManager, IRefreshTokenRepository _refreshTokenRepository,
+    public class AuthService(UserManager<ApplicationUser> _userManager, IIdentityUnitOfWork _identityUnitOfWork,
          IConfiguration _configuration) : IAuthService
     {
         public async Task<UserDTO> LoginAsync(LoginDTO loginDTO)
@@ -47,8 +47,8 @@ namespace Services
             var refreshToken = GenerateRefreshToken();
 
             // revoke the old tokens and setting a new one
-            await _refreshTokenRepository.RevokeRefreshTokenForUser(user.Id);
-            await _refreshTokenRepository.AddRefreshTokenAsync(new RefreshToken()
+            await _identityUnitOfWork.RefreshTokenRepository.RevokeRefreshTokenForUser(user.Id);
+            await _identityUnitOfWork.RefreshTokenRepository.AddRefreshTokenAsync(new RefreshToken()
             {
                 Token = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(Convert.ToDouble(_configuration["JwtSettings:RefreshTokenExpiryInDays"])),
@@ -104,7 +104,7 @@ namespace Services
             var refreshToken = GenerateRefreshToken();
 
             // saving tokens in Identity database
-            await _refreshTokenRepository.AddRefreshTokenAsync(new RefreshToken()
+            await _identityUnitOfWork.RefreshTokenRepository.AddRefreshTokenAsync(new RefreshToken()
             {
                 Token = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(Convert.ToDouble(_configuration["JwtSettings:RefreshTokenExpiryInDays"])),
@@ -132,7 +132,7 @@ namespace Services
             {
                 throw new Exception("User not found.");
             }
-            await _refreshTokenRepository.RevokeRefreshTokenForUser(id);
+            await _identityUnitOfWork.RefreshTokenRepository.RevokeRefreshTokenForUser(id);
         }
 
 

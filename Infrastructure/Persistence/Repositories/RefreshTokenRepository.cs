@@ -16,14 +16,12 @@ namespace Persistence.Repositories
         public async Task AddRefreshTokenAsync(RefreshToken refreshToken)
         {
             await _identityDbContext.Set<RefreshToken>().AddAsync(refreshToken);
-            await _identityDbContext.SaveChangesAsync();
         }
 
         public async Task RevokeRefreshTokenForUser(string id)
         {
             await _identityDbContext.Set<RefreshToken>().Where(a => a.UserId == id).
                 ExecuteUpdateAsync(a => a.SetProperty(p => p.IsRevoked, true));
-            await _identityDbContext.SaveChangesAsync();
         }
     }
 }

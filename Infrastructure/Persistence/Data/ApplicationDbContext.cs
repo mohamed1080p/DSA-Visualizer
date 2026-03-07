@@ -1,5 +1,4 @@
-﻿
-using Domain.Models.IdentityModule;
+﻿using Domain.Models.TopicModule;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Data
@@ -10,13 +9,18 @@ namespace Persistence.Data
         {
             
         }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.ApplyConfigurationsFromAssembly(
-        //        typeof(AssemblyReference).Assembly,
-        //        t => t.Namespace!.Contains("Persistence.Data")
-        //    );
-        //}
+        public DbSet<Topic> Topics { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<TopicCodeImplementation> TopicCodeImplementations { get; set; }
+        public DbSet<TopicComplexity> TopicComplexities { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                typeof(AssemblyReference).Assembly,
+                t => t.Namespace!.Contains("Persistence.Data")
+            );
+        }
 
     }
 }

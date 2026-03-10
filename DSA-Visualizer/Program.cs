@@ -1,5 +1,6 @@
 using Domain.Contracts;
 using Domain.Models.IdentityModule;
+using Domain.Models.TopicModule;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -80,12 +81,26 @@ namespace DSA_Visualizer
 
             // Repositories 
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
 
             // Services
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITopicService, TopicService>();
 
             // Application Pipeline
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var appDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                appDbContext.Database.EnsureCreated();
+
+                if (!appDbContext.Set<Topic>().Any())
+                {
+                    appDbContext.Set<Topic>().AddRange(TopicSeedData.GetTopics());
+                    appDbContext.SaveChanges();
+                }
+            }
 
             if (app.Environment.IsDevelopment())
             {

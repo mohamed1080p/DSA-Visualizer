@@ -86,6 +86,12 @@ namespace DSA_Visualizer
             // Services
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITopicService, TopicService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
+
+            // Services
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
             // Application Pipeline
             var app = builder.Build();

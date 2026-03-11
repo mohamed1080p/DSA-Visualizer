@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Data;
-using Persistence.Identity;
 using Persistence.Repositories;
 using ServicesAbstraction;
 using Services;
@@ -30,11 +29,6 @@ namespace DSA_Visualizer
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
-            });
-
             // Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -52,7 +46,7 @@ namespace DSA_Visualizer
                 // User settings
                 options.User.RequireUniqueEmail = true;
             })
-            .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
             // JWT Authentication Configurations
@@ -81,7 +75,6 @@ namespace DSA_Visualizer
             // Repositories 
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
 
             // Services
             builder.Services.AddScoped<IAuthService, AuthService>();

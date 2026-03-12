@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq.Expressions;
 
 namespace Domain.Contracts
 {
     public interface IGenericRepository<TEntity,TKey> where TEntity:class
     {
-        // get all
         Task<IEnumerable<TEntity>> GetAllAsync();
-
-        // get by id
+        Task<IEnumerable<TEntity>> GetAllAsync(
+            Expression<Func<TEntity, bool>>? predicate,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy,
+            params Expression<Func<TEntity, object>>[] includes);
         Task<TEntity?> GetByIdAsync(TKey id);
-
-        // add
+        Task<TEntity?> GetByIdAsync(TKey id, params Expression<Func<TEntity, object>>[] includes);
         Task AddAsync(TEntity entity);
-
-        // update by id
         void Update(TEntity entity);
-
-        // delete by id
         void Delete(TEntity entity);
     }
 }

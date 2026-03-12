@@ -3,5 +3,6 @@
     public interface IServiceManager
     {
         IAuthService AuthService { get; }
+        ITopicService TopicService { get; }
     }
 }

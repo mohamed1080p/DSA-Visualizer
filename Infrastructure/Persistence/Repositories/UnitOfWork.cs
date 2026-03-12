@@ -12,7 +12,7 @@ namespace Persistence.Repositories
         private readonly Lazy<IRefreshTokenRepository> _refreshTokenRepository = new(() => new RefreshTokenRepository(_dbContext));
         public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository.Value;
 
-        public IGenericRepository<TEntity, TKey> genericRepository<TEntity, TKey>() where TEntity : class
+        public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class
         {
             string name = typeof(TEntity).Name;
             if(!_repositories.ContainsKey(name))

@@ -1,5 +1,4 @@
 {
-  "Id": 8,
   "Title": "Stack",
   "Description": "A linear data structure that follows the Last In First Out (LIFO) principle — the last element pushed is the first one to be popped.",
   "Explanation": "A Stack is one of the most fundamental data structures in computer science. It operates on the **LIFO** principle — Last In, First Out. Think of it like a stack of plates: you can only add or remove a plate from the top.\n\nA Stack supports four core operations:\n\n**Push:** Add a new element to the top of the stack. If the stack has a fixed capacity and is full, this results in a stack overflow.\n\n**Pop:** Remove and return the element at the top of the stack. If the stack is empty, this results in a stack underflow error.\n\n**Peek (Top):** Return the top element without removing it. Useful when you need to inspect the top value before deciding whether to pop.\n\n**Reset (Clear):** Remove all elements from the stack, returning it to an empty state.\n\n**Real-world uses of Stack:**\n- **Function call stack:** Every time a function is called, its frame is pushed onto the call stack. When it returns, it is popped.\n- **Undo/Redo:** Text editors push every action onto a stack. Ctrl+Z pops the last action.\n- **Expression evaluation:** Compilers use stacks to evaluate arithmetic expressions and match parentheses.\n- **Browser history:** The back button pops the current page off a history stack.\n\n**Two common implementations:**\n- **Array-based:** Fixed size, O(1) push/pop, but limited capacity.\n- **Linked List-based:** Dynamic size, O(1) push/pop, no capacity limit.",
@@ -8,31 +7,26 @@
   "CategoryId": 1,
   "Complexities": [
     {
-      "Id": 26,
       "OperationName": "Push",
       "TimeComplexity": "O(1)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 27,
       "OperationName": "Pop",
       "TimeComplexity": "O(1)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 28,
       "OperationName": "Peek",
       "TimeComplexity": "O(1)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 29,
       "OperationName": "Reset",
       "TimeComplexity": "O(1)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 30,
       "OperationName": "Search",
       "TimeComplexity": "O(n)",
       "SpaceComplexity": "O(1)"
@@ -40,25 +34,21 @@
   ],
   "CodeImplementations": [
     {
-      "Id": 29,
       "Language": 1,
       "Code": "// C# — Stack: Push, Pop, Peek, Reset\n\npublic class Stack<T>\n{\n    private readonly List<T> _items = new List<T>();\n\n    // Push — add element to the top\n    public void Push(T item)\n    {\n        _items.Add(item);\n    }\n\n    // Pop — remove and return the top element\n    public T Pop()\n    {\n        if (IsEmpty())\n            throw new InvalidOperationException(\"Stack is empty.\");\n        T top = _items[_items.Count - 1];\n        _items.RemoveAt(_items.Count - 1);\n        return top;\n    }\n\n    // Peek — return top element without removing it\n    public T Peek()\n    {\n        if (IsEmpty())\n            throw new InvalidOperationException(\"Stack is empty.\");\n        return _items[_items.Count - 1];\n    }\n\n    // Reset — clear all elements\n    public void Reset()\n    {\n        _items.Clear();\n    }\n\n    public bool IsEmpty() => _items.Count == 0;\n    public int Size() => _items.Count;\n}\n\n// Usage\nvar stack = new Stack<int>();\nstack.Push(10);\nstack.Push(20);\nstack.Push(30);\n\nint top = stack.Peek();  // 30 — not removed\nint popped = stack.Pop(); // 30 — removed\n\nstack.Reset(); // stack is now empty",
       "StepsJson": "[{\"step\":1,\"line\":3,\"description\":\"Generic Stack class — works with any type T.\"},{\"step\":2,\"line\":5,\"description\":\"Internal List<T> stores elements. Last index = top of stack.\"},{\"step\":3,\"line\":8,\"description\":\"Push: add item to the end of the list — this is the top. O(1) amortized.\"},{\"step\":4,\"line\":13,\"description\":\"Pop: check for empty stack first to prevent underflow.\"},{\"step\":5,\"line\":16,\"description\":\"Store the top element (last index) before removing it.\"},{\"step\":6,\"line\":17,\"description\":\"Remove the top element from the list.\"},{\"step\":7,\"line\":18,\"description\":\"Return the stored top element.\"},{\"step\":8,\"line\":23,\"description\":\"Peek: same empty check as Pop, but do not remove — just return the top.\"},{\"step\":9,\"line\":31,\"description\":\"Reset: List.Clear() removes all elements in O(1) — just sets the count to 0.\"},{\"step\":10,\"line\":40,\"description\":\"Push 10, 20, 30 — stack top is now 30.\"},{\"step\":11,\"line\":43,\"description\":\"Peek returns 30 without modifying the stack.\"},{\"step\":12,\"line\":44,\"description\":\"Pop removes and returns 30 — stack top is now 20.\"},{\"step\":13,\"line\":46,\"description\":\"Reset clears all elements — stack is empty.\"}]"
     },
     {
-      "Id": 30,
       "Language": 2,
       "Code": "// C++ — Stack: Push, Pop, Peek, Reset\n#include <iostream>\n#include <vector>\n#include <stdexcept>\nusing namespace std;\n\ntemplate <typename T>\nclass Stack {\n    vector<T> items;\npublic:\n    // Push — add element to top\n    void push(T item) {\n        items.push_back(item);\n    }\n\n    // Pop — remove and return top element\n    T pop() {\n        if (isEmpty())\n            throw runtime_error(\"Stack is empty.\");\n        T top = items.back();\n        items.pop_back();\n        return top;\n    }\n\n    // Peek — return top element without removing\n    T peek() {\n        if (isEmpty())\n            throw runtime_error(\"Stack is empty.\");\n        return items.back();\n    }\n\n    // Reset — clear all elements\n    void reset() {\n        items.clear();\n    }\n\n    bool isEmpty() const { return items.empty(); }\n    int size() const { return items.size(); }\n};\n\nint main() {\n    Stack<int> stack;\n    stack.push(10);\n    stack.push(20);\n    stack.push(30);\n\n    int top = stack.peek();   // 30 — not removed\n    int popped = stack.pop(); // 30 — removed\n\n    stack.reset(); // stack is now empty\n    return 0;\n}",
       "StepsJson": "[{\"step\":1,\"line\":7,\"description\":\"Template class allows Stack to work with any data type.\"},{\"step\":2,\"line\":8,\"description\":\"std::vector stores elements — back() is the top of the stack.\"},{\"step\":3,\"line\":12,\"description\":\"push: vector::push_back adds to the end — O(1) amortized.\"},{\"step\":4,\"line\":17,\"description\":\"pop: check isEmpty to avoid undefined behavior on empty vector.\"},{\"step\":5,\"line\":19,\"description\":\"Save the back element before removing it.\"},{\"step\":6,\"line\":20,\"description\":\"vector::pop_back removes the last element — O(1).\"},{\"step\":7,\"line\":25,\"description\":\"peek: return items.back() without modifying the vector.\"},{\"step\":8,\"line\":32,\"description\":\"reset: vector::clear removes all elements.\"},{\"step\":9,\"line\":43,\"description\":\"peek returns 30 — top element, stack unchanged.\"},{\"step\":10,\"line\":44,\"description\":\"pop removes and returns 30 — top is now 20.\"},{\"step\":11,\"line\":46,\"description\":\"reset empties the entire stack.\"}]"
     },
     {
-      "Id": 31,
       "Language": 3,
       "Code": "// Java — Stack: Push, Pop, Peek, Reset\nimport java.util.ArrayList;\n\npublic class Stack<T> {\n    private final ArrayList<T> items = new ArrayList<>();\n\n    // Push — add element to top\n    public void push(T item) {\n        items.add(item);\n    }\n\n    // Pop — remove and return top element\n    public T pop() {\n        if (isEmpty())\n            throw new RuntimeException(\"Stack is empty.\");\n        return items.remove(items.size() - 1);\n    }\n\n    // Peek — return top element without removing\n    public T peek() {\n        if (isEmpty())\n            throw new RuntimeException(\"Stack is empty.\");\n        return items.get(items.size() - 1);\n    }\n\n    // Reset — clear all elements\n    public void reset() {\n        items.clear();\n    }\n\n    public boolean isEmpty() { return items.isEmpty(); }\n    public int size() { return items.size(); }\n\n    public static void main(String[] args) {\n        Stack<Integer> stack = new Stack<>();\n        stack.push(10);\n        stack.push(20);\n        stack.push(30);\n\n        int top = stack.peek();   // 30 — not removed\n        int popped = stack.pop(); // 30 — removed\n\n        stack.reset(); // stack is now empty\n    }\n}",
       "StepsJson": "[{\"step\":1,\"line\":4,\"description\":\"Generic Stack<T> class — works with any reference type.\"},{\"step\":2,\"line\":5,\"description\":\"ArrayList stores elements — last index is the top of the stack.\"},{\"step\":3,\"line\":8,\"description\":\"push: ArrayList.add appends to the end — O(1) amortized.\"},{\"step\":4,\"line\":13,\"description\":\"pop: guard against empty stack before removing.\"},{\"step\":5,\"line\":15,\"description\":\"ArrayList.remove(index) removes and returns the last element in one call.\"},{\"step\":6,\"line\":20,\"description\":\"peek: use get(size-1) to read top without modifying the list.\"},{\"step\":7,\"line\":26,\"description\":\"reset: ArrayList.clear removes all elements.\"},{\"step\":8,\"line\":38,\"description\":\"peek returns 30 — top element, stack unchanged.\"},{\"step\":9,\"line\":39,\"description\":\"pop removes and returns 30.\"},{\"step\":10,\"line\":41,\"description\":\"reset clears the entire stack.\"}]"
     },
     {
-      "Id": 32,
       "Language": 4,
       "Code": "// JavaScript — Stack: Push, Pop, Peek, Reset\n\nclass Stack {\n    constructor() {\n        this.items = [];\n    }\n\n    // Push — add element to top\n    push(item) {\n        this.items.push(item);\n    }\n\n    // Pop — remove and return top element\n    pop() {\n        if (this.isEmpty())\n            throw new Error('Stack is empty.');\n        return this.items.pop();\n    }\n\n    // Peek — return top element without removing\n    peek() {\n        if (this.isEmpty())\n            throw new Error('Stack is empty.');\n        return this.items[this.items.length - 1];\n    }\n\n    // Reset — clear all elements\n    reset() {\n        this.items = [];\n    }\n\n    isEmpty() { return this.items.length === 0; }\n    size() { return this.items.length; }\n}\n\n// Usage\nconst stack = new Stack();\nstack.push(10);\nstack.push(20);\nstack.push(30);\n\nconst top = stack.peek();   // 30 — not removed\nconst popped = stack.pop(); // 30 — removed\n\nstack.reset(); // stack is now empty",
       "StepsJson": "[{\"step\":1,\"line\":3,\"description\":\"Stack class using a plain array as the internal storage.\"},{\"step\":2,\"line\":5,\"description\":\"this.items is the array — last element is always the top.\"},{\"step\":3,\"line\":9,\"description\":\"push: Array.push adds to the end — O(1).\"},{\"step\":4,\"line\":14,\"description\":\"pop: check isEmpty first to throw a meaningful error.\"},{\"step\":5,\"line\":16,\"description\":\"Array.pop removes and returns the last element — O(1). No index needed.\"},{\"step\":6,\"line\":21,\"description\":\"peek: access last index directly without modifying the array.\"},{\"step\":7,\"line\":28,\"description\":\"reset: reassign items to a new empty array — simple and effective.\"},{\"step\":8,\"line\":41,\"description\":\"peek returns 30 — stack is unchanged.\"},{\"step\":9,\"line\":42,\"description\":\"pop removes and returns 30 — top is now 20.\"},{\"step\":10,\"line\":44,\"description\":\"reset empties the stack entirely.\"}]"

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Persistence.Identity.Configurations
+namespace Persistence.Data.Configurations
 {
     public class RefreshTokenConfigurations : IEntityTypeConfiguration<RefreshToken>
     {

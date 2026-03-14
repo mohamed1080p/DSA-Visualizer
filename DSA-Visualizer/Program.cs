@@ -5,17 +5,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Data;
-using Persistence.Identity;
 using Persistence.Repositories;
 using ServicesAbstraction;
 using Services;
 using System.Text;
+using Persistence.Data.Seeds;
 
 namespace DSA_Visualizer
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +28,6 @@ namespace DSA_Visualizer
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-
-            builder.Services.AddDbContext<ApplicationIdentityDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
             });
 
             // Identity
@@ -52,7 +47,7 @@ namespace DSA_Visualizer
                 // User settings
                 options.User.RequireUniqueEmail = true;
             })
-            .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
             // JWT Authentication Configurations
@@ -78,17 +73,19 @@ namespace DSA_Visualizer
                 };
             });
 
-            // Repositories 
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
-
-            // Services
-            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddScoped<DataSeeding>();
 
             // Application Pipeline
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetRequiredService<DataSeeding>();
+                await seeder.SeedAsync();
+            }
 
             if (app.Environment.IsDevelopment())
             {
@@ -97,6 +94,7 @@ namespace DSA_Visualizer
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

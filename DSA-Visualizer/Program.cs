@@ -9,12 +9,13 @@ using Persistence.Repositories;
 using ServicesAbstraction;
 using Services;
 using System.Text;
+using Persistence.Data.Seeds;
 
 namespace DSA_Visualizer
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -72,16 +73,19 @@ namespace DSA_Visualizer
                 };
             });
 
-            // Repositories 
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            // Services
-            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddScoped<DataSeeding>();
 
             // Application Pipeline
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetRequiredService<DataSeeding>();
+                await seeder.SeedAsync();
+            }
 
             if (app.Environment.IsDevelopment())
             {

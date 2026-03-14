@@ -1,0 +1,55 @@
+{
+  "Id": 7,
+  "Title": "Quick Sort",
+  "Description": "A highly efficient divide-and-conquer sorting algorithm that selects a pivot element and partitions the array into two halves, recursively sorting each half.",
+  "Explanation": "Quick Sort is one of the fastest sorting algorithms in practice. It follows the divide-and-conquer strategy and works entirely in-place, requiring no extra array.\n\n**Core concept — Partitioning:**\nChoose a pivot element. Rearrange the array so that:\n- All elements **less than** the pivot are to its left.\n- All elements **greater than** the pivot are to its right.\n- The pivot is now in its **final sorted position**.\n\nRecursively apply the same process to the left and right sub-arrays.\n\n**Lomuto Partition Scheme (used here):**\n- Pick the last element as the pivot.\n- Maintain a pointer `i` for the boundary of elements smaller than pivot.\n- For each element `j`, if `arr[j] <= pivot`, increment `i` and swap `arr[i]` with `arr[j]`.\n- After the loop, place pivot at `i+1` — this is its final position.\n\n**Example:** `[10, 7, 8, 9, 1, 5]`, pivot = 5\n- After partition: `[1, 5, 8, 9, 7, 10]` — 5 is now at index 1 (final position)\n- Recursively sort `[1]` and `[8, 9, 7, 10]`\n\n**Pivot choice matters:**\n- Last element (Lomuto) — simple but O(n²) on sorted arrays.\n- Random pivot — avoids worst case in practice.\n- Median-of-three — used in production implementations.\n\n**Why O(n log n) average?** Each partition step is O(n). With a good pivot, the array splits roughly in half each time → log n levels of recursion → O(n log n) total.",
+  "Slug": "quick-sort",
+  "Difficulty": 2,
+  "CategoryId": 2,
+  "Complexities": [
+    {
+      "Id": 23,
+      "OperationName": "Best Case (Balanced Partitions)",
+      "TimeComplexity": "O(n log n)",
+      "SpaceComplexity": "O(log n)"
+    },
+    {
+      "Id": 24,
+      "OperationName": "Average Case",
+      "TimeComplexity": "O(n log n)",
+      "SpaceComplexity": "O(log n)"
+    },
+    {
+      "Id": 25,
+      "OperationName": "Worst Case (Already Sorted / All Equal)",
+      "TimeComplexity": "O(n²)",
+      "SpaceComplexity": "O(n)"
+    }
+  ],
+  "CodeImplementations": [
+    {
+      "Id": 25,
+      "Language": 1,
+      "Code": "// C# — Quick Sort (Lomuto partition scheme)\nvoid QuickSort(int[] arr, int low, int high)\n{\n    if (low < high)\n    {\n        int pivotIndex = Partition(arr, low, high);\n        QuickSort(arr, low, pivotIndex - 1);\n        QuickSort(arr, pivotIndex + 1, high);\n    }\n}\n\nint Partition(int[] arr, int low, int high)\n{\n    int pivot = arr[high]; // last element as pivot\n    int i = low - 1;       // boundary of smaller elements\n\n    for (int j = low; j < high; j++)\n    {\n        if (arr[j] <= pivot)\n        {\n            i++;\n            (arr[i], arr[j]) = (arr[j], arr[i]); // swap\n        }\n    }\n    (arr[i + 1], arr[high]) = (arr[high], arr[i + 1]); // place pivot\n    return i + 1;\n}\n\nint[] arr = { 10, 7, 8, 9, 1, 5 };\nQuickSort(arr, 0, arr.Length - 1);\n// arr = { 1, 5, 7, 8, 9, 10 }",
+      "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"QuickSort is called recursively with low and high bounds.\"},{\"step\":2,\"line\":4,\"description\":\"Base case: if low >= high, sub-array has 0 or 1 element — already sorted.\"},{\"step\":3,\"line\":6,\"description\":\"Partition the array and get the pivot's final index.\"},{\"step\":4,\"line\":7,\"description\":\"Recursively sort the left sub-array (elements smaller than pivot).\"},{\"step\":5,\"line\":8,\"description\":\"Recursively sort the right sub-array (elements larger than pivot).\"},{\"step\":6,\"line\":13,\"description\":\"Pick the last element as pivot.\"},{\"step\":7,\"line\":14,\"description\":\"i tracks the boundary of elements smaller than pivot.\"},{\"step\":8,\"line\":18,\"description\":\"If current element is <= pivot, expand the smaller-elements region and swap.\"},{\"step\":9,\"line\":23,\"description\":\"Place pivot at its correct final position (i+1) by swapping with arr[high].\"},{\"step\":10,\"line\":24,\"description\":\"Return pivot index so QuickSort knows where to split.\"}]"
+    },
+    {
+      "Id": 26,
+      "Language": 2,
+      "Code": "// C++ — Quick Sort (Lomuto partition scheme)\n#include <iostream>\nusing namespace std;\n\nint partition(int arr[], int low, int high) {\n    int pivot = arr[high];\n    int i = low - 1;\n    for (int j = low; j < high; j++) {\n        if (arr[j] <= pivot) {\n            i++;\n            swap(arr[i], arr[j]);\n        }\n    }\n    swap(arr[i + 1], arr[high]);\n    return i + 1;\n}\n\nvoid quickSort(int arr[], int low, int high) {\n    if (low < high) {\n        int pivotIndex = partition(arr, low, high);\n        quickSort(arr, low, pivotIndex - 1);\n        quickSort(arr, pivotIndex + 1, high);\n    }\n}\n\nint main() {\n    int arr[] = {10, 7, 8, 9, 1, 5};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    quickSort(arr, 0, n - 1);\n    // arr = {1, 5, 7, 8, 9, 10}\n    return 0;\n}",
+      "StepsJson": "[{\"step\":1,\"line\":5,\"description\":\"partition returns the final sorted index of the pivot.\"},{\"step\":2,\"line\":6,\"description\":\"Pick last element as pivot.\"},{\"step\":3,\"line\":7,\"description\":\"i is the boundary between smaller and larger elements.\"},{\"step\":4,\"line\":8,\"description\":\"Scan all elements except the pivot.\"},{\"step\":5,\"line\":10,\"description\":\"Expand smaller region and swap element into it.\"},{\"step\":6,\"line\":13,\"description\":\"Place pivot at its correct position.\"},{\"step\":7,\"line\":18,\"description\":\"Base case: sub-array of size 0 or 1 needs no sorting.\"},{\"step\":8,\"line\":20,\"description\":\"Recursively sort left and right sub-arrays around pivot.\"}]"
+    },
+    {
+      "Id": 27,
+      "Language": 3,
+      "Code": "// Java — Quick Sort (Lomuto partition scheme)\npublic class QuickSort {\n    static int partition(int[] arr, int low, int high) {\n        int pivot = arr[high];\n        int i = low - 1;\n        for (int j = low; j < high; j++) {\n            if (arr[j] <= pivot) {\n                i++;\n                int temp = arr[i];\n                arr[i] = arr[j];\n                arr[j] = temp;\n            }\n        }\n        int temp = arr[i + 1];\n        arr[i + 1] = arr[high];\n        arr[high] = temp;\n        return i + 1;\n    }\n\n    static void quickSort(int[] arr, int low, int high) {\n        if (low < high) {\n            int pivotIndex = partition(arr, low, high);\n            quickSort(arr, low, pivotIndex - 1);\n            quickSort(arr, pivotIndex + 1, high);\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {10, 7, 8, 9, 1, 5};\n        quickSort(arr, 0, arr.length - 1);\n        // arr = {1, 5, 7, 8, 9, 10}\n    }\n}",
+      "StepsJson": "[{\"step\":1,\"line\":3,\"description\":\"partition method rearranges elements and returns pivot's final index.\"},{\"step\":2,\"line\":4,\"description\":\"Use last element as pivot.\"},{\"step\":3,\"line\":5,\"description\":\"i is the smaller-elements boundary, starts before low.\"},{\"step\":4,\"line\":6,\"description\":\"Scan elements from low to high-1.\"},{\"step\":5,\"line\":8,\"description\":\"Increment i and swap to grow the smaller-elements region.\"},{\"step\":6,\"line\":13,\"description\":\"Place pivot in its final sorted position.\"},{\"step\":7,\"line\":20,\"description\":\"Recursive base case — sub-array length <= 1.\"},{\"step\":8,\"line\":22,\"description\":\"Recursively sort both halves.\"}]"
+    },
+    {
+      "Id": 28,
+      "Language": 4,
+      "Code": "// JavaScript — Quick Sort (Lomuto partition scheme)\nfunction partition(arr, low, high) {\n    const pivot = arr[high];\n    let i = low - 1;\n    for (let j = low; j < high; j++) {\n        if (arr[j] <= pivot) {\n            i++;\n            [arr[i], arr[j]] = [arr[j], arr[i]];\n        }\n    }\n    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];\n    return i + 1;\n}\n\nfunction quickSort(arr, low, high) {\n    if (low < high) {\n        const pivotIndex = partition(arr, low, high);\n        quickSort(arr, low, pivotIndex - 1);\n        quickSort(arr, pivotIndex + 1, high);\n    }\n}\n\nconst arr = [10, 7, 8, 9, 1, 5];\nquickSort(arr, 0, arr.length - 1);\n// arr = [1, 5, 7, 8, 9, 10]",
+      "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"partition rearranges elements around the pivot and returns its final index.\"},{\"step\":2,\"line\":3,\"description\":\"Last element is the pivot.\"},{\"step\":3,\"line\":4,\"description\":\"i tracks the end of the smaller-elements region.\"},{\"step\":4,\"line\":5,\"description\":\"Loop through all elements except pivot.\"},{\"step\":5,\"line\":7,\"description\":\"Swap element into the smaller-elements region using destructuring.\"},{\"step\":6,\"line\":10,\"description\":\"Place pivot at its correct final position.\"},{\"step\":7,\"line\":15,\"description\":\"Base case: if low >= high, no sorting needed.\"},{\"step\":8,\"line\":17,\"description\":\"Recursively sort sub-arrays to the left and right of pivot.\"}]"
+    }
+  ]
+}

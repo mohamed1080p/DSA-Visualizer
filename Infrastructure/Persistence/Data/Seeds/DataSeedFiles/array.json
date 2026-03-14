@@ -1,0 +1,52 @@
+{
+  "Title": "Array",
+  "Description": "A collection of elements stored at contiguous memory locations, accessible by index.",
+  "Explanation": "An array is one of the most fundamental data structures in computer science. It stores elements of the same type in contiguous memory locations, which allows direct access to any element using its index in O(1) time. Arrays have a fixed size once created, meaning you must know the number of elements in advance.\n\nArrays support four core operations:\n- **Create**: Allocate a block of memory for N elements.\n- **Indexing (Access)**: Read or retrieve an element at a specific position using its index. This is O(1).\n- **Search**: Scan through the array to find an element by value. This is O(n) for unsorted arrays.\n- **Update**: Overwrite the value at a specific index. This is O(1).\n\nBecause of their simplicity and cache-friendly memory layout, arrays are the building block for many other data structures such as stacks, queues, and heaps.",
+  "Slug": "array",
+  "Difficulty": 1,
+  "CategoryId": 1,
+  "Complexities": [
+    {
+      "OperationName": "Create Array",
+      "TimeComplexity": "O(n)",
+      "SpaceComplexity": "O(n)"
+    },
+    {
+      "OperationName": "Access by Index",
+      "TimeComplexity": "O(1)",
+      "SpaceComplexity": "O(1)"
+    },
+    {
+      "OperationName": "Search (Linear)",
+      "TimeComplexity": "O(n)",
+      "SpaceComplexity": "O(1)"
+    },
+    {
+      "OperationName": "Update by Index",
+      "TimeComplexity": "O(1)",
+      "SpaceComplexity": "O(1)"
+    }
+  ],
+  "CodeImplementations": [
+    {
+      "Language": 1,
+      "Code": "// C# — Array: Create, Search, Indexing, Update\nint[] arr = new int[5] { 10, 20, 30, 40, 50 };\n\n// Access by index\nint value = arr[2]; // 30\n\n// Search (linear)\nint target = 40;\nint foundIndex = -1;\nfor (int i = 0; i < arr.Length; i++)\n{\n    if (arr[i] == target)\n    {\n        foundIndex = i;\n        break;\n    }\n}\n\n// Update\narr[1] = 99; // arr is now { 10, 99, 30, 40, 50 }",
+      "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Declare and initialize an array of 5 integers.\"},{\"step\":2,\"line\":5,\"description\":\"Access element at index 2 — returns 30 in O(1).\"},{\"step\":3,\"line\":8,\"description\":\"Set the search target to 40.\"},{\"step\":4,\"line\":10,\"description\":\"Start linear search from index 0.\"},{\"step\":5,\"line\":12,\"description\":\"Compare current element with target.\"},{\"step\":6,\"line\":14,\"description\":\"Match found — store the index and break.\"},{\"step\":7,\"line\":20,\"description\":\"Update index 1 from 20 to 99 in O(1).\"}]"
+    },
+    {
+      "Language": 2,
+      "Code": "// C++ — Array: Create, Search, Indexing, Update\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n\n    // Access by index\n    int value = arr[2]; // 30\n\n    // Search (linear)\n    int target = 40;\n    int foundIndex = -1;\n    for (int i = 0; i < 5; i++) {\n        if (arr[i] == target) {\n            foundIndex = i;\n            break;\n        }\n    }\n\n    // Update\n    arr[1] = 99; // arr is now {10, 99, 30, 40, 50}\n\n    return 0;\n}",
+      "StepsJson": "[{\"step\":1,\"line\":6,\"description\":\"Declare and initialize an array of 5 integers on the stack.\"},{\"step\":2,\"line\":9,\"description\":\"Access element at index 2 — returns 30 in O(1).\"},{\"step\":3,\"line\":12,\"description\":\"Set the search target to 40.\"},{\"step\":4,\"line\":14,\"description\":\"Loop through the array starting at index 0.\"},{\"step\":5,\"line\":15,\"description\":\"Compare arr[i] with target.\"},{\"step\":6,\"line\":16,\"description\":\"Match found — store index and exit loop.\"},{\"step\":7,\"line\":21,\"description\":\"Update index 1 to 99 in O(1).\"}]"
+    },
+    {
+      "Language": 3,
+      "Code": "// Java — Array: Create, Search, Indexing, Update\npublic class ArrayDemo {\n    public static void main(String[] args) {\n        int[] arr = {10, 20, 30, 40, 50};\n\n        // Access by index\n        int value = arr[2]; // 30\n\n        // Search (linear)\n        int target = 40;\n        int foundIndex = -1;\n        for (int i = 0; i < arr.length; i++) {\n            if (arr[i] == target) {\n                foundIndex = i;\n                break;\n            }\n        }\n\n        // Update\n        arr[1] = 99; // arr is now {10, 99, 30, 40, 50}\n    }\n}",
+      "StepsJson": "[{\"step\":1,\"line\":4,\"description\":\"Declare and initialize an integer array with 5 elements.\"},{\"step\":2,\"line\":7,\"description\":\"Access element at index 2 — returns 30 in O(1).\"},{\"step\":3,\"line\":10,\"description\":\"Set the search target to 40.\"},{\"step\":4,\"line\":12,\"description\":\"Iterate through array using arr.length.\"},{\"step\":5,\"line\":13,\"description\":\"Check if current element equals target.\"},{\"step\":6,\"line\":14,\"description\":\"Match found — record index and break.\"},{\"step\":7,\"line\":19,\"description\":\"Update index 1 to 99 in O(1).\"}]"
+    },
+    {
+      "Language": 4,
+      "Code": "// JavaScript — Array: Create, Search, Indexing, Update\nconst arr = [10, 20, 30, 40, 50];\n\n// Access by index\nconst value = arr[2]; // 30\n\n// Search (linear)\nconst target = 40;\nlet foundIndex = -1;\nfor (let i = 0; i < arr.length; i++) {\n    if (arr[i] === target) {\n        foundIndex = i;\n        break;\n    }\n}\n\n// Update\narr[1] = 99; // arr is now [10, 99, 30, 40, 50]",
+      "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Declare and initialize an array with 5 numbers.\"},{\"step\":2,\"line\":5,\"description\":\"Access element at index 2 — returns 30 in O(1).\"},{\"step\":3,\"line\":8,\"description\":\"Set the search target to 40.\"},{\"step\":4,\"line\":10,\"description\":\"Loop through array using arr.length.\"},{\"step\":5,\"line\":11,\"description\":\"Use strict equality to compare current element with target.\"},{\"step\":6,\"line\":12,\"description\":\"Match found — store index and break.\"},{\"step\":7,\"line\":18,\"description\":\"Update index 1 to 99 in O(1).\"}]"
+    }
+  ]
+}

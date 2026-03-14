@@ -1,0 +1,47 @@
+{
+  "Title": "Selection Sort",
+  "Description": "A sorting algorithm that repeatedly finds the minimum element from the unsorted portion and places it at the beginning.",
+  "Explanation": "Selection Sort divides the array into two parts: a sorted portion on the left and an unsorted portion on the right. In each pass, it selects the smallest element from the unsorted portion and swaps it with the first element of that unsorted portion.\n\n**How it works step by step:**\n- Assume the first element of the unsorted portion is the minimum.\n- Scan the rest of the unsorted portion to find the actual minimum.\n- Swap the found minimum with the first element of the unsorted portion.\n- Move the boundary between sorted and unsorted one step to the right.\n- Repeat until the entire array is sorted.\n\n**Example:** `[64, 25, 12, 22, 11]`\n- Pass 1: min=11 (index 4). Swap with index 0. → `[11, 25, 12, 22, 64]`\n- Pass 2: min=12 (index 2). Swap with index 1. → `[11, 12, 25, 22, 64]`\n- Pass 3: min=22 (index 3). Swap with index 2. → `[11, 12, 22, 25, 64]`\n- Pass 4: min=25 (index 3). Already in place. → `[11, 12, 22, 25, 64]`\n\n**Key property:** Selection Sort always makes exactly **n-1 swaps** regardless of input — making it useful when write operations are expensive (e.g. flash memory). However it never benefits from a partially sorted input — it always runs O(n²) comparisons.",
+  "Slug": "selection-sort",
+  "Difficulty": 2,
+  "CategoryId": 2,
+  "Complexities": [
+    {
+      "OperationName": "Best Case",
+      "TimeComplexity": "O(n²)",
+      "SpaceComplexity": "O(1)"
+    },
+    {
+      "OperationName": "Average Case",
+      "TimeComplexity": "O(n²)",
+      "SpaceComplexity": "O(1)"
+    },
+    {
+      "OperationName": "Worst Case",
+      "TimeComplexity": "O(n²)",
+      "SpaceComplexity": "O(1)"
+    }
+  ],
+  "CodeImplementations": [
+    {
+      "Language": 1,
+      "Code": "// C# — Selection Sort\nint[] arr = { 64, 25, 12, 22, 11 };\nint n = arr.Length;\n\nfor (int i = 0; i < n - 1; i++)\n{\n    // find the index of the minimum element in the unsorted portion\n    int minIndex = i;\n    for (int j = i + 1; j < n; j++)\n    {\n        if (arr[j] < arr[minIndex])\n            minIndex = j;\n    }\n\n    // swap minimum with the first unsorted element\n    if (minIndex != i)\n    {\n        int temp = arr[minIndex];\n        arr[minIndex] = arr[i];\n        arr[i] = temp;\n    }\n}\n// arr = { 11, 12, 22, 25, 64 }",
+      "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Initialize the unsorted array.\"},{\"step\":2,\"line\":5,\"description\":\"Outer loop defines the boundary of the unsorted portion starting at i.\"},{\"step\":3,\"line\":8,\"description\":\"Assume the first unsorted element is the minimum.\"},{\"step\":4,\"line\":9,\"description\":\"Inner loop scans the rest of the unsorted portion for a smaller element.\"},{\"step\":5,\"line\":11,\"description\":\"Update minIndex whenever a smaller element is found.\"},{\"step\":6,\"line\":15,\"description\":\"Only swap if the minimum is not already in its position — avoids unnecessary writes.\"},{\"step\":7,\"line\":17,\"description\":\"Swap the found minimum into position i.\"}]"
+    },
+    {
+      "Language": 2,
+      "Code": "// C++ — Selection Sort\n#include <iostream>\nusing namespace std;\n\nvoid selectionSort(int arr[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        int minIndex = i;\n        for (int j = i + 1; j < n; j++) {\n            if (arr[j] < arr[minIndex])\n                minIndex = j;\n        }\n        if (minIndex != i)\n            swap(arr[minIndex], arr[i]);\n    }\n}\n\nint main() {\n    int arr[] = {64, 25, 12, 22, 11};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    selectionSort(arr, n);\n    // arr = {11, 12, 22, 25, 64}\n    return 0;\n}",
+      "StepsJson": "[{\"step\":1,\"line\":5,\"description\":\"selectionSort takes array and size as parameters.\"},{\"step\":2,\"line\":6,\"description\":\"Outer loop moves the sorted boundary forward each pass.\"},{\"step\":3,\"line\":7,\"description\":\"Assume position i holds the minimum.\"},{\"step\":4,\"line\":8,\"description\":\"Scan from i+1 to end for a smaller element.\"},{\"step\":5,\"line\":11,\"description\":\"Skip swap if min is already in correct position.\"},{\"step\":6,\"line\":12,\"description\":\"Use std::swap to place minimum at position i.\"}]"
+    },
+    {
+      "Language": 3,
+      "Code": "// Java — Selection Sort\npublic class SelectionSort {\n    public static void selectionSort(int[] arr) {\n        int n = arr.length;\n        for (int i = 0; i < n - 1; i++) {\n            int minIndex = i;\n            for (int j = i + 1; j < n; j++) {\n                if (arr[j] < arr[minIndex])\n                    minIndex = j;\n            }\n            if (minIndex != i) {\n                int temp = arr[minIndex];\n                arr[minIndex] = arr[i];\n                arr[i] = temp;\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {64, 25, 12, 22, 11};\n        selectionSort(arr);\n        // arr = {11, 12, 22, 25, 64}\n    }\n}",
+      "StepsJson": "[{\"step\":1,\"line\":3,\"description\":\"Static method sorts the array in place.\"},{\"step\":2,\"line\":5,\"description\":\"Outer loop runs n-1 times.\"},{\"step\":3,\"line\":6,\"description\":\"Track index of minimum element in unsorted portion.\"},{\"step\":4,\"line\":7,\"description\":\"Inner loop finds actual minimum from i+1 to end.\"},{\"step\":5,\"line\":10,\"description\":\"Only swap if minimum is not already at position i.\"},{\"step\":6,\"line\":11,\"description\":\"Swap minimum element into sorted position.\"}]"
+    },
+    {
+      "Language": 4,
+      "Code": "// JavaScript — Selection Sort\nfunction selectionSort(arr) {\n    const n = arr.length;\n    for (let i = 0; i < n - 1; i++) {\n        let minIndex = i;\n        for (let j = i + 1; j < n; j++) {\n            if (arr[j] < arr[minIndex])\n                minIndex = j;\n        }\n        if (minIndex !== i) {\n            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]]; // destructuring swap\n        }\n    }\n    return arr;\n}\n\nconst arr = [64, 25, 12, 22, 11];\nselectionSort(arr);\n// arr = [11, 12, 22, 25, 64]",
+      "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Function sorts array in place and returns it.\"},{\"step\":2,\"line\":4,\"description\":\"Outer loop moves the sorted boundary one step forward each pass.\"},{\"step\":3,\"line\":5,\"description\":\"Assume current position holds the minimum.\"},{\"step\":4,\"line\":6,\"description\":\"Scan the rest for a smaller element.\"},{\"step\":5,\"line\":9,\"description\":\"Use strict inequality to skip unnecessary swaps.\"},{\"step\":6,\"line\":10,\"description\":\"ES6 destructuring swap — clean and no temp variable needed.\"}]"
+    }
+  ]
+}

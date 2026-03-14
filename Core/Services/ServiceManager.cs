@@ -7,9 +7,12 @@ using ServicesAbstraction;
 
 namespace Services
 {
-    public class ServiceManager(IIdentityUnitOfWork _identityUnitOfWork, UserManager<ApplicationUser> _userManager, IConfiguration _configuration) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, IConfiguration _configuration) : IServiceManager
     {
-        private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _identityUnitOfWork, _configuration));
+        private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _unitOfWork, _configuration));
         public IAuthService AuthService => _authService.Value;
+
+        private readonly Lazy<ITopicService> _topicService = new(() => new TopicService(_unitOfWork));
+        public ITopicService TopicService => _topicService.Value;
     }
 }

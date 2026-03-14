@@ -1,5 +1,4 @@
 {
-  "Id": 2,
   "Title": "Binary Search",
   "Description": "An efficient search algorithm that finds a target value by repeatedly halving the search interval in a sorted array.",
   "Explanation": "Binary Search is one of the most efficient searching algorithms. It works on the principle of divide and conquer — instead of scanning every element like linear search, it repeatedly divides the sorted array in half and eliminates the half where the target cannot exist.\n\nThe algorithm works as follows:\n- Start with two pointers: `left = 0` and `right = array.length - 1`.\n- Calculate the middle index: `mid = (left + right) / 2`.\n- If `array[mid] == target` → found, return mid.\n- If `array[mid] < target` → target is in the right half, move `left = mid + 1`.\n- If `array[mid] > target` → target is in the left half, move `right = mid - 1`.\n- Repeat until `left > right` (not found) or the target is found.\n\n**Key requirement:** The array MUST be sorted before applying binary search. If the array is unsorted, the result is unpredictable.\n\n**Why is it O(log n)?** Each iteration eliminates half the remaining elements. For an array of 1,000,000 elements, binary search needs at most 20 comparisons. Linear search would need up to 1,000,000.",
@@ -8,19 +7,16 @@
   "CategoryId": 2,
   "Complexities": [
     {
-      "Id": 5,
       "OperationName": "Search (Best Case)",
       "TimeComplexity": "O(1)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 6,
       "OperationName": "Search (Average / Worst Case)",
       "TimeComplexity": "O(log n)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 7,
       "OperationName": "Search (Recursive)",
       "TimeComplexity": "O(log n)",
       "SpaceComplexity": "O(log n)"
@@ -28,25 +24,21 @@
   ],
   "CodeImplementations": [
     {
-      "Id": 5,
       "Language": 1,
       "Code": "// C# — Binary Search (Iterative)\nint[] arr = { 5, 12, 23, 37, 45, 56, 70, 89, 95 };\nint target = 45;\n\nint left = 0;\nint right = arr.Length - 1;\nint result = -1;\n\nwhile (left <= right)\n{\n    int mid = left + (right - left) / 2;\n\n    if (arr[mid] == target)\n    {\n        result = mid;\n        break;\n    }\n    else if (arr[mid] < target)\n    {\n        left = mid + 1;\n    }\n    else\n    {\n        right = mid - 1;\n    }\n}\n\n// result = 4 (index of 45)",
       "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Declare a sorted array — binary search requires a sorted input.\"},{\"step\":2,\"line\":3,\"description\":\"Set the target value to search for.\"},{\"step\":3,\"line\":5,\"description\":\"Initialize left pointer at the start of the array.\"},{\"step\":4,\"line\":6,\"description\":\"Initialize right pointer at the end of the array.\"},{\"step\":5,\"line\":9,\"description\":\"Enter the loop — continue while the search space is valid.\"},{\"step\":6,\"line\":11,\"description\":\"Calculate mid index. Using left + (right - left) / 2 avoids integer overflow.\"},{\"step\":7,\"line\":13,\"description\":\"Check if the middle element is the target.\"},{\"step\":8,\"line\":20,\"description\":\"Target is greater than mid — discard the left half, move left pointer up.\"},{\"step\":9,\"line\":24,\"description\":\"Target is smaller than mid — discard the right half, move right pointer down.\"},{\"step\":10,\"line\":28,\"description\":\"Search complete. result holds the index, or -1 if not found.\"}]"
     },
     {
-      "Id": 6,
       "Language": 2,
       "Code": "// C++ — Binary Search (Iterative)\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int arr[] = {5, 12, 23, 37, 45, 56, 70, 89, 95};\n    int size = 9;\n    int target = 45;\n\n    int left = 0;\n    int right = size - 1;\n    int result = -1;\n\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n\n        if (arr[mid] == target) {\n            result = mid;\n            break;\n        } else if (arr[mid] < target) {\n            left = mid + 1;\n        } else {\n            right = mid - 1;\n        }\n    }\n\n    // result = 4 (index of 45)\n    return 0;\n}",
       "StepsJson": "[{\"step\":1,\"line\":6,\"description\":\"Declare a sorted array on the stack.\"},{\"step\":2,\"line\":8,\"description\":\"Set the target value to 45.\"},{\"step\":3,\"line\":10,\"description\":\"Initialize left pointer at index 0.\"},{\"step\":4,\"line\":11,\"description\":\"Initialize right pointer at last index (size - 1).\"},{\"step\":5,\"line\":14,\"description\":\"Loop while search space is valid (left <= right).\"},{\"step\":6,\"line\":15,\"description\":\"Compute mid to avoid integer overflow.\"},{\"step\":7,\"line\":17,\"description\":\"If arr[mid] equals target, store index and exit.\"},{\"step\":8,\"line\":20,\"description\":\"Target is in right half — move left pointer up.\"},{\"step\":9,\"line\":22,\"description\":\"Target is in left half — move right pointer down.\"},{\"step\":10,\"line\":27,\"description\":\"result = 4, or -1 if not found.\"}]"
     },
     {
-      "Id": 7,
       "Language": 3,
       "Code": "// Java — Binary Search (Iterative)\npublic class BinarySearch {\n    public static void main(String[] args) {\n        int[] arr = {5, 12, 23, 37, 45, 56, 70, 89, 95};\n        int target = 45;\n\n        int left = 0;\n        int right = arr.length - 1;\n        int result = -1;\n\n        while (left <= right) {\n            int mid = left + (right - left) / 2;\n\n            if (arr[mid] == target) {\n                result = mid;\n                break;\n            } else if (arr[mid] < target) {\n                left = mid + 1;\n            } else {\n                right = mid - 1;\n            }\n        }\n\n        // result = 4 (index of 45)\n    }\n}",
       "StepsJson": "[{\"step\":1,\"line\":4,\"description\":\"Declare and initialize a sorted integer array.\"},{\"step\":2,\"line\":5,\"description\":\"Set the target value to search for.\"},{\"step\":3,\"line\":7,\"description\":\"Initialize left pointer at index 0.\"},{\"step\":4,\"line\":8,\"description\":\"Initialize right pointer using arr.length - 1.\"},{\"step\":5,\"line\":11,\"description\":\"Loop while the search space is valid.\"},{\"step\":6,\"line\":12,\"description\":\"Compute mid safely to prevent overflow.\"},{\"step\":7,\"line\":14,\"description\":\"Middle element matches target — store result and break.\"},{\"step\":8,\"line\":17,\"description\":\"Target is larger — search the right half.\"},{\"step\":9,\"line\":19,\"description\":\"Target is smaller — search the left half.\"},{\"step\":10,\"line\":23,\"description\":\"result = 4, or -1 if target was not found.\"}]"
     },
     {
-      "Id": 8,
       "Language": 4,
       "Code": "// JavaScript — Binary Search (Iterative)\nconst arr = [5, 12, 23, 37, 45, 56, 70, 89, 95];\nconst target = 45;\n\nlet left = 0;\nlet right = arr.length - 1;\nlet result = -1;\n\nwhile (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n\n    if (arr[mid] === target) {\n        result = mid;\n        break;\n    } else if (arr[mid] < target) {\n        left = mid + 1;\n    } else {\n        right = mid - 1;\n    }\n}\n\n// result = 4 (index of 45)",
       "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Declare a sorted array — binary search requires sorted input.\"},{\"step\":2,\"line\":3,\"description\":\"Set the target value to 45.\"},{\"step\":3,\"line\":5,\"description\":\"Initialize left pointer at index 0.\"},{\"step\":4,\"line\":6,\"description\":\"Initialize right pointer at the last index.\"},{\"step\":5,\"line\":9,\"description\":\"Loop while the search space is valid.\"},{\"step\":6,\"line\":10,\"description\":\"Use Math.floor to compute the mid index.\"},{\"step\":7,\"line\":12,\"description\":\"Use strict equality (===) to check if mid element matches target.\"},{\"step\":8,\"line\":15,\"description\":\"Target is larger — eliminate left half.\"},{\"step\":9,\"line\":17,\"description\":\"Target is smaller — eliminate right half.\"},{\"step\":10,\"line\":21,\"description\":\"result = 4, or -1 if not found.\"}]"

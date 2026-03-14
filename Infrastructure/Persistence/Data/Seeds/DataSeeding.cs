@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace Persistence.Data.Seeds
 {
-    public class DataSeeding(ApplicationDbContext _dbContext, ILogger _logger)
+    public class DataSeeding(ApplicationDbContext _dbContext)
     {
         public async Task SeedAsync()
         {
@@ -137,9 +137,9 @@ namespace Persistence.Data.Seeds
 
                 await _dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "something went wrong while seeding data to database.");
+                Console.WriteLine("something went wrong while seeding data to database.");
             }
         }
     }

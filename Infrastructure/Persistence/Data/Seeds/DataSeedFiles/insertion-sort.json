@@ -1,5 +1,4 @@
 {
-  "Id": 5,
   "Title": "Insertion Sort",
   "Description": "A sorting algorithm that builds the sorted array one element at a time by picking each element and inserting it into its correct position among the already-sorted elements.",
   "Explanation": "Insertion Sort works similarly to how you sort playing cards in your hand. You pick one card at a time and insert it into its correct position among the cards you have already sorted.\n\n**How it works step by step:**\n- Start from index 1 (the first element is trivially sorted).\n- Pick the current element — call it the `key`.\n- Compare the `key` with elements to its left, shifting each element one position to the right as long as it is greater than the `key`.\n- Insert the `key` into the gap that was created.\n- Repeat for every element until the array is fully sorted.\n\n**Example:** `[5, 3, 8, 1]`\n- Pass 1: key=3. 5>3 → shift 5 right. Insert 3. → `[3, 5, 8, 1]`\n- Pass 2: key=8. 5<8 → no shift. → `[3, 5, 8, 1]`\n- Pass 3: key=1. 8>1, 5>1, 3>1 → shift all. Insert 1. → `[1, 3, 5, 8]`\n\n**When to use it:**\n- Very efficient for small arrays (n < 20).\n- Excellent for nearly sorted arrays — best case is O(n).\n- Used as the base case in hybrid algorithms like Timsort (Python's built-in sort) for small subarrays.",
@@ -8,19 +7,16 @@
   "CategoryId": 2,
   "Complexities": [
     {
-      "Id": 17,
       "OperationName": "Best Case (Already Sorted)",
       "TimeComplexity": "O(n)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 18,
       "OperationName": "Average Case",
       "TimeComplexity": "O(n²)",
       "SpaceComplexity": "O(1)"
     },
     {
-      "Id": 19,
       "OperationName": "Worst Case (Reverse Sorted)",
       "TimeComplexity": "O(n²)",
       "SpaceComplexity": "O(1)"
@@ -28,25 +24,21 @@
   ],
   "CodeImplementations": [
     {
-      "Id": 17,
       "Language": 1,
       "Code": "// C# — Insertion Sort\nint[] arr = { 5, 3, 8, 1, 2 };\nint n = arr.Length;\n\nfor (int i = 1; i < n; i++)\n{\n    int key = arr[i];\n    int j = i - 1;\n\n    // shift elements greater than key one position to the right\n    while (j >= 0 && arr[j] > key)\n    {\n        arr[j + 1] = arr[j];\n        j--;\n    }\n\n    // insert key into its correct position\n    arr[j + 1] = key;\n}\n// arr = { 1, 2, 3, 5, 8 }",
       "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Initialize the unsorted array.\"},{\"step\":2,\"line\":5,\"description\":\"Start from index 1 — the first element is considered sorted by itself.\"},{\"step\":3,\"line\":7,\"description\":\"Store current element as key — this is the element to be inserted.\"},{\"step\":4,\"line\":8,\"description\":\"j points to the last element of the sorted portion.\"},{\"step\":5,\"line\":11,\"description\":\"Shift elements right while they are greater than key.\"},{\"step\":6,\"line\":13,\"description\":\"Move arr[j] one position to the right to make room.\"},{\"step\":7,\"line\":18,\"description\":\"Insert key at the correct position — the gap left by shifting.\"}]"
     },
     {
-      "Id": 18,
       "Language": 2,
       "Code": "// C++ — Insertion Sort\n#include <iostream>\nusing namespace std;\n\nvoid insertionSort(int arr[], int n) {\n    for (int i = 1; i < n; i++) {\n        int key = arr[i];\n        int j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j--;\n        }\n        arr[j + 1] = key;\n    }\n}\n\nint main() {\n    int arr[] = {5, 3, 8, 1, 2};\n    int n = sizeof(arr) / sizeof(arr[0]);\n    insertionSort(arr, n);\n    // arr = {1, 2, 3, 5, 8}\n    return 0;\n}",
       "StepsJson": "[{\"step\":1,\"line\":5,\"description\":\"insertionSort takes array and size as parameters.\"},{\"step\":2,\"line\":6,\"description\":\"Loop starts at index 1 — element at 0 is trivially sorted.\"},{\"step\":3,\"line\":7,\"description\":\"Save the current element as key.\"},{\"step\":4,\"line\":8,\"description\":\"j starts just before the current position.\"},{\"step\":5,\"line\":9,\"description\":\"Shift elements larger than key one step to the right.\"},{\"step\":6,\"line\":12,\"description\":\"Place key at the correct sorted position.\"}]"
     },
     {
-      "Id": 19,
       "Language": 3,
       "Code": "// Java — Insertion Sort\npublic class InsertionSort {\n    public static void insertionSort(int[] arr) {\n        int n = arr.length;\n        for (int i = 1; i < n; i++) {\n            int key = arr[i];\n            int j = i - 1;\n            while (j >= 0 && arr[j] > key) {\n                arr[j + 1] = arr[j];\n                j--;\n            }\n            arr[j + 1] = key;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 3, 8, 1, 2};\n        insertionSort(arr);\n        // arr = {1, 2, 3, 5, 8}\n    }\n}",
       "StepsJson": "[{\"step\":1,\"line\":3,\"description\":\"Static method accepts an int array.\"},{\"step\":2,\"line\":5,\"description\":\"Outer loop starts at index 1.\"},{\"step\":3,\"line\":6,\"description\":\"key holds the element to be placed correctly.\"},{\"step\":4,\"line\":7,\"description\":\"j starts at the end of the sorted portion.\"},{\"step\":5,\"line\":8,\"description\":\"Shift elements right while greater than key.\"},{\"step\":6,\"line\":11,\"description\":\"Insert key at its correct sorted position.\"}]"
     },
     {
-      "Id": 20,
       "Language": 4,
       "Code": "// JavaScript — Insertion Sort\nfunction insertionSort(arr) {\n    const n = arr.length;\n    for (let i = 1; i < n; i++) {\n        const key = arr[i];\n        let j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j--;\n        }\n        arr[j + 1] = key;\n    }\n    return arr;\n}\n\nconst arr = [5, 3, 8, 1, 2];\ninsertionSort(arr);\n// arr = [1, 2, 3, 5, 8]",
       "StepsJson": "[{\"step\":1,\"line\":2,\"description\":\"Function accepts an array and sorts it in place.\"},{\"step\":2,\"line\":4,\"description\":\"Start from index 1 — index 0 is already sorted.\"},{\"step\":3,\"line\":5,\"description\":\"key is the element to insert into the sorted portion.\"},{\"step\":4,\"line\":6,\"description\":\"j starts at the last index of the sorted portion.\"},{\"step\":5,\"line\":7,\"description\":\"Shift elements to the right while they exceed key.\"},{\"step\":6,\"line\":10,\"description\":\"Insert key into the correct position.\"}]"

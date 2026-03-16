@@ -1,4 +1,5 @@
 ﻿using Domain.Models.IdentityModule;
+using Domain.Models.ProblemsModule;
 using Domain.Models.TopicModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -18,6 +19,10 @@ namespace Persistence.Data
         public DbSet<TopicComplexity> TopicComplexities { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<UserTopicProgress> UserTopicProgresses { get; set; }
+        public DbSet<Problem> Problems { get; set; }
+        public DbSet<TestCase> TestCases { get; set; }
+        public DbSet<Submission> Submissions { get; set; }
+        public DbSet<SubmissionTestResult> SubmissionTestResults { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

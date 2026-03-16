@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServicesAbstraction;
 using Shared.DTOs.TopicsDTOs;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Presentation.Controllers
 {

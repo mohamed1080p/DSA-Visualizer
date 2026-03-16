@@ -14,5 +14,8 @@ namespace Services
 
         private readonly Lazy<ITopicService> _topicService = new(() => new TopicService(_unitOfWork));
         public ITopicService TopicService => _topicService.Value;
+
+        private readonly Lazy<IProblemService> _problemService = new(() => new ProblemService(_unitOfWork));
+        public IProblemService ProblemService => _problemService.Value;
     }
 }

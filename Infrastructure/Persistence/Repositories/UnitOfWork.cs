@@ -11,6 +11,8 @@ namespace Persistence.Repositories
 
         private readonly Lazy<IRefreshTokenRepository> _refreshTokenRepository = new(() => new RefreshTokenRepository(_dbContext));
         public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository.Value;
+        private readonly Lazy<ISubmissionRepository> _submissionRepository = new(() => new SubmissionRepository(_dbContext));
+        public ISubmissionRepository SubmissionRepository => _submissionRepository.Value;
 
         public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class
         {

@@ -1,0 +1,70 @@
+﻿
+using Domain.Contracts;
+using Domain.Models.ProblemsModule;
+using ServicesAbstraction;
+using Shared.DTOs.ProblemDTOs;
+
+namespace Services
+{
+    public class ProblemService(IUnitOfWork _unitOfWork) : IProblemService
+    {
+        public async Task<IEnumerable<ProblemDTO>> GetAllAsync()
+        {
+            var problems = await _unitOfWork.GetRepository<Problem, int>().
+                GetAllAsync(predicate: null, orderBy: null, includes: a => a.Topic);
+            return problems.Select(a => new ProblemDTO()
+            {
+                Id = a.Id,
+                Difficulty = a.Difficulty.ToString(),
+                Title = a.Title,
+                TopicName = a.Topic.Title
+            });
+        }
+
+        public async Task<IEnumerable<ProblemDTO>> GetAllAsync(ProblemQueryParametersDTO parameters)
+        {
+            var problems = await _unitOfWork.GetRepository<Problem, int>().GetAllAsync(
+                predicate: p =>
+                    (string.IsNullOrEmpty(parameters.SearchTerm) || p.Title.Contains(parameters.SearchTerm)) &&
+                    (parameters.CategoryId == null || p.Topic.Category.Id == parameters.CategoryId),
+                orderBy: null,
+                includes: p => p.Topic);
+
+            return problems.Select(p => new ProblemDTO
+            {
+                Id = p.Id,
+                Title = p.Title,
+                Difficulty = p.Difficulty.ToString(),
+                TopicName = p.Topic.Title
+            });
+        }
+
+        public async Task<ProblemDetailDTO> GetByIdAsync(int id)
+        {
+            var problem = await _unitOfWork.GetRepository<Problem, int>().GetByIdAsync(id, a => a.Topic, a=> a.TestCases);
+
+            if (problem is null)
+                throw new Exception($"Problem with Id: {id} was not found.");
+
+            return new ProblemDetailDTO
+            {
+                Id = problem.Id,
+                Title = problem.Title,
+                Description = problem.Description,
+                Difficulty = problem.Difficulty.ToString(),
+                TopicName = problem.Topic.Title,
+                TimeLimitMs = problem.TimeLimitMs,
+                MemoryLimitKb = problem.MemoryLimitKb,
+                // filter hidden test cases
+                SampleTestCases = problem.TestCases
+                    .Where(t => !t.IsHidden)
+                    .Select(t => new TestCaseDTO
+                    {
+                        Id = t.Id,
+                        Input = t.Input,
+                        ExpectedOutput = t.ExpectedOutput
+                    })
+            };
+        }
+    }
+}

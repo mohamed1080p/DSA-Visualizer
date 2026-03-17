@@ -8,19 +8,6 @@ namespace Services
 {
     public class ProblemService(IUnitOfWork _unitOfWork) : IProblemService
     {
-        public async Task<IEnumerable<ProblemDTO>> GetAllAsync()
-        {
-            var problems = await _unitOfWork.GetRepository<Problem, int>().
-                GetAllAsync(predicate: null, orderBy: null, includes: a => a.Topic);
-            return problems.Select(a => new ProblemDTO()
-            {
-                Id = a.Id,
-                Difficulty = a.Difficulty.ToString(),
-                Title = a.Title,
-                TopicName = a.Topic.Title
-            });
-        }
-
         public async Task<IEnumerable<ProblemDTO>> GetAllAsync(ProblemQueryParametersDTO parameters)
         {
             var problems = await _unitOfWork.GetRepository<Problem, int>().GetAllAsync(

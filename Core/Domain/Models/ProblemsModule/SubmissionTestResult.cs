@@ -8,7 +8,8 @@ namespace Domain.Models.ProblemsModule
         public string? ActualOutput { get; set; }
 
         //Runtime for this specific test case in milliseconds
-        public int? RuntimeMs { get; set; }
+        public long RuntimeMs { get; set; }
+        public long MemoryKb { get; set; }
 
         ///////////////////////////////////////////////////////////////////////
         public long SubmissionId { get; set; }

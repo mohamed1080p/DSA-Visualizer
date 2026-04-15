@@ -19,9 +19,6 @@ namespace Persistence.Data.Configurations
                 .IsRequired(false)
                 .HasColumnType("nvarchar(max)");
 
-            builder.Property(r => r.RuntimeMs)
-                .IsRequired(false);
-
             builder.HasOne(r => r.TestCase)
                 .WithMany()
                 .HasForeignKey(r => r.TestCaseId)

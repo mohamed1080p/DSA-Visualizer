@@ -7,7 +7,7 @@ namespace ServicesAbstraction
     {
         Task<SubmissionResultDTO> SubmitAsync(SubmitProblemDTO dto, string userId);
         Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(int problemId, string userId);
-        Task<SubmissionResultDTO> GetSubmissionByIdAsync(long submissionId);
+        Task<SubmissionResultDTO> GetSubmissionByIdAsync(long submissionId, string userId);
 
     }
 }

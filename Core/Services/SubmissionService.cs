@@ -1,76 +1,105 @@
-﻿
-using Domain.Contracts;
+﻿using Domain.Contracts;
 using Domain.Models.ProblemsModule;
 using Domain.Models.TopicModule;
 using ServicesAbstraction;
-using Shared.DTOs.Judge0DTOs;
 using Shared.DTOs.SubmissionDTOs;
 
 namespace Services
 {
-    public class SubmissionService(IUnitOfWork _unitOfWork, IJudge0Service _judge0Service) : ISubmissionService
+    public class SubmissionService : ISubmissionService
     {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICodeExecutionService _codeExecutionService;
+
+        public SubmissionService(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService)
+        {
+            _unitOfWork = unitOfWork;
+            _codeExecutionService = codeExecutionService;
+        }
+
         public async Task<SubmissionResultDTO> SubmitAsync(SubmitProblemDTO dto, string userId)
         {
-            // 1. validate language
-            if (!Judge0Service.LanguageIds.TryGetValue(dto.Language, out int languageId))
-                throw new Exception($"Unsupported language: {dto.Language}");
+            ArgumentNullException.ThrowIfNull(dto);
 
-            // 2. fetch problem with test cases
-            var problem = await _unitOfWork.GetRepository<Problem, int>().GetByIdAsync(dto.ProblemId);
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User id is required.", nameof(userId));
+
+            if (string.IsNullOrWhiteSpace(dto.Language))
+                throw new ArgumentException("Language is required.", nameof(dto.Language));
+
+            var supportedLanguages = new[] { "python", "cpp", "csharp", "java" };
+            var normalizedLanguage = dto.Language.Trim().ToLowerInvariant();
+
+            if (!supportedLanguages.Contains(normalizedLanguage))
+                throw new InvalidOperationException($"Unsupported language: {dto.Language}");
+
+            var problem = await _unitOfWork
+                .GetRepository<Problem, int>()
+                .GetByIdAsync(dto.ProblemId, p => p.TestCases);
+
             if (problem is null)
-                throw new Exception($"Problem with Id {dto.ProblemId} was not found.");
+                throw new InvalidOperationException($"Problem with Id {dto.ProblemId} was not found.");
 
-            // 3. run code against each test case via Judge0
-            var testResults = new List<SubmissionTestResult>();
-            int? totalRuntimeMs = 0;
-            int? totalMemoryKb = 0;
-            Verdict overallVerdict = Verdict.Accepted;
+            if (problem.TestCases.Count == 0)
+                throw new InvalidOperationException($"Problem with Id {dto.ProblemId} has no test cases.");
 
-            foreach (var testCase in problem.TestCases)
+            // ✅ O(1) lookup instead of repeated First()
+            var testCaseMap = problem.TestCases.ToDictionary(t => t.Id);
+
+            var testCases = problem.TestCases.ToList();
+            var memoryLimitMb = ConvertKilobytesToMegabytes(problem.MemoryLimitKb);
+            var batchResults = await _codeExecutionService.ExecuteBatchAsync(new BatchCodeExecutionRequest
             {
-                var judge0Result = await _judge0Service.ExecuteAsync(new Judge0RequestDTO
-                {
-                    SourceCode = dto.Code,
-                    LanguageId = languageId,
-                    Stdin = testCase.Input,
-                    CpuTimeLimit = problem.TimeLimitMs / 1000.0,
-                    MemoryLimit = problem.MemoryLimitKb
-                });
+                SourceCode = dto.Code,
+                Language = normalizedLanguage,
+                Inputs = testCases.Select(t => t.Input).ToList(),
+                TimeLimitMs = problem.TimeLimitMs,
+                MemoryLimitMB = memoryLimitMb
+            });
 
-                var verdict = MapVerdict(judge0Result, testCase.ExpectedOutput);
+            var testResults = new List<SubmissionTestResult>(testCases.Count);
+            for (var i = 0; i < testCases.Count; i++)
+            {
+                var testCase = testCases[i];
+                var execResult = i < batchResults.Count
+                    ? batchResults[i]
+                    : new CodeExecutionResult
+                    {
+                        Output = string.Empty,
+                        Error = "Missing execution result.",
+                        ExitCode = -1,
+                        ExecutionTimeMs = 0,
+                        MemoryUsedKB = 0,
+                        Verdict = Verdict.RuntimeError
+                    };
 
-                // first non-accepted verdict becomes the overall verdict
-                if (overallVerdict == Verdict.Accepted && verdict != Verdict.Accepted)
-                    overallVerdict = verdict;
-
-                // accumulate runtime and memory
-                if (judge0Result.Time.HasValue)
-                    totalRuntimeMs += (int)(judge0Result.Time.Value * 1000);
-                if (judge0Result.Memory.HasValue)
-                    totalMemoryKb = Math.Max(totalMemoryKb ?? 0, judge0Result.Memory.Value);
+                var verdict = MapVerdict(execResult, testCase.ExpectedOutput);
 
                 testResults.Add(new SubmissionTestResult
                 {
                     TestCaseId = testCase.Id,
                     Verdict = verdict,
-                    ActualOutput = judge0Result.Stdout,
-                    RuntimeMs = judge0Result.Time.HasValue
-                        ? (int)(judge0Result.Time.Value * 1000)
-                        : null
+                    ActualOutput = execResult.Output,
+                    RuntimeMs = execResult.ExecutionTimeMs,
+                    MemoryKb = execResult.MemoryUsedKB
                 });
             }
 
-            // 4. save submission + test results
+            var maxRuntimeMs = testResults.Count == 0 ? 0 : testResults.Max(r => r.RuntimeMs);
+            var maxMemoryKb = testResults.Count == 0 ? 0 : testResults.Max(r => r.MemoryKb);
+            var overallVerdict = testResults
+                .Select(r => r.Verdict)
+                .FirstOrDefault(v => v != Verdict.Accepted, Verdict.Accepted);
+
             var submission = new Submission
             {
                 UserId = userId,
                 ProblemId = dto.ProblemId,
                 Code = dto.Code,
-                Language = Enum.Parse<ProgrammingLanguage>(dto.Language, ignoreCase: true),
+                Language = Enum.Parse<ProgrammingLanguage>(normalizedLanguage, ignoreCase: true),
                 Verdict = overallVerdict,
-                RuntimeMs = totalRuntimeMs,
-                MemoryKb = totalMemoryKb,
+                RuntimeMs = maxRuntimeMs,
+                MemoryKb = maxMemoryKb,
                 SubmittedAt = DateTime.UtcNow,
                 SubmissionTestResults = testResults
             };
@@ -78,8 +107,7 @@ namespace Services
             await _unitOfWork.GetRepository<Submission, long>().AddAsync(submission);
             await _unitOfWork.SaveChangesAsync();
 
-            // 5. return result
-            return MapToResultDTO(submission, testResults, problem);
+            return MapToResultDTO(submission, testResults, problem, testCaseMap);
         }
 
         public async Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(int problemId, string userId)
@@ -98,13 +126,23 @@ namespace Services
             });
         }
 
-        public async Task<SubmissionResultDTO> GetSubmissionByIdAsync(long submissionId)
+        public async Task<SubmissionResultDTO> GetSubmissionByIdAsync(long submissionId, string userId)
         {
-            var submission = await _unitOfWork.SubmissionRepository
-                .GetByIdAsync(submissionId);
+            var submission = await _unitOfWork
+                .GetRepository<Submission, long>()
+                .GetByIdAsync(submissionId, s => s.SubmissionTestResults);
 
             if (submission is null)
-                throw new Exception($"Submission with Id {submissionId} was not found.");
+                throw new InvalidOperationException($"Submission with Id {submissionId} was not found.");
+
+            if (submission.UserId != userId)
+                throw new UnauthorizedAccessException("You do not have permission to view this submission.");
+
+            var problem = await _unitOfWork
+                .GetRepository<Problem, int>()
+                .GetByIdAsync(submission.ProblemId, p => p.TestCases);
+
+            var testCaseMap = problem?.TestCases.ToDictionary(t => t.Id) ?? new Dictionary<int, TestCase>();
 
             return new SubmissionResultDTO
             {
@@ -114,38 +152,106 @@ namespace Services
                 RuntimeMs = submission.RuntimeMs,
                 MemoryKb = submission.MemoryKb,
                 SubmittedAt = submission.SubmittedAt,
-                TestResults = submission.SubmissionTestResults.Select(r => new SubmissionTestCaseResultDTO
-                {
-                    Verdict = r.Verdict.ToString(),
-                    ActualOutput = r.ActualOutput,
-                    ExpectedOutput = r.TestCase.ExpectedOutput,
-                    Input = r.TestCase.IsHidden ? "Hidden" : r.TestCase.Input,
-                    RuntimeMs = r.RuntimeMs
-                })
+                TestResults = submission.SubmissionTestResults.Select(r => MapTestResult(r, testCaseMap))
             };
         }
 
-        // ── Helpers ────────────────────────────────────────────────────────
+        // ───────────────────────────────────────────────
+        // Helpers
+        // ───────────────────────────────────────────────
 
-        private static Verdict MapVerdict(Judge0ResultDTO result, string expectedOutput)
+        private static Verdict MapVerdict(CodeExecutionResult result, string expectedOutput)
         {
-            return result.StatusId switch
+            if (result.Verdict == Verdict.TimeLimitExceeded)
+                return Verdict.TimeLimitExceeded;
+
+            if (result.Verdict == Verdict.MemoryLimitExceeded)
+                return Verdict.MemoryLimitExceeded;
+
+            if (result.Verdict == Verdict.compilationError)
+                return Verdict.compilationError;
+
+            if (result.ExitCode != 0 || result.Verdict == Verdict.RuntimeError)
+                return Verdict.RuntimeError;
+
+            var actual = Normalize(result.Output);
+            var expected = Normalize(expectedOutput);
+
+            return actual == expected ? Verdict.Accepted : Verdict.WrongAnswer;
+        }
+
+        private static string Normalize(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            var normalizedLineBreaks = input.Replace("\r\n", "\n").Replace('\r', '\n');
+            var lines = normalizedLineBreaks.Split('\n')
+                .Select(line => line.TrimEnd());
+
+            return string.Join('\n', lines).Trim();
+        }
+
+        private static int ConvertKilobytesToMegabytes(int memoryLimitKb)
+        {
+            if (memoryLimitKb <= 0)
+                return 1;
+
+            return (int)Math.Max(1, Math.Ceiling(memoryLimitKb / 1024d));
+        }
+
+        private async Task<CodeExecutionResult> ExecuteWithTransientRetryAsync(CodeExecutionRequest request)
+        {
+            var result = await _codeExecutionService.ExecuteAsync(request);
+
+            // Compiled runtimes can occasionally hit cold-start spikes in Docker/WSL.
+            // Retry once before finalizing a TimeLimitExceeded verdict.
+            if (result.Verdict == Verdict.TimeLimitExceeded && IsCompiledLanguage(request.Language))
             {
-                3 => result.Stdout?.Trim() == expectedOutput.Trim()
-                        ? Verdict.Accepted
-                        : Verdict.WrongAnswer,
-                5 => Verdict.TimeLimitExceeded,
-                6 => Verdict.compilationError,
-                >= 7 and <= 12 => Verdict.RuntimeError,
-                13 or 14 => Verdict.MemoryLimitExceeded,
-                _ => Verdict.RuntimeError
+                result = await _codeExecutionService.ExecuteAsync(request);
+            }
+
+            return result;
+        }
+
+        private static bool IsCompiledLanguage(string language)
+        {
+            return language.Equals("csharp", StringComparison.OrdinalIgnoreCase)
+                   || language.Equals("java", StringComparison.OrdinalIgnoreCase)
+                   || language.Equals("cpp", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static SubmissionTestCaseResultDTO MapTestResult(
+            SubmissionTestResult result,
+            IReadOnlyDictionary<int, TestCase> testCaseMap)
+        {
+            if (!testCaseMap.TryGetValue(result.TestCaseId, out var testCase))
+            {
+                return new SubmissionTestCaseResultDTO
+                {
+                    Verdict = result.Verdict.ToString(),
+                    ActualOutput = result.ActualOutput,
+                    ExpectedOutput = string.Empty,
+                    Input = string.Empty,
+                    RuntimeMs = (int?)result.RuntimeMs
+                };
+            }
+
+            return new SubmissionTestCaseResultDTO
+            {
+                Verdict = result.Verdict.ToString(),
+                ActualOutput = result.ActualOutput,
+                ExpectedOutput = testCase.ExpectedOutput,
+                Input = testCase.IsHidden ? "Hidden" : testCase.Input,
+                RuntimeMs = (int?)result.RuntimeMs
             };
         }
 
         private static SubmissionResultDTO MapToResultDTO(
             Submission submission,
             List<SubmissionTestResult> testResults,
-            Domain.Models.ProblemsModule.Problem problem)
+            Problem problem,
+            Dictionary<int, TestCase> testCaseMap)
         {
             return new SubmissionResultDTO
             {
@@ -155,15 +261,19 @@ namespace Services
                 RuntimeMs = submission.RuntimeMs,
                 MemoryKb = submission.MemoryKb,
                 SubmittedAt = submission.SubmittedAt,
-                TestResults = testResults.Select(r => new SubmissionTestCaseResultDTO
+
+                TestResults = testResults.Select(r =>
                 {
-                    Verdict = r.Verdict.ToString(),
-                    ActualOutput = r.ActualOutput,
-                    ExpectedOutput = problem.TestCases.First(t => t.Id == r.TestCaseId).ExpectedOutput,
-                    Input = problem.TestCases.First(t => t.Id == r.TestCaseId).IsHidden
-                                        ? "Hidden"
-                                        : problem.TestCases.First(t => t.Id == r.TestCaseId).Input,
-                    RuntimeMs = r.RuntimeMs
+                    var tc = testCaseMap[r.TestCaseId];
+
+                    return new SubmissionTestCaseResultDTO
+                    {
+                        Verdict = r.Verdict.ToString(),
+                        ActualOutput = r.ActualOutput,
+                        ExpectedOutput = tc.ExpectedOutput,
+                        Input = tc.IsHidden ? "Hidden" : tc.Input,
+                        RuntimeMs = (int?)r.RuntimeMs
+                    };
                 })
             };
         }

@@ -12,10 +12,10 @@ namespace Domain.Models.ProblemsModule
         public Verdict Verdict { get; set; }
 
         //Runtime in milliseconds returned by the execution engine
-        public int? RuntimeMs { get; set; }
+        public long? RuntimeMs { get; set; }
 
         //Memory used in kilobytes returned by the execution engine
-        public int? MemoryKb { get; set; }
+        public long? MemoryKb { get; set; }
 
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 

@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ServicesAbstraction;
 using Shared.DTOs.TopicsDTOs;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace Presentation.Controllers
 {
@@ -13,16 +10,8 @@ namespace Presentation.Controllers
     [Route("api/[controller]")]
     public class TopicsController(IServiceManager _serviceManager) : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TopicDTO>>> GetAll()
-        {
-            var topics = await _serviceManager.TopicService.GetAllAsync();
-            return Ok(topics);
-        }
-
-        // GET api/topics/filter?searchTerm=stack&difficulty=easy&categoryId=1
-        [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<TopicDTO>>> Filter([FromQuery] TopicQueryParametersDTO parameters)
+        [HttpGet("Topics")]
+        public async Task<ActionResult<IEnumerable<TopicDTO>>> GetAll([FromQuery] TopicQueryParametersDTO parameters)
         {
             var topics = await _serviceManager.TopicService.GetAllAsync(parameters);
             return Ok(topics);

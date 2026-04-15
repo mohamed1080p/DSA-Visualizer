@@ -5,6 +5,7 @@ namespace Domain.Contracts
     {
         IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class;
         IRefreshTokenRepository RefreshTokenRepository { get; }
+        ISubmissionRepository SubmissionRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }

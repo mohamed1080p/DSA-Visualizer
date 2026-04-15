@@ -1,4 +1,6 @@
 ﻿
+using Domain.Models.ProblemsModule;
+
 namespace Domain.Models.TopicModule
 {
     public class Topic
@@ -17,5 +19,6 @@ namespace Domain.Models.TopicModule
         public ICollection<TopicCodeImplementation> CodeImplementations { get; set; } = new List<TopicCodeImplementation>();
         public ICollection<TopicComplexity> Complexities { get; set; } = new List<TopicComplexity>();
         public ICollection<UserTopicProgress> UserProgresses { get; set; } = new List<UserTopicProgress>();
+        public ICollection<Problem> Problems { get; set; } = new List<Problem>();
     }
 }

@@ -4,5 +4,7 @@
     {
         IAuthService AuthService { get; }
         ITopicService TopicService { get; }
+        IProblemService ProblemService { get; }
+
     }
 }

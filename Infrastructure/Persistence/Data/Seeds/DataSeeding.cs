@@ -1,4 +1,5 @@
-﻿using Domain.Models.TopicModule;
+﻿using Domain.Models.ProblemsModule;
+using Domain.Models.TopicModule;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -18,7 +19,7 @@ namespace Persistence.Data.Seeds
 
                 if (!_dbContext.Categories.Any())
                 {
-                    var categoriesStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\categories.json");
+                    var categoriesStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\categories.json");
                     var categories = await JsonSerializer.DeserializeAsync<List<Category>>(categoriesStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (categories is not null && categories.Any())
@@ -29,7 +30,7 @@ namespace Persistence.Data.Seeds
 
                 if (!_dbContext.Topics.Any())
                 {
-                    var arrayStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\array.json");
+                    var arrayStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\array.json");
                     var arrayTopic = await JsonSerializer.DeserializeAsync<Topic>(arrayStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (arrayTopic is not null)
@@ -37,7 +38,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(arrayTopic);
                     }
 
-                    var binarySearchStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\binary-search.json");
+                    var binarySearchStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-search.json");
                     var binarySearchTopic = await JsonSerializer.DeserializeAsync<Topic>(binarySearchStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (binarySearchTopic is not null)
@@ -45,7 +46,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(binarySearchTopic);
                     }
 
-                    var singlyLinkedListStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\linked-list.json");
+                    var singlyLinkedListStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\linked-list.json");
                     var singlyLinkedListTopic = await JsonSerializer.DeserializeAsync<Topic>(singlyLinkedListStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (singlyLinkedListTopic is not null)
@@ -53,7 +54,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(singlyLinkedListTopic);
                     }
 
-                    var bubbleSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\bubble-sort.json");
+                    var bubbleSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\bubble-sort.json");
                     var bubbleSortTopic = await JsonSerializer.DeserializeAsync<Topic>(bubbleSortStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (bubbleSortTopic is not null)
@@ -61,7 +62,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(bubbleSortTopic);
                     }
 
-                    var insertionSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\insertion-sort.json");
+                    var insertionSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\insertion-sort.json");
                     var insertionSortTopic = await JsonSerializer.DeserializeAsync<Topic>(insertionSortStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (insertionSortTopic is not null)
@@ -69,7 +70,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(insertionSortTopic);
                     }
 
-                    var selectionSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\selection-sort.json");
+                    var selectionSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\selection-sort.json");
                     var selectionSortTopic = await JsonSerializer.DeserializeAsync<Topic>(selectionSortStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (selectionSortTopic is not null)
@@ -77,7 +78,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(selectionSortTopic);
                     }
 
-                    var quickSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\quick-sort.json");
+                    var quickSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\quick-sort.json");
                     var quickSortTopic = await JsonSerializer.DeserializeAsync<Topic>(quickSortStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (quickSortTopic is not null)
@@ -85,7 +86,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(quickSortTopic);
                     }
 
-                    var stackStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\stack.json");
+                    var stackStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\stack.json");
                     var stackTopic = await JsonSerializer.DeserializeAsync<Topic>(stackStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (stackTopic is not null)
@@ -93,7 +94,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(stackTopic);
                     }
 
-                    var queueStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\queue.json");
+                    var queueStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\queue.json");
                     var queueTopic = await JsonSerializer.DeserializeAsync<Topic>(queueStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (queueTopic is not null)
@@ -101,7 +102,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(queueTopic);
                     }
 
-                    var binaryTreeStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\binary-tree.json");
+                    var binaryTreeStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-tree.json");
                     var binaryTreeTopic = await JsonSerializer.DeserializeAsync<Topic>(binaryTreeStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (binaryTreeTopic is not null)
@@ -109,7 +110,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(binaryTreeTopic);
                     }
 
-                    var bstStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\binary-search-tree.json");
+                    var bstStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-search-tree.json");
                     var bstTopic = await JsonSerializer.DeserializeAsync<Topic>(bstStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (bstTopic is not null)
@@ -117,7 +118,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(bstTopic);
                     }
 
-                    var dfsStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\dfs.json");
+                    var dfsStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\dfs.json");
                     var dfsTopic = await JsonSerializer.DeserializeAsync<Topic>(dfsStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (dfsTopic is not null)
@@ -125,7 +126,7 @@ namespace Persistence.Data.Seeds
                         await _dbContext.Topics.AddAsync(dfsTopic);
                     }
 
-                    var bfsStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\bfs.json");
+                    var bfsStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\bfs.json");
                     var bfsTopic = await JsonSerializer.DeserializeAsync<Topic>(bfsStream,
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     if (bfsTopic is not null)
@@ -136,6 +137,30 @@ namespace Persistence.Data.Seeds
                 }
 
                 await _dbContext.SaveChangesAsync();
+
+
+
+                if (!_dbContext.Problems.Any())
+                {
+                    var problemFiles = new[]
+                    {
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\array-find-max.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\stack-valid-parentheses.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\binary-search-find-target.json"
+                    };
+
+                    foreach (var filePath in problemFiles)
+                    {
+                        var stream = File.OpenRead(filePath);
+                        var problem = await JsonSerializer.DeserializeAsync<Problem>(stream,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (problem is not null)
+                            await _dbContext.Problems.AddAsync(problem);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                }
+
             }
             catch (Exception)
             {

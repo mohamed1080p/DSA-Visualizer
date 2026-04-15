@@ -73,10 +73,10 @@ namespace DSA_Visualizer
                 };
             });
 
-            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
             builder.Services.AddScoped<DataSeeding>();
+            builder.Services.AddHttpClient<IJudge0Service, Judge0Service>();
 
             // Application Pipeline
             var app = builder.Build();

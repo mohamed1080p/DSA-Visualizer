@@ -4,7 +4,7 @@
   "Description": "Given an array of integers, find and return the maximum element.\n\n**Example 1:**\n- Input: `5 3 8 1 9 2`\n- Output: `9`\n\n**Example 2:**\n- Input: `1 1 1 1`\n- Output: `1`\n\n**Constraints:**\n- 1 <= array length <= 1000\n- -10000 <= element <= 10000",
   "Difficulty": 1,
   "TimeLimitMs": 1000,
-  "MemoryLimitKb": 65536,
+  "MemoryLimitKb": 262144,
   "TestCases": [
     {
       "Input": "5 3 8 1 9 2",

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence.Data;
 
@@ -11,9 +12,11 @@ using Persistence.Data;
 namespace Persistence.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414185259_FixingDataTypes")]
+    partial class FixingDataTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,7 +135,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.Problem", b =>
@@ -173,7 +176,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Problems", (string)null);
+                    b.ToTable("Problems");
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.Submission", b =>
@@ -192,14 +195,14 @@ namespace Persistence.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("MemoryKb")
-                        .HasColumnType("bigint");
+                    b.Property<int?>("MemoryKb")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProblemId")
                         .HasColumnType("int");
 
-                    b.Property<long?>("RuntimeMs")
-                        .HasColumnType("bigint");
+                    b.Property<int?>("RuntimeMs")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("SubmittedAt")
                         .HasColumnType("datetime2");
@@ -218,7 +221,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("UserId", "SubmittedAt");
 
-                    b.ToTable("Submissions", (string)null);
+                    b.ToTable("Submissions");
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.SubmissionTestResult", b =>
@@ -254,7 +257,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("TestCaseId");
 
-                    b.ToTable("SubmissionTestResults", (string)null);
+                    b.ToTable("SubmissionTestResults");
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.TestCase", b =>
@@ -285,7 +288,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("ProblemId");
 
-                    b.ToTable("TestCases", (string)null);
+                    b.ToTable("TestCases");
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.Category", b =>
@@ -303,7 +306,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.Topic", b =>
@@ -347,7 +350,7 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Topics", (string)null);
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.TopicCodeImplementation", b =>
@@ -380,7 +383,7 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("TopicId", "Language")
                         .IsUnique();
 
-                    b.ToTable("TopicCodeImplementations", (string)null);
+                    b.ToTable("TopicCodeImplementations");
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.TopicComplexity", b =>
@@ -413,7 +416,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("TopicComplexities", (string)null);
+                    b.ToTable("TopicComplexities");
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.UserTopicProgress", b =>
@@ -444,7 +447,7 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("UserId", "TopicId")
                         .IsUnique();
 
-                    b.ToTable("UserTopicProgresses", (string)null);
+                    b.ToTable("UserTopicProgresses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -7,7 +7,7 @@ using ServicesAbstraction;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, IConfiguration _configuration, IJudge0Service _judge0Service) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, IConfiguration _configuration) : IServiceManager
     {
         private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _unitOfWork, _configuration));
         public IAuthService AuthService => _authService.Value;
@@ -17,7 +17,5 @@ namespace Services
 
         private readonly Lazy<IProblemService> _problemService = new(() => new ProblemService(_unitOfWork));
         public IProblemService ProblemService => _problemService.Value;
-        private readonly Lazy<ISubmissionService> _submissionService = new(() => new SubmissionService(_unitOfWork, _judge0Service));
-        public ISubmissionService SubmissionService => _submissionService.Value;
     }
 }

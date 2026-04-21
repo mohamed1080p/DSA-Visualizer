@@ -144,11 +144,11 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\count-even-numbers.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\reverse-array.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\rotate-array-left.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\second-largest-element.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\sum-of-all-elements.json"
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\find-length-of-linked-list.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\find-middle-node.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\nth-node-from-end.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\remove-duplicates-from-sorted-linked-list.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\reverse-a-linked-list.json"
                     };
 
                     foreach (var filePath in problemFiles)

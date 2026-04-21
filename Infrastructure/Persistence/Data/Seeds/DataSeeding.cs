@@ -1,4 +1,4 @@
-﻿using Domain.Models.ProblemsModule;
+using Domain.Models.ProblemsModule;
 using Domain.Models.TopicModule;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -144,9 +144,11 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\array-find-max.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\stack-valid-parentheses.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\binary-search-find-target.json"
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\count-even-numbers.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\reverse-array.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\rotate-array-left.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\second-largest-element.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\sum-of-all-elements.json"
                     };
 
                     foreach (var filePath in problemFiles)

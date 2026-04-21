@@ -43,7 +43,7 @@ namespace Services
             if (problem.TestCases.Count == 0)
                 throw new InvalidOperationException($"Problem with Id {dto.ProblemId} has no test cases.");
 
-            // ✅ O(1) lookup instead of repeated First()
+            
             var testCaseMap = problem.TestCases.ToDictionary(t => t.Id);
 
             var testCases = problem.TestCases.ToList();

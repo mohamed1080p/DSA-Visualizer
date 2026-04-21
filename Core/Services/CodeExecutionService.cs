@@ -76,7 +76,6 @@ public class CodeExecutionService : ICodeExecutionService
         var stopwatch = Stopwatch.StartNew();
         var memoryLimitMb = ContainerMemoryLimitMb;
 
-        // Encode user code/input to avoid shell escaping issues in the container script.
         var encodedCode = Convert.ToBase64String(Encoding.UTF8.GetBytes(request.SourceCode ?? ""));
         var encodedInput = Convert.ToBase64String(Encoding.UTF8.GetBytes(request.Input ?? ""));
 

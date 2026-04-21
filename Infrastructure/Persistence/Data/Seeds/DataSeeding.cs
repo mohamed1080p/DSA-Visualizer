@@ -144,11 +144,9 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\find-length-of-linked-list.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\find-middle-node.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\nth-node-from-end.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\remove-duplicates-from-sorted-linked-list.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\reverse-a-linked-list.json"
+                        //@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\asteroid-collision.json",
+                        //@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\simulate-stack-operations.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\valid-parentheses.json"
                     };
 
                     foreach (var filePath in problemFiles)

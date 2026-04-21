@@ -1,0 +1,105 @@
+{
+  "TopicId": 8,
+  "Title": "Balanced Parentheses",
+  "Description": "Given a string of brackets, return `true` if balanced, `false` otherwise. Valid pairs: `()` `[]` `{}`\n\n**Input:** single line string.\n\n**Example:**\n- Input: `({[]})`\n- Output: `true`\n\n**Constraints:**\n- 0 <= length <= 1,000,000\n- Expected complexity: O(n)",
+  "Difficulty": 2,
+  "TimeLimitMs": 3000,
+  "MemoryLimitKb": 131072,
+  "TestCases": [
+    {
+      "Input": "({[]})",
+      "ExpectedOutput": "true",
+      "IsHidden": false
+    },
+    {
+      "Input": "([)]",
+      "ExpectedOutput": "false",
+      "IsHidden": false
+    },
+    {
+      "Input": "{}",
+      "ExpectedOutput": "true",
+      "IsHidden": false
+    },
+    {
+      "Input": "(((",
+      "ExpectedOutput": "false",
+      "IsHidden": false
+    },
+    {
+      "Input": "{[()]}",
+      "ExpectedOutput": "true",
+      "IsHidden": false
+    },
+    {
+      "Input": "()",
+      "ExpectedOutput": "true",
+      "IsHidden": true
+    },
+    {
+      "Input": "[]",
+      "ExpectedOutput": "true",
+      "IsHidden": true
+    },
+    {
+      "Input": "([])",
+      "ExpectedOutput": "true",
+      "IsHidden": true
+    },
+    {
+      "Input": "((()))",
+      "ExpectedOutput": "true",
+      "IsHidden": true
+    },
+    {
+      "Input": "(()",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": ")(",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": "((((",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": "()[]{}",
+      "ExpectedOutput": "true",
+      "IsHidden": true
+    },
+    {
+      "Input": "([{}])",
+      "ExpectedOutput": "true",
+      "IsHidden": true
+    },
+    {
+      "Input": "(",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": ")",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": "{",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": "}",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    },
+    {
+      "Input": ")(",
+      "ExpectedOutput": "false",
+      "IsHidden": true
+    }
+  ]
+}

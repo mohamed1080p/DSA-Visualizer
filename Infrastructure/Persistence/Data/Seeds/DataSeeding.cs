@@ -144,10 +144,12 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\count-leaf-nodes.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\height-of-binary-tree.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\Inorder-traversal.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\level-order-traversal.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\bfs-traversal-order.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\count-connected-components.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\detect-cycle-in-undirected-graph.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\dfs-traversal-order.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\level-of-each-node.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\shortest-path-unweighted-graph.json"
                     };
 
                     foreach (var filePath in problemFiles)

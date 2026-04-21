@@ -144,9 +144,16 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\generate-binary-numbers.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\reverse-a-queue.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\simulate-queue-operations.json"
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-selection-sort-swaps.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-shifts-in-insertion-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-swaps-in-bubble-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\insert-into-sorted-array.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\kth-smallest-element-using-quick-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-ascending-bubble-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-descending-bubble-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-using-insertion-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-using-selection-sort.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-using-quick-sort.json"
                     };
 
                     foreach (var filePath in problemFiles)

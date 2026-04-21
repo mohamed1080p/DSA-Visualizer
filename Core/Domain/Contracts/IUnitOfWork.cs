@@ -1,4 +1,4 @@
-﻿
+
 namespace Domain.Contracts
 {
     public interface IUnitOfWork:IAsyncDisposable
@@ -6,6 +6,7 @@ namespace Domain.Contracts
         IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class;
         IRefreshTokenRepository RefreshTokenRepository { get; }
         ISubmissionRepository SubmissionRepository { get; }
+        IProblemRepository ProblemRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }

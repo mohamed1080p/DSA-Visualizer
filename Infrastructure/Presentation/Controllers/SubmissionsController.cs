@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ServicesAbstraction;
@@ -15,24 +15,27 @@ namespace Presentation.Controllers
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
-        // POST api/submissions
-        [HttpPost]
-        public async Task<ActionResult<SubmissionResultDTO>> Submit([FromBody] SubmitProblemDTO dto)
+
+        // POST api/submissions/{slug}
+        [HttpPost("{slug}")]
+        public async Task<ActionResult<SubmissionResultDTO>> Submit(string slug, [FromBody] SubmitProblemDTO dto)
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
+
+            dto.Slug = slug;
 
             try
             {
                 var result = await _serviceManager.SubmissionService.SubmitAsync(dto, userId);
                 return Ok(result);
             }
-            catch (ArgumentException ex) // Unsupported language, invalid input
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (KeyNotFoundException ex) // Problem not found
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
@@ -43,9 +46,9 @@ namespace Presentation.Controllers
             }
         }
 
-        // GET api/submissions/{problemId:int}/history
-        [HttpGet("{problemId:int}/history")]
-        public async Task<ActionResult<IEnumerable<SubmissionHistoryDTO>>> GetHistory(int problemId)
+        // GET api/submissions/{slug}/history
+        [HttpGet("{slug}/history")]
+        public async Task<ActionResult<IEnumerable<SubmissionHistoryDTO>>> GetHistory(string slug)
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
@@ -53,12 +56,12 @@ namespace Presentation.Controllers
 
             try
             {
-                var history = await _serviceManager.SubmissionService.GetSubmissionHistoryAsync(problemId, userId);
+                var history = await _serviceManager.SubmissionService.GetSubmissionHistoryAsync(slug, userId);
                 return Ok(history);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving submission history for problem {ProblemId}", problemId);
+                _logger.LogError(ex, "Error retrieving submission history for problem {Slug}", slug);
                 return StatusCode(500, "An internal error occurred.");
             }
         }

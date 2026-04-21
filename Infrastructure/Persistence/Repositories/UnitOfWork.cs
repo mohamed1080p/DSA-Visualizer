@@ -1,4 +1,4 @@
-﻿
+
 using Domain.Contracts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Persistence.Data;
@@ -13,6 +13,8 @@ namespace Persistence.Repositories
         public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository.Value;
         private readonly Lazy<ISubmissionRepository> _submissionRepository = new(() => new SubmissionRepository(_dbContext));
         public ISubmissionRepository SubmissionRepository => _submissionRepository.Value;
+        private readonly Lazy<IProblemRepository> _problemRepository = new(() => new ProblemRepository(_dbContext));
+        public IProblemRepository ProblemRepository => _problemRepository.Value;
 
         public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class
         {

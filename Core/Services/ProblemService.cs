@@ -1,4 +1,4 @@
-﻿
+
 using Domain.Contracts;
 using Domain.Models.ProblemsModule;
 using ServicesAbstraction;
@@ -26,12 +26,12 @@ namespace Services
             });
         }
 
-        public async Task<ProblemDetailDTO> GetByIdAsync(int id)
+        public async Task<ProblemDetailDTO> GetBySlugAsync(string slug)
         {
-            var problem = await _unitOfWork.GetRepository<Problem, int>().GetByIdAsync(id, a => a.Topic, a=> a.TestCases);
+            var problem = await _unitOfWork.ProblemRepository.GetBySlugAsync(slug);
 
             if (problem is null)
-                throw new Exception($"Problem with Id: {id} was not found.");
+                throw new Exception($"Problem with Slug: {slug} was not found.");
 
             return new ProblemDetailDTO
             {

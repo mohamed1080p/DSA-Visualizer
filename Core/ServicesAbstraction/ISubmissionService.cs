@@ -1,4 +1,4 @@
-﻿
+
 using Shared.DTOs.SubmissionDTOs;
 
 namespace ServicesAbstraction
@@ -6,7 +6,7 @@ namespace ServicesAbstraction
     public interface ISubmissionService
     {
         Task<SubmissionResultDTO> SubmitAsync(SubmitProblemDTO dto, string userId);
-        Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(int problemId, string userId);
+        Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(string slug, string userId);
         Task<SubmissionResultDTO> GetSubmissionByIdAsync(long submissionId, string userId);
 
     }

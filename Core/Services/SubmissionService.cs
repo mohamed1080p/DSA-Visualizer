@@ -1,4 +1,4 @@
-﻿using Domain.Contracts;
+using Domain.Contracts;
 using Domain.Models.ProblemsModule;
 using Domain.Models.TopicModule;
 using ServicesAbstraction;
@@ -10,6 +10,7 @@ namespace Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICodeExecutionService _codeExecutionService;
+        
 
         public SubmissionService(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService)
         {
@@ -34,14 +35,14 @@ namespace Services
                 throw new InvalidOperationException($"Unsupported language: {dto.Language}");
 
             var problem = await _unitOfWork
-                .GetRepository<Problem, int>()
-                .GetByIdAsync(dto.ProblemId, p => p.TestCases);
+                .ProblemRepository
+                .GetBySlugAsync(dto.Slug);
 
             if (problem is null)
-                throw new InvalidOperationException($"Problem with Id {dto.ProblemId} was not found.");
+                throw new InvalidOperationException($"Problem {dto.Slug} was not found.");
 
             if (problem.TestCases.Count == 0)
-                throw new InvalidOperationException($"Problem with Id {dto.ProblemId} has no test cases.");
+                throw new InvalidOperationException($"Problem {dto.Slug} has no test cases.");
 
             
             var testCaseMap = problem.TestCases.ToDictionary(t => t.Id);
@@ -94,7 +95,7 @@ namespace Services
             var submission = new Submission
             {
                 UserId = userId,
-                ProblemId = dto.ProblemId,
+                ProblemId = problem.Id,
                 Code = dto.Code,
                 Language = Enum.Parse<ProgrammingLanguage>(normalizedLanguage, ignoreCase: true),
                 Verdict = overallVerdict,
@@ -110,10 +111,10 @@ namespace Services
             return MapToResultDTO(submission, testResults, problem, testCaseMap);
         }
 
-        public async Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(int problemId, string userId)
+        public async Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(string slug, string userId)
         {
             var submissions = await _unitOfWork.SubmissionRepository
-                .GetUserSubmissionsAsync(userId, problemId);
+                .GetUserSubmissionsBySlugAsync(userId, slug);
 
             return submissions.Select(s => new SubmissionHistoryDTO
             {

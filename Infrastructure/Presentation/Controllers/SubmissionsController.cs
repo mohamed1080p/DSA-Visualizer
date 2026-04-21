@@ -66,6 +66,26 @@ namespace Presentation.Controllers
             }
         }
 
+        // GET api/submissions/history
+        [HttpGet("history")]
+        public async Task<ActionResult<IEnumerable<SubmissionHistoryDTO>>> GetAllHistory()
+        {
+            var userId = GetUserId();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            try
+            {
+                var history = await _serviceManager.SubmissionService.GetAllSubmissionHistoryAsync(userId);
+                return Ok(history);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving overall submission history");
+                return StatusCode(500, "An internal error occurred.");
+            }
+        }
+
         // GET api/submissions/{id:long}
         [HttpGet("{id:long}")]
         public async Task<ActionResult<SubmissionResultDTO>> GetById(long id)

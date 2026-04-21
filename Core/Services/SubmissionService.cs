@@ -39,7 +39,7 @@ namespace Services
                 .GetBySlugAsync(dto.Slug);
 
             if (problem is null)
-                throw new InvalidOperationException($"Problem {dto.Slug} was not found.");
+                throw new KeyNotFoundException($"Problem {dto.Slug} was not found.");
 
             if (problem.TestCases.Count == 0)
                 throw new InvalidOperationException($"Problem {dto.Slug} has no test cases.");
@@ -123,7 +123,27 @@ namespace Services
                 Language = s.Language.ToString(),
                 RuntimeMs = s.RuntimeMs,
                 MemoryKb = s.MemoryKb,
-                SubmittedAt = s.SubmittedAt
+                SubmittedAt = s.SubmittedAt,
+                ProblemSlug = s.Problem?.Slug ?? string.Empty,
+                ProblemTitle = s.Problem?.Title ?? string.Empty
+            });
+        }
+
+        public async Task<IEnumerable<SubmissionHistoryDTO>> GetAllSubmissionHistoryAsync(string userId)
+        {
+            var submissions = await _unitOfWork.SubmissionRepository
+                .GetAllUserSubmissionsAsync(userId);
+
+            return submissions.Select(s => new SubmissionHistoryDTO
+            {
+                Id = s.Id,
+                Verdict = s.Verdict.ToString(),
+                Language = s.Language.ToString(),
+                RuntimeMs = s.RuntimeMs,
+                MemoryKb = s.MemoryKb,
+                SubmittedAt = s.SubmittedAt,
+                ProblemSlug = s.Problem?.Slug ?? string.Empty,
+                ProblemTitle = s.Problem?.Title ?? string.Empty
             });
         }
 
@@ -134,7 +154,7 @@ namespace Services
                 .GetByIdAsync(submissionId, s => s.SubmissionTestResults);
 
             if (submission is null)
-                throw new InvalidOperationException($"Submission with Id {submissionId} was not found.");
+                throw new KeyNotFoundException($"Submission with Id {submissionId} was not found.");
 
             if (submission.UserId != userId)
                 throw new UnauthorizedAccessException("You do not have permission to view this submission.");

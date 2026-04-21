@@ -10,7 +10,18 @@ namespace Persistence.Repositories
     {
         public async Task<IEnumerable<Submission>> GetUserSubmissionsBySlugAsync(string userId, string slug)
         {
-            return await _dbContext.Submissions.Where(a => a.UserId == userId && a.Problem.Slug == slug)
+            return await _dbContext.Submissions
+                .Include(a => a.Problem)
+                .Where(a => a.UserId == userId && a.Problem.Slug == slug)
+                .OrderByDescending(a => a.SubmittedAt)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Submission>> GetAllUserSubmissionsAsync(string userId)
+        {
+            return await _dbContext.Submissions
+                .Include(a => a.Problem)
+                .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.SubmittedAt)
                 .ToListAsync();
         }

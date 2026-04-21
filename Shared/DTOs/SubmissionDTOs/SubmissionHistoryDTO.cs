@@ -1,4 +1,4 @@
-﻿
+
 namespace Shared.DTOs.SubmissionDTOs
 {
     public class SubmissionHistoryDTO
@@ -9,5 +9,7 @@ namespace Shared.DTOs.SubmissionDTOs
         public long? RuntimeMs { get; set; }
         public long? MemoryKb { get; set; }
         public DateTime SubmittedAt { get; set; }
+        public string ProblemSlug { get; set; } = string.Empty;
+        public string ProblemTitle { get; set; } = string.Empty;
     }
 }

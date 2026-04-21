@@ -22,6 +22,8 @@ namespace Services
         public ICodeExecutionService CodeExecutionService => _codeExecutionService.Value;
         private readonly Lazy<ISubmissionService> _submissionService = new(() => new SubmissionService(_unitOfWork, _codeExecutionService));
         public ISubmissionService SubmissionService => _submissionService.Value;
+        private readonly Lazy<IUserProgressService> _userProgressService = new(() => new UserProgressService(_unitOfWork));
+        public IUserProgressService UserProgressService => _userProgressService.Value;
 
     }
 }

@@ -7,6 +7,7 @@
         IProblemService ProblemService { get; }
         ISubmissionService SubmissionService { get; }
         ICodeExecutionService CodeExecutionService { get; }
+        IUserProgressService UserProgressService { get; }
 
     }
 }

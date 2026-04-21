@@ -144,16 +144,10 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-selection-sort-swaps.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-shifts-in-insertion-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-swaps-in-bubble-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\insert-into-sorted-array.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\kth-smallest-element-using-quick-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-ascending-bubble-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-descending-bubble-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-using-insertion-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-using-selection-sort.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-using-quick-sort.json"
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\count-leaf-nodes.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\height-of-binary-tree.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\Inorder-traversal.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\level-order-traversal.json",
                     };
 
                     foreach (var filePath in problemFiles)

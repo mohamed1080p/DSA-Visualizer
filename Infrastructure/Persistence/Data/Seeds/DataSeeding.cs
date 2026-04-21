@@ -144,9 +144,9 @@ namespace Persistence.Data.Seeds
                 {
                     var problemFiles = new[]
                     {
-                        //@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\asteroid-collision.json",
-                        //@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\simulate-stack-operations.json",
-                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\valid-parentheses.json"
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\generate-binary-numbers.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\reverse-a-queue.json",
+                        @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\simulate-queue-operations.json"
                     };
 
                     foreach (var filePath in problemFiles)

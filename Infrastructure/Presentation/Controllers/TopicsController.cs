@@ -10,7 +10,7 @@ namespace Presentation.Controllers
     [Route("api/[controller]")]
     public class TopicsController(IServiceManager _serviceManager) : ControllerBase
     {
-        [HttpGet("Topics")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<TopicDTO>>> GetAll([FromQuery] TopicQueryParametersDTO parameters)
         {
             var topics = await _serviceManager.TopicService.GetAllAsync(parameters);
@@ -30,12 +30,9 @@ namespace Presentation.Controllers
         [Authorize]
         public async Task<ActionResult> MarkAsCompleted(int id)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId is null)
-                return Unauthorized();
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             await _serviceManager.TopicService.MarkTopicAsCompletedAsync(id, userId);
-            return Ok();
+            return NoContent();
         }
     }
 }

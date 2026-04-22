@@ -81,7 +81,6 @@ namespace DSA_Visualizer
             {
                 githubOptions.ClientId = builder.Configuration["ExternalAuth:GitHub:ClientId"]!;
                 githubOptions.ClientSecret = builder.Configuration["ExternalAuth:GitHub:ClientSecret"]!;
-                // GitHub requires a specific scope for email if you need it
                 githubOptions.Scope.Add("user:email");
             });
 

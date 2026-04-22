@@ -21,29 +21,9 @@ namespace Presentation.Controllers
         public async Task<ActionResult<SubmissionResultDTO>> Submit(string slug, [FromBody] SubmitProblemDTO dto)
         {
             var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
             dto.Slug = slug;
-
-            try
-            {
-                var result = await _serviceManager.SubmissionService.SubmitAsync(dto, userId);
-                return Ok(result);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error during submission");
-                return StatusCode(500, "An internal error occurred.");
-            }
+            var result = await _serviceManager.SubmissionService.SubmitAsync(dto, userId);
+            return Ok(result);
         }
 
         // GET api/submissions/history
@@ -51,19 +31,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult<IEnumerable<SubmissionHistoryDTO>>> GetAllHistory()
         {
             var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            try
-            {
-                var history = await _serviceManager.SubmissionService.GetAllSubmissionHistoryAsync(userId);
-                return Ok(history);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving overall submission history");
-                return StatusCode(500, "An internal error occurred.");
-            }
+            var history = await _serviceManager.SubmissionService.GetAllSubmissionHistoryAsync(userId);
+            return Ok(history);
         }
 
         // GET api/submissions/{id:long}
@@ -71,28 +40,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult<SubmissionResultDTO>> GetById(long id)
         {
             var userId = GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            try
-            {
-                // Ownership check now happens in the service layer
-                var result = await _serviceManager.SubmissionService.GetSubmissionByIdAsync(id, userId);
-                return Ok(result);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (UnauthorizedAccessException) // Thrown by service if user doesn't own the submission
-            {
-                return Forbid();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving submission {SubmissionId}", id);
-                return StatusCode(500, "An internal error occurred.");
-            }
+            var result = await _serviceManager.SubmissionService.GetSubmissionByIdAsync(id, userId);
+            return Ok(result);
         }
     }
 }

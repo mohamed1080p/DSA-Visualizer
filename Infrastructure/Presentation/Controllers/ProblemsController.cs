@@ -6,8 +6,8 @@ using Shared.DTOs.ProblemDTOs;
 namespace Presentation.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]")]
-    public class ProblemsController(IServiceManager _serviceManager):ControllerBase
+    [Route("api/[controller]")]
+    public class ProblemsController(IServiceManager _serviceManager) : ControllerBase
     {
         // GET api/problems
         [HttpGet]

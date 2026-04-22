@@ -10,8 +10,8 @@ using System.Security.Claims;
 namespace Presentation.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]")]
-    public class AuthController(IServiceManager _serviceManager):ControllerBase
+    [Route("api/[controller]")]
+    public class AuthController(IServiceManager _serviceManager) : ControllerBase
     {
         // register
         [HttpPost("register")]
@@ -35,10 +35,6 @@ namespace Presentation.Controllers
         public async Task<ActionResult> Logout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId is null)
-            {
-                return Unauthorized();
-            }
             await _serviceManager.AuthService.LogoutAsync(userId);
             return Ok();
         }
@@ -56,7 +52,7 @@ namespace Presentation.Controllers
         {
             // If no redirectUrl is provided, we send them to our callback endpoint
             var callbackUrl = redirectUrl ?? Url.Action("ExternalLoginCallback", "Auth", null, Request.Scheme);
-            
+
             var properties = _serviceManager.AuthService.GetExternalAuthenticationProperties(provider, callbackUrl!);
             return Challenge(properties, provider);
         }

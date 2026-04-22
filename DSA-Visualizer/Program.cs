@@ -1,15 +1,16 @@
 using Domain.Contracts;
+using Domain.Exceptions;
 using Domain.Models.IdentityModule;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Data;
-using Persistence.Repositories;
-using ServicesAbstraction;
-using Services;
-using System.Text;
 using Persistence.Data.Seeds;
+using Persistence.Repositories;
+using Services;
+using ServicesAbstraction;
+using System.Text;
 
 namespace DSA_Visualizer
 {
@@ -19,18 +20,20 @@ namespace DSA_Visualizer
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Controllers and Swagger
+            // ------------------- Controllers and Swagger -------------------
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
 
-            // DB Contexts 
+            // ------------------- DB Contexts -------------------
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            // Identity
+            // ------------------- Identity -------------------
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 // Password rules
@@ -50,7 +53,7 @@ namespace DSA_Visualizer
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            // JWT Authentication Configurations
+            // ------------------- JWT Authentication Configurations -------------------
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
             builder.Services.AddAuthentication(options =>
@@ -89,7 +92,11 @@ namespace DSA_Visualizer
             builder.Services.AddScoped<DataSeeding>();
             builder.Services.AddScoped<ICodeExecutionService, CodeExecutionService>();
 
-            // Application Pipeline
+
+
+
+
+            // ------------------- Application Pipeline -------------------
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -104,6 +111,7 @@ namespace DSA_Visualizer
                 app.UseSwaggerUI();
             }
 
+            app.UseExceptionHandler();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();

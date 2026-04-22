@@ -1,4 +1,4 @@
-﻿
+
 using Domain.Contracts;
 using Domain.Models.IdentityModule;
 using Microsoft.AspNetCore.Identity;
@@ -56,6 +56,8 @@ namespace Services
                 UserId = user.Id
             });
 
+            await _unitOfWork.SaveChangesAsync();
+
             // return the userDTO(mapping)
             return new UserDTO()
             {
@@ -112,6 +114,8 @@ namespace Services
                 UserId = user.Id
             });
 
+            await _unitOfWork.SaveChangesAsync();
+
             // return a new userDTO
             return new UserDTO()
             {
@@ -135,9 +139,58 @@ namespace Services
             await _unitOfWork.RefreshTokenRepository.RevokeRefreshTokenForUser(id);
         }
 
+        public async Task<UserDTO> RefreshTokenAsync(TokenRequestDTO tokenRequestDTO)
+        {
+            var principal = GetPrincipalFromExpiredToken(tokenRequestDTO.AccessToken);
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                throw new Exception("Invalid access token.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            var storedRefreshToken = await _unitOfWork.RefreshTokenRepository.GetRefreshTokenAsync(tokenRequestDTO.RefreshToken);
+
+            if (storedRefreshToken == null || storedRefreshToken.UserId != userId || !storedRefreshToken.IsActive)
+            {
+                throw new Exception("Invalid or expired refresh token.");
+            }
+
+            // Generate new tokens
+            var newAccessToken = GenerateAccessToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            // Revoke old refresh token and add a new one
+            await _unitOfWork.RefreshTokenRepository.RevokeRefreshTokenForUser(userId);
+            await _unitOfWork.RefreshTokenRepository.AddRefreshTokenAsync(new RefreshToken()
+            {
+                Token = newRefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(Convert.ToDouble(_configuration["JwtSettings:RefreshTokenExpiryInDays"])),
+                IsRevoked = false,
+                UserId = user.Id
+            });
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return new UserDTO()
+            {
+                Email = user.Email!,
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken,
+                DisplayName = user.DisplayName,
+                UserName = user.UserName!
+            };
+        }
 
 
-        // helper methods
+
+        // ------------------- helper methods -------------------
         private string GenerateAccessToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -169,6 +222,26 @@ namespace Services
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomBytes);
             return Convert.ToBase64String(randomBytes);
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var jwtSettings = _configuration.GetSection("JwtSettings");
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!)),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Invalid token");
+
+            return principal;
         }
 
     }

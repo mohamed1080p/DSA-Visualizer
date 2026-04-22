@@ -1,4 +1,4 @@
-﻿
+
 using Shared.DTOs.IdentityDTOs;
 
 namespace ServicesAbstraction
@@ -13,6 +13,9 @@ namespace ServicesAbstraction
 
         // logout
         Task LogoutAsync(string id);
+
+        // refresh token
+        Task<UserDTO> RefreshTokenAsync(TokenRequestDTO tokenRequestDTO);
 
     }
 }

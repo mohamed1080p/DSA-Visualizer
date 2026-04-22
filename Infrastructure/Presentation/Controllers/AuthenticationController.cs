@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServicesAbstraction;
@@ -9,7 +9,7 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    public class AuthenticationController(IServiceManager _serviceManager):ControllerBase
+    public class AuthController(IServiceManager _serviceManager):ControllerBase
     {
         // register
         [HttpPost("register")]
@@ -39,6 +39,14 @@ namespace Presentation.Controllers
             }
             await _serviceManager.AuthService.LogoutAsync(userId);
             return Ok();
+        }
+
+        // refresh token
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<UserDTO>> RefreshToken([FromBody] TokenRequestDTO tokenRequestDTO)
+        {
+            var result = await _serviceManager.AuthService.RefreshTokenAsync(tokenRequestDTO);
+            return Ok(result);
         }
     }
 }

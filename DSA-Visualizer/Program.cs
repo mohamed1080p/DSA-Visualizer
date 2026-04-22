@@ -74,6 +74,21 @@ namespace DSA_Visualizer
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!)),
                     ClockSkew = TimeSpan.Zero
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        await context.Response.WriteAsJsonAsync(new
+                        {
+                            StatusCode = StatusCodes.Status401Unauthorized,
+                            Message = "You are not authorized. Please login first."
+                        });
+                    }
+                };
             })
             .AddGoogle(googleOptions =>
             {

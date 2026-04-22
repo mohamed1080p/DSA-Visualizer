@@ -1,6 +1,7 @@
 
 using Domain.Contracts;
 using Domain.Models.IdentityModule;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +14,7 @@ using System.Text;
 
 namespace Services
 {
-    public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork _unitOfWork,
+    public class AuthService(UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IUnitOfWork _unitOfWork,
          IConfiguration _configuration) : IAuthService
     {
         public async Task<UserDTO> LoginAsync(LoginDTO loginDTO)
@@ -189,8 +190,75 @@ namespace Services
         }
 
 
+        public async Task<UserDTO> ExternalLoginAsync(ExternalLoginDTO externalLoginDTO)
+        {
+            var loginInfo = new UserLoginInfo(externalLoginDTO.Provider, externalLoginDTO.ProviderKey, externalLoginDTO.Provider);
+            var user = await _userManager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
 
-        // ------------------- helper methods -------------------
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(externalLoginDTO.Email);
+
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        Email = externalLoginDTO.Email,
+                        UserName = externalLoginDTO.Email,
+                        DisplayName = externalLoginDTO.Name,
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        LastLoginAt = DateTime.UtcNow
+                    };
+
+                    var createResult = await _userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                    {
+                        throw new Exception(string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                    }
+                }
+
+                var addLoginResult = await _userManager.AddLoginAsync(user, loginInfo);
+                if (!addLoginResult.Succeeded)
+                {
+                    throw new Exception("Failed to link external login.");
+                }
+            }
+
+            // update last login
+            user.LastLoginAt = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+
+            // Generate tokens
+            var accessToken = GenerateAccessToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            // Revoke old refresh token and add new one
+            await _unitOfWork.RefreshTokenRepository.RevokeRefreshTokenForUser(user.Id);
+            await _unitOfWork.RefreshTokenRepository.AddRefreshTokenAsync(new RefreshToken()
+            {
+                Token = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(Convert.ToDouble(_configuration["JwtSettings:RefreshTokenExpiryInDays"])),
+                IsRevoked = false,
+                UserId = user.Id
+            });
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return new UserDTO
+            {
+                Email = user.Email!,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                DisplayName = user.DisplayName,
+                UserName = user.UserName!
+            };
+        }
+
+        public AuthenticationProperties GetExternalAuthenticationProperties(string provider, string redirectUrl)
+        {
+            return _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        }
         private string GenerateAccessToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");

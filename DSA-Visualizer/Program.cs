@@ -71,6 +71,18 @@ namespace DSA_Visualizer
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!)),
                     ClockSkew = TimeSpan.Zero
                 };
+            })
+            .AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = builder.Configuration["ExternalAuth:Google:ClientId"]!;
+                googleOptions.ClientSecret = builder.Configuration["ExternalAuth:Google:ClientSecret"]!;
+            })
+            .AddGitHub(githubOptions =>
+            {
+                githubOptions.ClientId = builder.Configuration["ExternalAuth:GitHub:ClientId"]!;
+                githubOptions.ClientSecret = builder.Configuration["ExternalAuth:GitHub:ClientSecret"]!;
+                // GitHub requires a specific scope for email if you need it
+                githubOptions.Scope.Add("user:email");
             });
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

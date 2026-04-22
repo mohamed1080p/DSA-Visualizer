@@ -1,4 +1,4 @@
-﻿
+
 using Domain.Contracts;
 using Domain.Models.IdentityModule;
 using Microsoft.AspNetCore.Identity;
@@ -8,9 +8,9 @@ using ServicesAbstraction;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService) : IServiceManager
     {
-        private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _unitOfWork, _configuration));
+        private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _signInManager, _unitOfWork, _configuration));
         public IAuthService AuthService => _authService.Value;
 
         private readonly Lazy<ITopicService> _topicService = new(() => new TopicService(_unitOfWork));

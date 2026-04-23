@@ -13,6 +13,7 @@ using ServicesAbstraction;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
+using Hangfire;
 
 namespace DSA_Visualizer.Extensions;
 
@@ -113,25 +114,27 @@ public static class ServiceExtensions
     {
         var rl = configuration.GetSection("RateLimiting");
 
-        // ── submissions-policy: Token Bucket keyed by authenticated userId ──
         var subTokenLimit = rl.GetValue<int>("Submissions:TokenLimit", 5);
         var subReplenishment = rl.GetValue<int>("Submissions:TokensPerPeriodReplenishment", 1);
         var subReplenishPeriodSeconds = rl.GetValue<int>("Submissions:ReplenishmentPeriodSeconds", 15);
         var subQueueLimit = rl.GetValue<int>("Submissions:QueueLimit", 0);
 
-        // ── auth-policy: Fixed Window keyed by IP ──
+
+
         var authPermitLimit = rl.GetValue<int>("Auth:PermitLimit", 10);
         var authWindowSeconds = rl.GetValue<int>("Auth:WindowSeconds", 60);
         var authQueueLimit = rl.GetValue<int>("Auth:QueueLimit", 0);
 
-        // ── general-policy: Fixed Window keyed by IP ──
+
+
         var genPermitLimit = rl.GetValue<int>("General:PermitLimit", 100);
         var genWindowSeconds = rl.GetValue<int>("General:WindowSeconds", 60);
         var genQueueLimit = rl.GetValue<int>("General:QueueLimit", 0);
 
+
+
         services.AddRateLimiter(options =>
         {
-            // Return a consistent JSON 429 body that matches the project's error format
             options.OnRejected = async (context, cancellationToken) =>
             {
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
@@ -148,10 +151,8 @@ public static class ServiceExtensions
                 }, cancellationToken);
             };
 
-            // ── 1. submissions-policy — Token Bucket, per authenticated user ──
             options.AddPolicy("submissions-policy", httpContext =>
             {
-                // Use userId from JWT when authenticated; fall back to IP for safety
                 var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
                              ?? httpContext.Connection.RemoteIpAddress?.ToString()
                              ?? "anonymous";
@@ -168,7 +169,6 @@ public static class ServiceExtensions
                     });
             });
 
-            // ── 2. auth-policy — Fixed Window, per IP ──
             options.AddPolicy("auth-policy", httpContext =>
             {
                 var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
@@ -183,7 +183,6 @@ public static class ServiceExtensions
                     });
             });
 
-            // ── 3. general-policy — Fixed Window, per IP ──
             options.AddPolicy("general-policy", httpContext =>
             {
                 var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
@@ -198,5 +197,20 @@ public static class ServiceExtensions
                     });
             });
         });
+    }
+
+    public static void AddHangfireServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddHangfireServer(options =>
+        {
+            options.WorkerCount = 3;
+        });
+        services.AddScoped<SubmissionProcessor>();
     }
 }

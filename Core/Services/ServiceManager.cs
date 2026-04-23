@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ServicesAbstraction;
+using Hangfire;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService, IBackgroundJobClient _backgroundJobClient) : IServiceManager
     {
         private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _signInManager, _unitOfWork, _configuration));
         public IAuthService AuthService => _authService.Value;
@@ -18,9 +19,9 @@ namespace Services
 
         private readonly Lazy<IProblemService> _problemService = new(() => new ProblemService(_unitOfWork));
         public IProblemService ProblemService => _problemService.Value;
-        private readonly Lazy<ICodeExecutionService> _codeExecutionService = new(() => new CodeExecutionService(_logger));
-        public ICodeExecutionService CodeExecutionService => _codeExecutionService.Value;
-        private readonly Lazy<ISubmissionService> _submissionService = new(() => new SubmissionService(_unitOfWork, _codeExecutionService));
+        private readonly Lazy<ICodeExecutionService> _codeExecutionServiceLazy = new(() => new CodeExecutionService(_logger));
+        public ICodeExecutionService CodeExecutionService => _codeExecutionServiceLazy.Value;
+        private readonly Lazy<ISubmissionService> _submissionService = new(() => new SubmissionService(_unitOfWork, _codeExecutionService, _backgroundJobClient));
         public ISubmissionService SubmissionService => _submissionService.Value;
         private readonly Lazy<IUserProgressService> _userProgressService = new(() => new UserProgressService(_unitOfWork));
         public IUserProgressService UserProgressService => _userProgressService.Value;

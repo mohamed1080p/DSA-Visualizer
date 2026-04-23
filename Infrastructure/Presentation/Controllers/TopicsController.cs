@@ -19,23 +19,23 @@ namespace Presentation.Controllers
             return Ok(topics);
         }
 
-        // GET api/topics/5
-        [HttpGet("{id:int}")]
+        // GET api/topics/{slug}
+        [HttpGet("{slug}")]
         [EnableRateLimiting("general-policy")]
-        public async Task<ActionResult<TopicDetailDTO>> GetById(int id)
+        public async Task<ActionResult<TopicDetailDTO>> GetBySlug(string slug)
         {
-            var topic = await _serviceManager.TopicService.GetByIdAsync(id);
+            var topic = await _serviceManager.TopicService.GetBySlugAsync(slug);
             return Ok(topic);
         }
 
-        // POST api/topics/5/complete
-        [HttpPost("{id:int}/complete")]
+        // POST api/topics/{slug}/complete
+        [HttpPost("{slug}/complete")]
         [Authorize]
         [EnableRateLimiting("general-policy")]
-        public async Task<ActionResult> MarkAsCompleted(int id)
+        public async Task<ActionResult> MarkAsCompleted(string slug)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-            await _serviceManager.TopicService.MarkTopicAsCompletedAsync(id, userId);
+            await _serviceManager.TopicService.MarkTopicAsCompletedAsync(slug, userId);
             return NoContent();
         }
     }

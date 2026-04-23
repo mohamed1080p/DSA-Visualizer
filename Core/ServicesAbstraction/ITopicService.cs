@@ -1,4 +1,4 @@
-﻿
+
 using Shared.DTOs.TopicsDTOs;
 
 namespace ServicesAbstraction
@@ -7,7 +7,7 @@ namespace ServicesAbstraction
     {
         Task<IEnumerable<TopicDTO>> GetAllAsync();
         Task<IEnumerable<TopicDTO>> GetAllAsync(TopicQueryParametersDTO parameters);
-        Task<TopicDetailDTO> GetByIdAsync(int id);
-        Task MarkTopicAsCompletedAsync(int topicId, string userId);
+        Task<TopicDetailDTO> GetBySlugAsync(string slug);
+        Task MarkTopicAsCompletedAsync(string slug, string userId);
     }
 }

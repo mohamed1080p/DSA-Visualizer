@@ -1,4 +1,4 @@
-﻿
+
 using Domain.Models.IdentityModule;
 using Domain.Models.TopicModule;
 
@@ -9,7 +9,9 @@ namespace Domain.Models.ProblemsModule
         public long Id { get; set; }
         public string Code { get; set; } = string.Empty;
         public ProgrammingLanguage Language { get; set; }
-        public Verdict Verdict { get; set; }
+        public Verdict? Verdict { get; set; }
+        public SubmissionStatus Status { get; set; } = SubmissionStatus.Queued;
+        public string? FailureReason { get; set; }
 
         //Runtime in milliseconds returned by the execution engine
         public long? RuntimeMs { get; set; }

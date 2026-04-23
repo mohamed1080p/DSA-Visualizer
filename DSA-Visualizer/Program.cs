@@ -1,6 +1,8 @@
 using Domain.Exceptions;
 using DSA_Visualizer.Extensions;
 using Persistence.Data.Seeds;
+using Hangfire;
+using Microsoft.Extensions.Configuration;
 
 namespace DSA_Visualizer
 {
@@ -19,6 +21,7 @@ namespace DSA_Visualizer
             builder.Services.AddJwtAuthentication(builder.Configuration);
             builder.Services.AddApplicationServices();
             builder.Services.AddRateLimitingServices(builder.Configuration);
+            builder.Services.AddHangfireServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -40,6 +43,16 @@ namespace DSA_Visualizer
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseRateLimiter();
+
+            var hangfireUser = app.Configuration.GetSection("Hangfire:Dashboard:Users:0");
+            var login = hangfireUser["Login"];
+            var password = hangfireUser["PasswordClear"];
+
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[] { new BasicAuthAuthorizationFilter(login!, password!) }
+            });
+
             app.MapControllers();
             app.Run();
         }

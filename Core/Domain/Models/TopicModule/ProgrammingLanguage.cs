@@ -6,6 +6,7 @@ namespace Domain.Models.TopicModule
         CSharp = 1,
         CPP,
         Java,
+        JavaScript,
         Python = 5
     }
 }

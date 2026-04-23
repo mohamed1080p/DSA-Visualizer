@@ -1,4 +1,4 @@
-﻿using Domain.Contracts;
+using Domain.Contracts;
 using Domain.Models.TopicModule;
 using ServicesAbstraction;
 using Shared.DTOs.TopicsDTOs;
@@ -46,16 +46,20 @@ namespace Services
             });
         }
 
-        public async Task<TopicDetailDTO> GetByIdAsync(int id)
+        public async Task<TopicDetailDTO> GetBySlugAsync(string slug)
         {
-            var topic = await _unitOfWork.GetRepository<Topic, int>().GetByIdAsync(id,
+            var topics = await _unitOfWork.GetRepository<Topic, int>().GetAllAsync(
+                predicate: t => t.Slug == slug,
+                orderBy: null,
                 t => t.Category,
                 t => t.Complexities,
                 t => t.CodeImplementations);
 
+            var topic = topics.FirstOrDefault();
+
             if(topic is null)
             {
-                throw new Exception($"Topic with Id: {id} was not found");
+                throw new Exception($"Topic with Slug: '{slug}' was not found");
             }
             return new TopicDetailDTO
             {
@@ -82,17 +86,25 @@ namespace Services
 
         }
 
-        public async Task MarkTopicAsCompletedAsync(int topicId, string userId)
+        public async Task MarkTopicAsCompletedAsync(string slug, string userId)
         {
+            var topics = await _unitOfWork.GetRepository<Topic, int>().GetAllAsync(
+                predicate: t => t.Slug == slug,
+                orderBy: null);
+            var topic = topics.FirstOrDefault();
+
+            if (topic is null)
+                throw new Exception($"Topic with Slug: '{slug}' was not found");
+
             var progress = await _unitOfWork.GetRepository<UserTopicProgress, int>().
-                GetAllAsync(predicate: p => p.UserId == userId && p.TopicId == topicId, orderBy: null);
+                GetAllAsync(predicate: p => p.UserId == userId && p.TopicId == topic.Id, orderBy: null);
 
             var existingProgress = progress.FirstOrDefault();
             if(existingProgress is null)
             {
                 await _unitOfWork.GetRepository<UserTopicProgress, int>().AddAsync(new UserTopicProgress()
                 {
-                    TopicId = topicId,
+                    TopicId = topic.Id,
                     UserId = userId,
                     IsCompleted = true,
                     CompletedAt = DateTime.UtcNow,

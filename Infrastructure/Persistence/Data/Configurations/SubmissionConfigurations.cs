@@ -1,11 +1,11 @@
-﻿
+
 using Domain.Models.ProblemsModule;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence.Data.Configurations
 {
-    public class SubmissionConfigurations:IEntityTypeConfiguration<Submission>
+    public class SubmissionConfigurations : IEntityTypeConfiguration<Submission>
     {
         public void Configure(EntityTypeBuilder<Submission> builder)
         {
@@ -20,8 +20,16 @@ namespace Persistence.Data.Configurations
                 .HasConversion<string>();
 
             builder.Property(s => s.Verdict)
+                .IsRequired(false)
+                .HasConversion<string>();
+
+            builder.Property(s => s.Status)
                 .IsRequired()
                 .HasConversion<string>();
+
+            builder.Property(s => s.FailureReason)
+                .IsRequired(false)
+                .HasColumnType("nvarchar(max)");
 
             builder.Property(s => s.RuntimeMs)
                 .IsRequired(false);
@@ -32,7 +40,7 @@ namespace Persistence.Data.Configurations
             builder.Property(s => s.SubmittedAt)
                 .IsRequired();
 
-            // *Note: Index for fetching a user's submission history sorted by date
+            // ---------- Index for fetching a user's submission history sorted by date ----------
             builder.HasIndex(s => new { s.UserId, s.SubmittedAt });
 
             builder.HasOne(s => s.User)

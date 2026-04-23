@@ -1,9 +1,10 @@
-﻿
+
 namespace Shared.DTOs.SubmissionDTOs
 {
     public class SubmissionResultDTO
     {
         public long Id { get; set; }
+        public string Status { get; set; } = string.Empty;
         public string Verdict { get; set; } = string.Empty;
         public string Language { get; set; } = string.Empty;
         public long? RuntimeMs { get; set; }

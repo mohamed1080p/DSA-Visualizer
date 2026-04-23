@@ -1,6 +1,7 @@
 using Domain.Contracts;
 using Domain.Models.ProblemsModule;
 using Domain.Models.TopicModule;
+using Hangfire;
 using ServicesAbstraction;
 using Shared.DTOs.SubmissionDTOs;
 
@@ -10,16 +11,18 @@ namespace Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICodeExecutionService _codeExecutionService;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
         private static readonly string[] SupportedLanguages = ["python", "cpp", "csharp", "java"];
 
-        public SubmissionService(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService)
+        public SubmissionService(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService, IBackgroundJobClient backgroundJobClient)
         {
             _unitOfWork = unitOfWork;
             _codeExecutionService = codeExecutionService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
-        public async Task<SubmissionResultDTO> SubmitAsync(SubmitProblemDTO dto, string userId)
+        public async Task<SubmissionQueuedDTO> SubmitAsync(SubmitProblemDTO dto, string userId)
         {
             ArgumentNullException.ThrowIfNull(dto);
 
@@ -41,70 +44,27 @@ namespace Services
             if (problem.TestCases.Count == 0)
                 throw new InvalidOperationException($"Problem '{dto.Slug}' has no test cases.");
 
-            var testCases = problem.TestCases.ToList();
-            var memoryLimitMb = ConvertKilobytesToMegabytes(problem.MemoryLimitKb);
-
-            var batchResults = await _codeExecutionService.ExecuteBatchAsync(new BatchCodeExecutionRequest
-            {
-                SourceCode = dto.Code,
-                Language = normalizedLanguage,
-                Inputs = testCases.Select(t => t.Input).ToList(),
-                TimeLimitMs = problem.TimeLimitMs,
-                MemoryLimitMB = memoryLimitMb
-            });
-
-            var testResults = new List<SubmissionTestResult>(testCases.Count);
-            for (var i = 0; i < testCases.Count; i++)
-            {
-                var testCase = testCases[i];
-                var execResult = i < batchResults.Count
-                    ? batchResults[i]
-                    : new CodeExecutionResult
-                    {
-                        Output = string.Empty,
-                        Error = "Missing execution result.",
-                        ExitCode = -1,
-                        ExecutionTimeMs = 0,
-                        MemoryUsedKB = 0,
-                        Verdict = Verdict.RuntimeError
-                    };
-
-                var verdict = MapVerdict(execResult, testCase.ExpectedOutput);
-
-                testResults.Add(new SubmissionTestResult
-                {
-                    TestCaseId = testCase.Id,
-                    Verdict = verdict,
-                    ActualOutput = execResult.Output,
-                    RuntimeMs = execResult.ExecutionTimeMs,
-                    MemoryKb = execResult.MemoryUsedKB
-                });
-            }
-
-            var maxRuntimeMs = testResults.Count == 0 ? 0 : testResults.Max(r => r.RuntimeMs);
-            var maxMemoryKb = testResults.Count == 0 ? 0 : testResults.Max(r => r.MemoryKb);
-            var overallVerdict = testResults
-                .Select(r => r.Verdict)
-                .FirstOrDefault(v => v != Verdict.Accepted, Verdict.Accepted);
-
             var submission = new Submission
             {
                 UserId = userId,
                 ProblemId = problem.Id,
                 Code = dto.Code,
                 Language = Enum.Parse<ProgrammingLanguage>(normalizedLanguage, ignoreCase: true),
-                Verdict = overallVerdict,
-                RuntimeMs = maxRuntimeMs,
-                MemoryKb = maxMemoryKb,
-                SubmittedAt = DateTime.UtcNow,
-                SubmissionTestResults = testResults
+                Status = SubmissionStatus.Queued,
+                SubmittedAt = DateTime.UtcNow
             };
 
             await _unitOfWork.GetRepository<Submission, long>().AddAsync(submission);
             await _unitOfWork.SaveChangesAsync();
 
-            var testCaseMap = problem.TestCases.ToDictionary(t => t.Id);
-            return MapToResultDTO(submission, testResults, testCaseMap);
+            _backgroundJobClient.Enqueue<SubmissionProcessor>(p => p.ProcessSubmissionAsync(submission.Id));
+
+            return new SubmissionQueuedDTO
+            {
+                SubmissionId = submission.Id,
+                Status = "Queued",
+                PollUrl = $"/api/submissions/{submission.Id}"
+            };
         }
 
         public async Task<IEnumerable<SubmissionHistoryDTO>> GetSubmissionHistoryAsync(string slug, string userId)
@@ -144,7 +104,8 @@ namespace Services
             return new SubmissionResultDTO
             {
                 Id = submission.Id,
-                Verdict = submission.Verdict.ToString(),
+                Status = submission.Status.ToString(),
+                Verdict = submission.Verdict?.ToString() ?? string.Empty,
                 Language = submission.Language.ToString(),
                 RuntimeMs = submission.RuntimeMs,
                 MemoryKb = submission.MemoryKb,
@@ -195,7 +156,8 @@ namespace Services
         private static SubmissionHistoryDTO MapToHistoryDTO(Submission s) => new()
         {
             Id = s.Id,
-            Verdict = s.Verdict.ToString(),
+            Status = s.Status.ToString(),
+            Verdict = s.Verdict?.ToString() ?? string.Empty,
             Language = s.Language.ToString(),
             RuntimeMs = s.RuntimeMs,
             MemoryKb = s.MemoryKb,
@@ -238,7 +200,8 @@ namespace Services
             return new SubmissionResultDTO
             {
                 Id = submission.Id,
-                Verdict = submission.Verdict.ToString(),
+                Status = submission.Status.ToString(),
+                Verdict = submission.Verdict?.ToString() ?? string.Empty,
                 Language = submission.Language.ToString(),
                 RuntimeMs = submission.RuntimeMs,
                 MemoryKb = submission.MemoryKb,

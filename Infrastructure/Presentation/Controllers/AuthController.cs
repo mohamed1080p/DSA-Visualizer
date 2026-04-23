@@ -14,7 +14,6 @@ namespace Presentation.Controllers
     [Route("api/[controller]")]
     public class AuthController(IServiceManager _serviceManager) : ControllerBase
     {
-        // register
         [HttpPost("register")]
         [EnableRateLimiting("auth-policy")]
         public async Task<ActionResult<UserDTO>> Register([FromBody] RegisterDTO registerDTO)
@@ -23,7 +22,6 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        // login
         [HttpPost("login")]
         [EnableRateLimiting("auth-policy")]
         public async Task<ActionResult<UserDTO>> Login([FromBody] LoginDTO loginDTO)
@@ -32,7 +30,6 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-        // logout
         [HttpPost("logout")]
         [Authorize]
         public async Task<ActionResult> Logout()
@@ -42,7 +39,6 @@ namespace Presentation.Controllers
             return Ok();
         }
 
-        // refresh token
         [HttpPost("refresh-token")]
         [EnableRateLimiting("auth-policy")]
         public async Task<ActionResult<UserDTO>> RefreshToken([FromBody] TokenRequestDTO tokenRequestDTO)

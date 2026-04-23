@@ -20,12 +20,14 @@ namespace Presentation.Controllers
         // POST api/submissions/{slug}
         [HttpPost("{slug}")]
         [EnableRateLimiting("submissions-policy")]
-        public async Task<ActionResult<SubmissionResultDTO>> Submit(string slug, [FromBody] SubmitProblemDTO dto)
+        public async Task<ActionResult<SubmissionQueuedDTO>> Submit(string slug, [FromBody] SubmitProblemDTO submitProblemDTO)
         {
-            var userId = GetUserId();
-            dto.Slug = slug;
-            var result = await _serviceManager.SubmissionService.SubmitAsync(dto, userId);
-            return Ok(result);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            submitProblemDTO.Slug = slug;
+            var result = await _serviceManager.SubmissionService.SubmitAsync(submitProblemDTO, userId);
+
+            // Return 202 Accepted with the queued result
+            return Accepted(result.PollUrl, result);
         }
 
         // GET api/submissions/history

@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ServicesAbstraction;
 using Shared.DTOs.TopicsDTOs;
 using System.Security.Claims;
@@ -11,6 +12,7 @@ namespace Presentation.Controllers
     public class TopicsController(IServiceManager _serviceManager) : ControllerBase
     {
         [HttpGet]
+        [EnableRateLimiting("general-policy")]
         public async Task<ActionResult<IEnumerable<TopicDTO>>> GetAll([FromQuery] TopicQueryParametersDTO parameters)
         {
             var topics = await _serviceManager.TopicService.GetAllAsync(parameters);
@@ -19,6 +21,7 @@ namespace Presentation.Controllers
 
         // GET api/topics/5
         [HttpGet("{id:int}")]
+        [EnableRateLimiting("general-policy")]
         public async Task<ActionResult<TopicDetailDTO>> GetById(int id)
         {
             var topic = await _serviceManager.TopicService.GetByIdAsync(id);
@@ -28,6 +31,7 @@ namespace Presentation.Controllers
         // POST api/topics/5/complete
         [HttpPost("{id:int}/complete")]
         [Authorize]
+        [EnableRateLimiting("general-policy")]
         public async Task<ActionResult> MarkAsCompleted(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;

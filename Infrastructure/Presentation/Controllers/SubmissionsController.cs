@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 using ServicesAbstraction;
 using Shared.DTOs.SubmissionDTOs;
@@ -10,7 +11,7 @@ namespace Presentation.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class SubmissionsController(IServiceManager _serviceManager, ILogger<SubmissionsController> _logger) : ControllerBase
+    public class SubmissionsController(IServiceManager _serviceManager) : ControllerBase
     {
 
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
@@ -18,6 +19,7 @@ namespace Presentation.Controllers
 
         // POST api/submissions/{slug}
         [HttpPost("{slug}")]
+        [EnableRateLimiting("submissions-policy")]
         public async Task<ActionResult<SubmissionResultDTO>> Submit(string slug, [FromBody] SubmitProblemDTO dto)
         {
             var userId = GetUserId();
@@ -28,6 +30,7 @@ namespace Presentation.Controllers
 
         // GET api/submissions/history
         [HttpGet("history")]
+        [EnableRateLimiting("general-policy")]
         public async Task<ActionResult<IEnumerable<SubmissionHistoryDTO>>> GetAllHistory()
         {
             var userId = GetUserId();
@@ -37,6 +40,7 @@ namespace Presentation.Controllers
 
         // GET api/submissions/{id:long}
         [HttpGet("{id:long}")]
+        [EnableRateLimiting("general-policy")]
         public async Task<ActionResult<SubmissionResultDTO>> GetById(long id)
         {
             var userId = GetUserId();

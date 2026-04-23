@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Logging;
 using ServicesAbstraction;
 using Shared.DTOs.UserProgressDTOs;
@@ -13,6 +14,7 @@ namespace Presentation.Controllers
     public class UserProgressController(IServiceManager _serviceManager, ILogger<UserProgressController> _logger) : ControllerBase
     {
         [HttpGet]
+        [EnableRateLimiting("general-policy")]
         public async Task<ActionResult<UserProgressDTO>> GetUserProgress()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;

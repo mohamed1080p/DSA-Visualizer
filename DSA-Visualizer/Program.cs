@@ -18,6 +18,7 @@ namespace DSA_Visualizer
             builder.Services.AddIdentityServices();
             builder.Services.AddJwtAuthentication(builder.Configuration);
             builder.Services.AddApplicationServices();
+            builder.Services.AddRateLimitingServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -38,6 +39,7 @@ namespace DSA_Visualizer
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseRateLimiter();
             app.MapControllers();
             app.Run();
         }

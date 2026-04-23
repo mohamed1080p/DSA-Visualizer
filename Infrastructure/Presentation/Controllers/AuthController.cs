@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using ServicesAbstraction;
 using Shared.DTOs.IdentityDTOs;
 using System.Security.Claims;
@@ -15,6 +16,7 @@ namespace Presentation.Controllers
     {
         // register
         [HttpPost("register")]
+        [EnableRateLimiting("auth-policy")]
         public async Task<ActionResult<UserDTO>> Register([FromBody] RegisterDTO registerDTO)
         {
             var result = await _serviceManager.AuthService.RegisterAsync(registerDTO);
@@ -23,6 +25,7 @@ namespace Presentation.Controllers
 
         // login
         [HttpPost("login")]
+        [EnableRateLimiting("auth-policy")]
         public async Task<ActionResult<UserDTO>> Login([FromBody] LoginDTO loginDTO)
         {
             var result = await _serviceManager.AuthService.LoginAsync(loginDTO);
@@ -41,6 +44,7 @@ namespace Presentation.Controllers
 
         // refresh token
         [HttpPost("refresh-token")]
+        [EnableRateLimiting("auth-policy")]
         public async Task<ActionResult<UserDTO>> RefreshToken([FromBody] TokenRequestDTO tokenRequestDTO)
         {
             var result = await _serviceManager.AuthService.RefreshTokenAsync(tokenRequestDTO);

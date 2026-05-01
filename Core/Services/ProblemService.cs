@@ -1,5 +1,6 @@
 
 using Domain.Contracts;
+using Domain.Exceptions;
 using Domain.Models.ProblemsModule;
 using ServicesAbstraction;
 using Shared.DTOs.ProblemDTOs;
@@ -31,7 +32,7 @@ namespace Services
             var problem = await _unitOfWork.ProblemRepository.GetBySlugAsync(slug);
 
             if (problem is null)
-                throw new Exception($"Problem with Slug: {slug} was not found.");
+                throw new NotFoundException($"Problem with Slug: {slug} was not found.");
 
             return new ProblemDetailDTO
             {

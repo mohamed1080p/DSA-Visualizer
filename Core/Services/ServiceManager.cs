@@ -9,9 +9,9 @@ using Hangfire;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService, IBackgroundJobClient _backgroundJobClient) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService, IBackgroundJobClient _backgroundJobClient, ITokenGenerator _tokenGenerator) : IServiceManager
     {
-        private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _signInManager, _unitOfWork, _configuration));
+        private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _signInManager, _unitOfWork, _configuration, _tokenGenerator));
         public IAuthService AuthService => _authService.Value;
 
         private readonly Lazy<ITopicService> _topicService = new(() => new TopicService(_unitOfWork));

@@ -118,41 +118,6 @@ namespace Services
         // Helpers
         // ───────────────────────────────────────────────
 
-        private static Verdict MapVerdict(CodeExecutionResult result, string expectedOutput)
-        {
-            if (result.Verdict is Verdict.TimeLimitExceeded
-                                or Verdict.MemoryLimitExceeded
-                                or Verdict.compilationError)
-                return result.Verdict;
-
-            if (result.ExitCode != 0 || result.Verdict == Verdict.RuntimeError)
-                return Verdict.RuntimeError;
-
-            return Normalize(result.Output) == Normalize(expectedOutput)
-                ? Verdict.Accepted
-                : Verdict.WrongAnswer;
-        }
-
-        private static string Normalize(string input)
-        {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
-
-            var normalizedLineBreaks = input.Replace("\r\n", "\n").Replace('\r', '\n');
-            var lines = normalizedLineBreaks.Split('\n')
-                .Select(line => line.TrimEnd());
-
-            return string.Join('\n', lines).Trim();
-        }
-
-        private static int ConvertKilobytesToMegabytes(int memoryLimitKb)
-        {
-            if (memoryLimitKb <= 0)
-                return 1;
-
-            return (int)Math.Max(1, Math.Ceiling(memoryLimitKb / 1024d));
-        }
-
         private static SubmissionHistoryDTO MapToHistoryDTO(Submission s) => new()
         {
             Id = s.Id,
@@ -189,24 +154,6 @@ namespace Services
                 ExpectedOutput = testCase.ExpectedOutput,
                 Input = testCase.IsHidden ? "Hidden" : testCase.Input,
                 RuntimeMs = (int?)result.RuntimeMs
-            };
-        }
-
-        private static SubmissionResultDTO MapToResultDTO(
-            Submission submission,
-            List<SubmissionTestResult> testResults,
-            Dictionary<int, TestCase> testCaseMap)
-        {
-            return new SubmissionResultDTO
-            {
-                Id = submission.Id,
-                Status = submission.Status.ToString(),
-                Verdict = submission.Verdict?.ToString() ?? string.Empty,
-                Language = submission.Language.ToString(),
-                RuntimeMs = submission.RuntimeMs,
-                MemoryKb = submission.MemoryKb,
-                SubmittedAt = submission.SubmittedAt,
-                TestResults = testResults.Select(r => MapTestResult(r, testCaseMap))
             };
         }
     }

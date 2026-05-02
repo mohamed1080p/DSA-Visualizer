@@ -69,7 +69,7 @@ namespace Services
             return progress;
         }
 
-        private void CalculateStreak(IEnumerable<Submission> submissions, UserProgressDTO progress)
+        private static void CalculateStreak(IEnumerable<Submission> submissions, UserProgressDTO progress)
         {
             if (!submissions.Any())
             {

@@ -12,7 +12,9 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
     {
         var (statusCode, message) = exception switch
         {
+            NotFoundException ex => (StatusCodes.Status404NotFound, ex.Message),
             KeyNotFoundException ex => (StatusCodes.Status404NotFound, ex.Message),
+            InvalidCredentialsException ex => (StatusCodes.Status401Unauthorized, ex.Message),
             UnauthorizedAccessException ex => (StatusCodes.Status403Forbidden, ex.Message),
             ArgumentException ex => (StatusCodes.Status400BadRequest, ex.Message),
             InvalidOperationException ex => (StatusCodes.Status400BadRequest, ex.Message),

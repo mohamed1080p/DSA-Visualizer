@@ -1,4 +1,5 @@
 using Domain.Contracts;
+using Domain.Exceptions;
 using Domain.Models.TopicModule;
 using ServicesAbstraction;
 using Shared.DTOs.TopicsDTOs;
@@ -59,7 +60,7 @@ namespace Services
 
             if(topic is null)
             {
-                throw new Exception($"Topic with Slug: '{slug}' was not found");
+                throw new NotFoundException($"Topic with Slug: '{slug}' was not found");
             }
             return new TopicDetailDTO
             {
@@ -94,7 +95,7 @@ namespace Services
             var topic = topics.FirstOrDefault();
 
             if (topic is null)
-                throw new Exception($"Topic with Slug: '{slug}' was not found");
+                throw new NotFoundException($"Topic with Slug: '{slug}' was not found");
 
             var progress = await _unitOfWork.GetRepository<UserTopicProgress, int>().
                 GetAllAsync(predicate: p => p.UserId == userId && p.TopicId == topic.Id, orderBy: null);

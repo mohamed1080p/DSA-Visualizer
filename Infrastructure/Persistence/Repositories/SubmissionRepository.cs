@@ -6,11 +6,18 @@ using Persistence.Data;
 
 namespace Persistence.Repositories
 {
-    public class SubmissionRepository(ApplicationDbContext _dbContext) : GenericRepository<Submission, long>(_dbContext), ISubmissionRepository
+    public class SubmissionRepository : GenericRepository<Submission, long>, ISubmissionRepository
     {
+        private readonly ApplicationDbContext _context;
+
+        public SubmissionRepository(ApplicationDbContext dbContext) : base(dbContext)
+        {
+            _context = dbContext;
+        }
+
         public async Task<IEnumerable<Submission>> GetUserSubmissionsBySlugAsync(string userId, string slug)
         {
-            return await _dbContext.Submissions
+            return await _context.Submissions
                 .Include(a => a.Problem)
                 .Where(a => a.UserId == userId && a.Problem.Slug == slug)
                 .OrderByDescending(a => a.SubmittedAt)
@@ -19,7 +26,7 @@ namespace Persistence.Repositories
 
         public async Task<IEnumerable<Submission>> GetAllUserSubmissionsAsync(string userId)
         {
-            return await _dbContext.Submissions
+            return await _context.Submissions
                 .Include(a => a.Problem)
                 .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.SubmittedAt)

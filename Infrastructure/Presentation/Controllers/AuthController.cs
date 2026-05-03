@@ -35,6 +35,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult> Logout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
+                return Unauthorized();
             await _serviceManager.AuthService.LogoutAsync(userId);
             return Ok();
         }

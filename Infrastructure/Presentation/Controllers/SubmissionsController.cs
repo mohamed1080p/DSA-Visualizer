@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Logging;
 using ServicesAbstraction;
 using Shared.DTOs.SubmissionDTOs;
 using System.Security.Claims;
@@ -22,7 +21,7 @@ namespace Presentation.Controllers
         [EnableRateLimiting("submissions-policy")]
         public async Task<ActionResult<SubmissionQueuedDTO>> Submit(string slug, [FromBody] SubmitProblemDTO submitProblemDTO)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var userId = GetUserId();
             submitProblemDTO.Slug = slug;
             var result = await _serviceManager.SubmissionService.SubmitAsync(submitProblemDTO, userId);
 

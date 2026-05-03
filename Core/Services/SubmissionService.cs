@@ -13,7 +13,7 @@ namespace Services
         private readonly ICodeExecutionService _codeExecutionService;
         private readonly IBackgroundJobClient _backgroundJobClient;
 
-        private static readonly string[] SupportedLanguages = ["python", "cpp", "csharp", "java"];
+        private static readonly string[] SupportedLanguages = ["python", "cpp", "csharp", "java", "cs"];
 
         public SubmissionService(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService, IBackgroundJobClient backgroundJobClient)
         {
@@ -33,6 +33,9 @@ namespace Services
 
             if (!SupportedLanguages.Contains(normalizedLanguage))
                 throw new InvalidOperationException($"Unsupported language: {dto.Language}");
+
+            if (normalizedLanguage == "cs") 
+                normalizedLanguage = "csharp";
 
             var problem = await _unitOfWork
                 .ProblemRepository

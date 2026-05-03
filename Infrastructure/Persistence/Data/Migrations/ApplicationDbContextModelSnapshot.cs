@@ -132,7 +132,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.Problem", b =>
@@ -173,7 +173,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Problems");
+                    b.ToTable("Problems", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.Submission", b =>
@@ -224,7 +224,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("UserId", "SubmittedAt");
 
-                    b.ToTable("Submissions");
+                    b.ToTable("Submissions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.SubmissionTestResult", b =>
@@ -260,7 +260,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("TestCaseId");
 
-                    b.ToTable("SubmissionTestResults");
+                    b.ToTable("SubmissionTestResults", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.ProblemsModule.TestCase", b =>
@@ -291,7 +291,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("ProblemId");
 
-                    b.ToTable("TestCases");
+                    b.ToTable("TestCases", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.Category", b =>
@@ -309,7 +309,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.Topic", b =>
@@ -353,7 +353,7 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topics", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.TopicCodeImplementation", b =>
@@ -386,7 +386,7 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("TopicId", "Language")
                         .IsUnique();
 
-                    b.ToTable("TopicCodeImplementations");
+                    b.ToTable("TopicCodeImplementations", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.TopicComplexity", b =>
@@ -419,7 +419,7 @@ namespace Persistence.Data.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("TopicComplexities");
+                    b.ToTable("TopicComplexities", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.TopicModule.UserTopicProgress", b =>
@@ -450,7 +450,7 @@ namespace Persistence.Data.Migrations
                     b.HasIndex("UserId", "TopicId")
                         .IsUnique();
 
-                    b.ToTable("UserTopicProgresses");
+                    b.ToTable("UserTopicProgresses", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

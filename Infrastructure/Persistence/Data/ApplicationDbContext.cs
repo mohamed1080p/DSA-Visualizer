@@ -32,6 +32,8 @@ namespace Persistence.Data
             builder.Entity<IdentityRole>().ToTable("Roles");
             builder.Ignore<IdentityUserClaim<string>>();
             builder.Ignore<IdentityRoleClaim<string>>();
+            builder.Ignore<IdentityUserRole<string>>();
+            builder.Ignore<IdentityUserToken<string>>();
 
 
             builder.ApplyConfigurationsFromAssembly(

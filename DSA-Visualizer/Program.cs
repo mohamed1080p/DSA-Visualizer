@@ -22,6 +22,7 @@ namespace DSA_Visualizer
             builder.Services.AddApplicationServices();
             builder.Services.AddRateLimitingServices(builder.Configuration);
             builder.Services.AddHangfireServices(builder.Configuration);
+            builder.Services.AddCorsPolicies();
 
             var app = builder.Build();
 
@@ -40,6 +41,7 @@ namespace DSA_Visualizer
             app.UseExceptionHandler();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseRateLimiter();

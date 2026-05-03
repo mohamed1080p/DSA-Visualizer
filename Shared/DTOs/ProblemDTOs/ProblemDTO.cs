@@ -1,4 +1,4 @@
-﻿
+
 namespace Shared.DTOs.ProblemDTOs
 {
     public class ProblemDTO
@@ -7,5 +7,6 @@ namespace Shared.DTOs.ProblemDTOs
         public string Title { get; set; } = string.Empty;
         public string Difficulty { get; set; } = string.Empty;
         public string TopicName { get; set; } = string.Empty;
+        public string Slug { get; set; } = string.Empty;
     }
 }

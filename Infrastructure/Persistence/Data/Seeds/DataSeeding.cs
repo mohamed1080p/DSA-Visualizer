@@ -17,123 +17,77 @@ namespace Persistence.Data.Seeds
                     await _dbContext.Database.MigrateAsync();
                 }
 
-                if (!_dbContext.Categories.Any())
+                // List of topic seed files
+                var topicSeedFiles = new[]
                 {
-                    var categoriesStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\categories.json");
-                    var categories = await JsonSerializer.DeserializeAsync<List<Category>>(categoriesStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (categories is not null && categories.Any())
-                    {
-                        await _dbContext.Categories.AddRangeAsync(categories);
-                    }
-                }
+                    "categories.json",
+                    "array.json",
+                    "binary-search.json",
+                    "linked-list.json",
+                    "bubble-sort.json",
+                    "insertion-sort.json",
+                    "selection-sort.json",
+                    "quick-sort.json",
+                    "stack.json",
+                    "queue.json",
+                    "binary-tree.json",
+                    "binary-search-tree.json",
+                    "dfs.json",
+                    "bfs.json"
+                };
 
-                if (!_dbContext.Topics.Any())
+                foreach (var fileName in topicSeedFiles)
                 {
-                    var arrayStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\array.json");
-                    var arrayTopic = await JsonSerializer.DeserializeAsync<Topic>(arrayStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (arrayTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(arrayTopic);
-                    }
+                    var path = Path.Combine(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics", fileName);
+                    if (!File.Exists(path)) continue;
 
-                    var binarySearchStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-search.json");
-                    var binarySearchTopic = await JsonSerializer.DeserializeAsync<Topic>(binarySearchStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (binarySearchTopic is not null)
+                    using var stream = File.OpenRead(path);
+                    if (fileName == "categories.json")
                     {
-                        await _dbContext.Topics.AddAsync(binarySearchTopic);
+                        var categories = await JsonSerializer.DeserializeAsync<List<Category>>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (categories != null)
+                        {
+                            foreach (var cat in categories)
+                            {
+                                var existing = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Name == cat.Name);
+                                if (existing == null) await _dbContext.Categories.AddAsync(cat);
+                            }
+                        }
                     }
-
-                    var singlyLinkedListStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\linked-list.json");
-                    var singlyLinkedListTopic = await JsonSerializer.DeserializeAsync<Topic>(singlyLinkedListStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (singlyLinkedListTopic is not null)
+                    else
                     {
-                        await _dbContext.Topics.AddAsync(singlyLinkedListTopic);
-                    }
+                        var topic = await JsonSerializer.DeserializeAsync<Topic>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (topic != null)
+                        {
+                            var existing = await _dbContext.Topics.Include(t => t.CodeImplementations).Include(t => t.Complexities)
+                                .FirstOrDefaultAsync(t => t.Slug == topic.Slug);
+                            
+                            if (existing != null)
+                            {
+                                Console.WriteLine($"[SEEDING] Updating existing topic: {topic.Title}");
+                                // Update existing topic
+                                existing.Title = topic.Title;
+                                existing.Description = topic.Description;
+                                existing.Explanation = topic.Explanation;
+                                existing.Difficulty = topic.Difficulty;
+                                
+                                // Explicitly remove and re-add to ensure refresh
+                                foreach(var impl in existing.CodeImplementations.ToList()) 
+                                    _dbContext.TopicCodeImplementations.Remove(impl);
+                                
+                                foreach(var comp in existing.Complexities.ToList()) 
+                                    _dbContext.TopicComplexities.Remove(comp);
 
-                    var bubbleSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\bubble-sort.json");
-                    var bubbleSortTopic = await JsonSerializer.DeserializeAsync<Topic>(bubbleSortStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (bubbleSortTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(bubbleSortTopic);
+                                existing.CodeImplementations = topic.CodeImplementations;
+                                existing.Complexities = topic.Complexities;
+                            }
+                            else
+                            {
+                                Console.WriteLine($"[SEEDING] Adding new topic: {topic.Title}");
+                                await _dbContext.Topics.AddAsync(topic);
+                            }
+                        }
                     }
-
-                    var insertionSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\insertion-sort.json");
-                    var insertionSortTopic = await JsonSerializer.DeserializeAsync<Topic>(insertionSortStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (insertionSortTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(insertionSortTopic);
-                    }
-
-                    var selectionSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\selection-sort.json");
-                    var selectionSortTopic = await JsonSerializer.DeserializeAsync<Topic>(selectionSortStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (selectionSortTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(selectionSortTopic);
-                    }
-
-                    var quickSortStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\quick-sort.json");
-                    var quickSortTopic = await JsonSerializer.DeserializeAsync<Topic>(quickSortStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (quickSortTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(quickSortTopic);
-                    }
-
-                    var stackStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\stack.json");
-                    var stackTopic = await JsonSerializer.DeserializeAsync<Topic>(stackStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (stackTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(stackTopic);
-                    }
-
-                    var queueStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\queue.json");
-                    var queueTopic = await JsonSerializer.DeserializeAsync<Topic>(queueStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (queueTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(queueTopic);
-                    }
-
-                    var binaryTreeStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-tree.json");
-                    var binaryTreeTopic = await JsonSerializer.DeserializeAsync<Topic>(binaryTreeStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (binaryTreeTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(binaryTreeTopic);
-                    }
-
-                    var bstStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-search-tree.json");
-                    var bstTopic = await JsonSerializer.DeserializeAsync<Topic>(bstStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (bstTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(bstTopic);
-                    }
-
-                    var dfsStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\dfs.json");
-                    var dfsTopic = await JsonSerializer.DeserializeAsync<Topic>(dfsStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (dfsTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(dfsTopic);
-                    }
-
-                    var bfsStream = File.OpenRead(@"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\bfs.json");
-                    var bfsTopic = await JsonSerializer.DeserializeAsync<Topic>(bfsStream,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    if (bfsTopic is not null)
-                    {
-                        await _dbContext.Topics.AddAsync(bfsTopic);
-                    }
-
                 }
 
                 await _dbContext.SaveChangesAsync();

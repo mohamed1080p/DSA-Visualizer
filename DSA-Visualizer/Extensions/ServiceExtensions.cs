@@ -213,4 +213,17 @@ public static class ServiceExtensions
         });
         services.AddScoped<SubmissionProcessor>();
     }
+    public static void AddCorsPolicies(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", builder =>
+            {
+                builder.WithOrigins("http://localhost:5173", "http://localhost:3000")
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .AllowCredentials();
+            });
+        });
+    }
 }

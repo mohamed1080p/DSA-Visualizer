@@ -22,7 +22,8 @@ namespace Services
                 Id = p.Id,
                 Title = p.Title,
                 Difficulty = p.Difficulty.ToString(),
-                TopicName = p.Topic.Title
+                TopicName = p.Topic.Title,
+                Slug = p.Slug
             });
         }
 
@@ -40,6 +41,7 @@ namespace Services
                 Description = problem.Description,
                 Difficulty = problem.Difficulty.ToString(),
                 TopicName = problem.Topic.Title,
+                Slug = problem.Slug,
                 TimeLimitMs = problem.TimeLimitMs,
                 MemoryLimitKb = problem.MemoryLimitKb,
                 // filter hidden test cases

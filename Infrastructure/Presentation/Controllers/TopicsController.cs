@@ -28,15 +28,32 @@ namespace Presentation.Controllers
             return Ok(topic);
         }
 
-        // POST api/topics/{slug}/complete
         [HttpPost("{slug}/complete")]
         [Authorize]
         [EnableRateLimiting("general-policy")]
         public async Task<ActionResult> MarkAsCompleted(string slug)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-            await _serviceManager.TopicService.MarkTopicAsCompletedAsync(slug, userId);
+            var topicId = await _serviceManager.TopicService.MarkTopicAsCompletedAsync(slug, userId);
+            
+            // Auto-advance learning path if applicable
+            await _serviceManager.LearningPathService.AdvanceIfCurrentLevelMatchesAsync(userId, topicId: topicId);
+            
             return NoContent();
+        }
+
+        [HttpGet("debug-advance")]
+        public async Task<ActionResult> DebugAdvance([FromQuery] string userId, [FromQuery] int topicId)
+        {
+            await _serviceManager.LearningPathService.AdvanceIfCurrentLevelMatchesAsync(userId, topicId: topicId);
+            return Ok(new { success = true });
+        }
+
+        [HttpGet("debug-advance")]
+        public async Task<ActionResult> DebugAdvance([FromQuery] string userId, [FromQuery] int topicId)
+        {
+            await _serviceManager.LearningPathService.AdvanceIfCurrentLevelMatchesAsync(userId, topicId: topicId);
+            return Ok(new { success = true });
         }
     }
 }

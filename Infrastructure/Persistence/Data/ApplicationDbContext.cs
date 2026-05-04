@@ -1,4 +1,5 @@
-﻿using Domain.Models.IdentityModule;
+using Domain.Models.IdentityModule;
+using Domain.Models.LearningPathModule;
 using Domain.Models.ProblemsModule;
 using Domain.Models.TopicModule;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,12 @@ namespace Persistence.Data
         {
             
         }
+                protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+                {
+                    base.OnConfiguring(optionsBuilder);
+                    optionsBuilder.ConfigureWarnings(w =>
+                        w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+                }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<TopicCodeImplementation> TopicCodeImplementations { get; set; }
@@ -23,6 +30,9 @@ namespace Persistence.Data
         public DbSet<TestCase> TestCases { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<SubmissionTestResult> SubmissionTestResults { get; set; }
+        public DbSet<LearningPath> LearningPaths { get; set; }
+        public DbSet<LearningPathLevel> LearningPathLevels { get; set; }
+        public DbSet<UserLearningPathProgress> UserLearningPathProgresses { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

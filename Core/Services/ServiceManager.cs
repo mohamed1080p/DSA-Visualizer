@@ -9,7 +9,7 @@ using Hangfire;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService, IBackgroundJobClient _backgroundJobClient, ITokenGenerator _tokenGenerator) : IServiceManager
+    public class ServiceManager(IUnitOfWork _unitOfWork, UserManager<ApplicationUser> _userManager, SignInManager<ApplicationUser> _signInManager, IConfiguration _configuration, ILogger<CodeExecutionService> _logger, ICodeExecutionService _codeExecutionService, IBackgroundJobClient _backgroundJobClient, ITokenGenerator _tokenGenerator, IHttpClientFactory _httpClientFactory, ILogger<ChatbotService> _chatbotLogger) : IServiceManager
     {
         private readonly Lazy<IAuthService> _authService = new(() => new AuthService(_userManager, _signInManager, _unitOfWork, _configuration, _tokenGenerator));
         public IAuthService AuthService => _authService.Value;
@@ -25,6 +25,12 @@ namespace Services
         public ISubmissionService SubmissionService => _submissionService.Value;
         private readonly Lazy<IUserProgressService> _userProgressService = new(() => new UserProgressService(_unitOfWork));
         public IUserProgressService UserProgressService => _userProgressService.Value;
+
+        private readonly Lazy<IChatbotService> _chatbotService = new(() => new ChatbotService(_httpClientFactory, _configuration, _chatbotLogger));
+        public IChatbotService ChatbotService => _chatbotService.Value;
+
+        private readonly Lazy<ILearningPathService> _learningPathService = new(() => new LearningPathService(_unitOfWork));
+        public ILearningPathService LearningPathService => _learningPathService.Value;
 
     }
 }

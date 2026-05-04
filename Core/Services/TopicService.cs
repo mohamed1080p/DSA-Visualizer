@@ -87,7 +87,7 @@ namespace Services
 
         }
 
-        public async Task MarkTopicAsCompletedAsync(string slug, string userId)
+        public async Task<int> MarkTopicAsCompletedAsync(string slug, string userId)
         {
             var topics = await _unitOfWork.GetRepository<Topic, int>().GetAllAsync(
                 predicate: t => t.Slug == slug,
@@ -118,6 +118,7 @@ namespace Services
                 _unitOfWork.GetRepository<UserTopicProgress, int>().Update(existingProgress);
             }
             await _unitOfWork.SaveChangesAsync();
+            return topic.Id;
         }
     }
 }

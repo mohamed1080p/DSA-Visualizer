@@ -20,6 +20,10 @@ const Topics = () => {
   const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
+    document.title = 'Topics \u2014 DSA Visualizer';
+  }, []);
+
+  useEffect(() => {
     const fetchTopics = async () => {
       try {
         const response = await api.get('/topics');

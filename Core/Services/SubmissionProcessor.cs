@@ -11,12 +11,14 @@ namespace Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICodeExecutionService _codeExecutionService;
         private readonly ILogger<SubmissionProcessor> _logger;
+        private readonly IServiceManager _serviceManager;
 
-        public SubmissionProcessor(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService, ILogger<SubmissionProcessor> logger)
+        public SubmissionProcessor(IUnitOfWork unitOfWork, ICodeExecutionService codeExecutionService, ILogger<SubmissionProcessor> logger, IServiceManager serviceManager)
         {
             _unitOfWork = unitOfWork;
             _codeExecutionService = codeExecutionService;
             _logger = logger;
+            _serviceManager = serviceManager;
         }
 
         public async Task ProcessSubmissionAsync(long submissionId)
@@ -102,6 +104,11 @@ namespace Services
                 submission.Status = SubmissionStatus.Completed;
 
                 await _unitOfWork.SaveChangesAsync();
+
+                if (overallVerdict == Verdict.Accepted)
+                {
+                    await _serviceManager.LearningPathService.AdvanceIfCurrentLevelMatchesAsync(submission.UserId, problemId: submission.ProblemId);
+                }
             }
             catch (Exception ex)
             {

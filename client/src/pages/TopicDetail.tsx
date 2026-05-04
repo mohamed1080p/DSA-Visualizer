@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Info, Clock, CheckCircle } from 'lucide-react';
 import Editor from '@monaco-editor/react';
@@ -425,6 +425,10 @@ interface TopicDetail {
 const TopicDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const fromPath = searchParams.get('fromPath');
+
   const [topic, setTopic] = useState<TopicDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -442,6 +446,10 @@ const TopicDetail = () => {
   const [interVal, setInterVal] = useState<number>(10);
   const [interIdx, setInterIdx] = useState<number>(0);
   const [interSize, setInterSize] = useState<number>(5);
+
+  useEffect(() => {
+    document.title = topic ? `${topic.title} — DSA Visualizer` : 'Loading... — DSA Visualizer';
+  }, [topic]);
 
   // Initialize live data based on topic
   useEffect(() => {
@@ -1237,7 +1245,6 @@ const TopicDetail = () => {
       let stepCount = 1;
 
       // Level-order traversal to find the target node and the deepest rightmost node
-      let queue = [root.id];
       let targetNodeId: number | null = null;
       let deepestNodeId: number = root.id;
       let deepestParentId: number | null = null;
@@ -1824,7 +1831,6 @@ const TopicDetail = () => {
     }
   };
 
-  const startPlayback = () => setIsPlaying(true);
   const stopPlayback = () => setIsPlaying(false);
 
   // Sync liveData to final sorted array after playback finishes
@@ -2148,6 +2154,8 @@ const TopicDetail = () => {
     return null;
   };
 
+  const [isCompleted, setIsCompleted] = useState(() => localStorage.getItem(`topic-completed-${slug}`) === 'true');
+
   const editorRef = useRef<any>(null);
 
   useEffect(() => {
@@ -2174,6 +2182,103 @@ const TopicDetail = () => {
       (selectedLang === 'javascript' && i.language === '4') ||
       (selectedLang === 'python' && i.language === '5')
   );
+
+  const generateCodeForLang = (baseCode: string, lang: string): string => {
+    if (!baseCode) return `// Implementation coming soon for ${lang}`;
+    if (lang === 'csharp' || lang === '1') return baseCode;
+    
+    let code = baseCode;
+    code = code.replace(/\/\/ C#/g, `// ${lang === 'cpp' ? 'C++' : lang === 'java' ? 'Java' : lang === 'javascript' ? 'JavaScript' : 'Python'}`);
+    
+    if (lang === 'python' || lang === '5') {
+      return code
+        .replace(/int\[\] arr = \{ (.*?) \};/g, "arr = [$1]")
+        .replace(/int target = (.*?);/g, "target = $1")
+        .replace(/int (.*?);/g, "$1 = 0")
+        .replace(/int (.*?) = (.*?);/g, "$1 = $2")
+        .replace(/while \((.*?)\) \{/g, "while $1:")
+        .replace(/for \(int i = 0; i < (.*?); i\+\+\) \{/g, "for i in range($1):")
+        .replace(/for \(int j = 0; j < (.*?); j\+\+\) \{/g, "for j in range($1):")
+        .replace(/for \(int i = 1; i < (.*?); \+\+i\) \{/g, "for i in range(1, $1):")
+        .replace(/Console\.WriteLine\((.*?)\);/g, "print($1)")
+        .replace(/curr != null/g, "curr is not None")
+        .replace(/null/g, "None")
+        .replace(/Queue<.*?> .*? = new Queue<.*?>\(\);/g, "from collections import deque\nq = deque()")
+        .replace(/q\.Enqueue\((.*?)\);/g, "q.append($1)")
+        .replace(/Node (.*?) = q\.Dequeue\(\);/g, "$1 = q.popleft()")
+        .replace(/q\.Dequeue\(\)/g, "q.popleft()")
+        .replace(/q\.Count > 0/g, "len(q) > 0")
+        .replace(/Stack<.*?> .*? = new Stack<.*?>\(\);/g, "stack = []")
+        .replace(/stack\.Push\((.*?)\);/g, "stack.append($1)")
+        .replace(/int (.*?) = stack\.Pop\(\);/g, "$1 = stack.pop()")
+        .replace(/stack\.Pop\(\)/g, "stack.pop()")
+        .replace(/public class Node \{/g, "class Node:")
+        .replace(/public int Value;/g, "    def __init__(self, value):\n        self.Value = value")
+        .replace(/public Node Left, Right;/g, "        self.Left = None\n        self.Right = None")
+        .replace(/;/g, "")
+        .replace(/\{/g, "")
+        .replace(/\}/g, "")
+        .replace(/void (.*?)\((.*?)\)/g, "def $1($2):")
+        .replace(/int\[\]/g, "list")
+        .replace(/int /g, "")
+        .replace(/Node /g, "");
+    }
+    
+    if (lang === 'javascript' || lang === '4') {
+      return code
+        .replace(/int\[\] arr = \{ (.*?) \};/g, "let arr = [$1];")
+        .replace(/int (.*?);/g, "let $1;")
+        .replace(/int (.*?) = (.*?);/g, "let $1 = $2;")
+        .replace(/Console\.WriteLine\((.*?)\);/g, "console.log($1);")
+        .replace(/Queue<.*?> .*? = new Queue<.*?>\(\);/g, "let q = [];")
+        .replace(/q\.Enqueue\((.*?)\);/g, "q.push($1);")
+        .replace(/Node (.*?) = q\.Dequeue\(\);/g, "let $1 = q.shift();")
+        .replace(/q\.Dequeue\(\)/g, "q.shift()")
+        .replace(/q\.Count > 0/g, "q.length > 0")
+        .replace(/Stack<.*?> .*? = new Stack<.*?>\(\);/g, "let stack = [];")
+        .replace(/stack\.Push\((.*?)\);/g, "stack.push($1);")
+        .replace(/int (.*?) = stack\.Pop\(\);/g, "let $1 = stack.pop();")
+        .replace(/stack\.Pop\(\)/g, "stack.pop()")
+        .replace(/public class Node \{/g, "class Node {")
+        .replace(/public int Value;/g, "    constructor(value) { this.Value = value; }")
+        .replace(/public Node Left, Right;/g, "")
+        .replace(/void (.*?)\((.*?)\)/g, "function $1($2)")
+        .replace(/Node /g, "let ")
+        .replace(/int\[\] /g, "")
+        .replace(/Queue<int> /g, "let ")
+        .replace(/Stack<int> /g, "let ");
+    }
+
+    if (lang === 'cpp' || lang === '2') {
+      return code
+        .replace(/Console\.WriteLine\((.*?)\);/g, "cout << $1 << endl;")
+        .replace(/null/g, "nullptr")
+        .replace(/Queue<.*?> /g, "queue<int> ")
+        .replace(/Stack<.*?> /g, "stack<int> ")
+        .replace(/q\.Enqueue/g, "q.push")
+        .replace(/q\.Dequeue\(\)/g, "q.front(); q.pop()")
+        .replace(/stack\.Push/g, "stack.push")
+        .replace(/stack\.Pop\(\)/g, "stack.top(); stack.pop()")
+        .replace(/q\.Count > 0/g, "!q.empty()");
+    }
+
+    if (lang === 'java' || lang === '3') {
+      return code
+        .replace(/Console\.WriteLine\((.*?)\);/g, "System.out.println($1);")
+        .replace(/Queue<.*?> /g, "Queue<Integer> ")
+        .replace(/Stack<.*?> /g, "Stack<Integer> ")
+        .replace(/q\.Enqueue/g, "q.add")
+        .replace(/q\.Dequeue\(\)/g, "q.poll()")
+        .replace(/stack\.Push/g, "stack.push")
+        .replace(/stack\.Pop\(\)/g, "stack.pop()")
+        .replace(/q\.Count > 0/g, "!q.isEmpty()");
+    }
+    
+    return code;
+  };
+
+  const fallbackBaseCode = topic?.codeImplementations.find(i => i.language === '1' || i.language.toLowerCase() === 'csharp')?.code || '';
+  const editorCode = currentImpl?.code || generateCodeForLang(fallbackBaseCode, selectedLang);
 
   // Sync implementation steps to state if not in interactive mode
   useEffect(() => {
@@ -2250,12 +2355,15 @@ const TopicDetail = () => {
     setIsPlaying(prev => !prev);
   };
 
-  // stopPlayback is already defined above in the generator section
-
   const markAsCompleted = async () => {
     try {
       await api.post(`/topics/${slug}/complete`);
-      alert('Topic marked as completed!');
+      setIsCompleted(true);
+      localStorage.setItem(`topic-completed-${slug}`, 'true');
+      
+      if (fromPath) {
+        navigate(`/paths/${fromPath}`);
+      }
     } catch (error) {
       console.error('Failed to mark topic as completed:', error);
     }
@@ -2268,14 +2376,28 @@ const TopicDetail = () => {
     <div className="container" style={{ marginTop: '2rem', paddingBottom: '5rem' }}>
       <div style={{ marginBottom: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <button onClick={() => navigate('/topics')} className="btn btn-secondary" style={{ marginBottom: '1.5rem' }}>
-            <ChevronLeft size={18} /> Back to Topics
+          <button onClick={() => {
+            if (fromPath) navigate(`/paths/${fromPath}`);
+            else navigate('/topics');
+          }} className="btn btn-secondary" style={{ marginBottom: '1.5rem' }}>
+            <ChevronLeft size={18} /> {fromPath ? 'Back to Path' : 'Back to Topics'}
           </button>
           <h1 className="heading-lg" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{topic.title}</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>{topic.categoryName} • {topic.difficulty}</p>
         </div>
-        <button onClick={markAsCompleted} className="btn btn-primary" style={{ display: 'flex', gap: '0.5rem' }}>
-          <CheckCircle size={18} /> Mark as Completed
+        <button 
+          onClick={markAsCompleted} 
+          className={`btn ${isCompleted ? 'btn-secondary' : 'btn-primary'}`} 
+          style={{ 
+            display: 'flex', 
+            gap: '0.5rem', 
+            background: isCompleted ? '#10b981' : undefined, 
+            color: isCompleted ? 'white' : undefined, 
+            borderColor: isCompleted ? '#10b981' : undefined,
+            opacity: isCompleted ? 0.9 : 1
+          }}
+        >
+          {isCompleted ? <><CheckCircle size={18} /> {fromPath ? 'Continue Path' : 'Completed'}</> : <><CheckCircle size={18} /> Mark as Completed</>}
         </button>
       </div>
 
@@ -2385,11 +2507,11 @@ const TopicDetail = () => {
                     fontSize: '0.875rem'
                   }}
                 >
-                  <option value="csharp">C#</option>
-                  <option value="cpp">C++</option>
-                  <option value="java">Java</option>
-                  <option value="javascript">JavaScript</option>
-                  <option value="python">Python</option>
+                  <option value="csharp" style={{ color: 'var(--surface-color)', background: '#fff' }}>C#</option>
+                  <option value="cpp" style={{ color: 'var(--surface-color)', background: '#fff' }}>C++</option>
+                  <option value="java" style={{ color: 'var(--surface-color)', background: '#fff' }}>Java</option>
+                  <option value="javascript" style={{ color: 'var(--surface-color)', background: '#fff' }}>JavaScript</option>
+                  <option value="python" style={{ color: 'var(--surface-color)', background: '#fff' }}>Python</option>
                 </select>
               </div>
 
@@ -2398,7 +2520,7 @@ const TopicDetail = () => {
                   height="100%"
                   language={selectedLang === 'javascript' ? 'javascript' : selectedLang === 'csharp' ? 'csharp' : selectedLang === 'cpp' ? 'cpp' : selectedLang}
                   theme="vs-dark"
-                  value={currentImpl?.code || ''}
+                  value={editorCode}
                   onMount={handleEditorDidMount}
                   options={{
                     readOnly: true,

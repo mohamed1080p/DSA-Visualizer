@@ -1,4 +1,4 @@
-﻿namespace ServicesAbstraction
+namespace ServicesAbstraction
 {
     public interface IServiceManager
     {
@@ -8,6 +8,7 @@
         ISubmissionService SubmissionService { get; }
         ICodeExecutionService CodeExecutionService { get; }
         IUserProgressService UserProgressService { get; }
-
+        IChatbotService ChatbotService { get; }
+        ILearningPathService LearningPathService { get; }
     }
 }

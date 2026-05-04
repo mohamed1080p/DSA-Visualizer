@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
 using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace DSA_Visualizer.Extensions;
 
@@ -28,7 +29,17 @@ public static class ServiceExtensions
     public static void AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        {
+            var isDevelopment = configuration["ASPNETCORE_ENVIRONMENT"] == "Development" || Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" || true; // Force SQLite for now
+            if (isDevelopment)
+            {
+                options.UseSqlite("Data Source=DSA-Visualizer.db");
+            }
+            else
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            }
+        });
     }
 
     public static void AddIdentityServices(this IServiceCollection services)
@@ -104,6 +115,7 @@ public static class ServiceExtensions
 
     public static void AddApplicationServices(this IServiceCollection services)
     {
+        services.AddHttpClient();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
         services.AddScoped<IServiceManager, ServiceManager>();
@@ -202,11 +214,22 @@ public static class ServiceExtensions
 
     public static void AddHangfireServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHangfire(config => config
-            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            .UseSimpleAssemblyNameTypeSerializer()
-            .UseRecommendedSerializerSettings()
-            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+        services.AddHangfire(config =>
+        {
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                  .UseSimpleAssemblyNameTypeSerializer()
+                  .UseRecommendedSerializerSettings();
+
+            var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            if (isDevelopment)
+            {
+                config.UseMemoryStorage();
+            }
+            else
+            {
+                config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+            }
+        });
 
         services.AddHangfireServer(options =>
         {
@@ -220,7 +243,7 @@ public static class ServiceExtensions
         {
             options.AddPolicy("AllowFrontend", builder =>
             {
-                builder.WithOrigins("http://localhost:5173", "http://localhost:3000")
+                builder.WithOrigins("http://localhost:5173", "http://localhost:5174", "http://localhost:3000")
                        .AllowAnyHeader()
                        .AllowAnyMethod()
                        .AllowCredentials();

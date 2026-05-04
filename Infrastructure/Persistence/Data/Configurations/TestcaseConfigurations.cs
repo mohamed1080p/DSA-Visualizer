@@ -13,11 +13,11 @@ namespace Persistence.Data.Configurations
 
             builder.Property(t => t.Input)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.Property(t => t.ExpectedOutput)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.Property(t => t.IsHidden)
                 .IsRequired()

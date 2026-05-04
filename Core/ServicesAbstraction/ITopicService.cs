@@ -8,6 +8,6 @@ namespace ServicesAbstraction
         Task<IEnumerable<TopicDTO>> GetAllAsync();
         Task<IEnumerable<TopicDTO>> GetAllAsync(TopicQueryParametersDTO parameters);
         Task<TopicDetailDTO> GetBySlugAsync(string slug);
-        Task MarkTopicAsCompletedAsync(string slug, string userId);
+        Task<int> MarkTopicAsCompletedAsync(string slug, string userId);
     }
 }

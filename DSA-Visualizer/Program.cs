@@ -28,8 +28,12 @@ namespace DSA_Visualizer
 
             using (var scope = app.Services.CreateScope())
             {
-                var seeder = scope.ServiceProvider.GetRequiredService<DataSeeding>();
-                await seeder.SeedAsync();
+                try {
+                    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeding>();
+                    await seeder.SeedAsync();
+                } catch(Exception e) {
+                    Console.WriteLine("SEED ERROR: " + e.ToString());
+                }
             }
 
             if (app.Environment.IsDevelopment())

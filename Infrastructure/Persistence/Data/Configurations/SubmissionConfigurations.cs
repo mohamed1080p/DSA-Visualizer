@@ -13,7 +13,7 @@ namespace Persistence.Data.Configurations
 
             builder.Property(s => s.Code)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.Property(s => s.Language)
                 .IsRequired()
@@ -29,7 +29,7 @@ namespace Persistence.Data.Configurations
 
             builder.Property(s => s.FailureReason)
                 .IsRequired(false)
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.Property(s => s.RuntimeMs)
                 .IsRequired(false);

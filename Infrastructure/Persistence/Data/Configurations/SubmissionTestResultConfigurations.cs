@@ -17,7 +17,7 @@ namespace Persistence.Data.Configurations
 
             builder.Property(r => r.ActualOutput)
                 .IsRequired(false)
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.HasOne(r => r.TestCase)
                 .WithMany()

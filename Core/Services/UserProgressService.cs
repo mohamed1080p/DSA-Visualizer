@@ -64,6 +64,37 @@ namespace Services
                 .Where(t => t.Category?.Name?.Equals("Algorithms", StringComparison.OrdinalIgnoreCase) == true)
                 .Count();
 
+            // Populate total counts for percentage calculations
+            var allProblems = await _unitOfWork.GetRepository<Problem, int>()
+                .GetAllAsync();
+            var allProblemsList = allProblems.ToList();
+            progress.TotalProblemsCount = allProblemsList.Count;
+            progress.TotalEasyProblems = allProblemsList.Count(p => p.Difficulty == DifficultyLevel.Easy);
+            progress.TotalMediumProblems = allProblemsList.Count(p => p.Difficulty == DifficultyLevel.Medium);
+            progress.TotalHardProblems = allProblemsList.Count(p => p.Difficulty == DifficultyLevel.Hard);
+
+            var allTopics = await _unitOfWork.GetRepository<Topic, int>()
+                .GetAllAsync(predicate: null, orderBy: null, includes: t => t.Category);
+            var allTopicsList = allTopics.ToList();
+            progress.TotalTopicsCount = allTopicsList.Count;
+            progress.TotalDataStructuresTopics = allTopicsList
+                .Count(t => t.Category?.Name?.Equals("Data Structures", StringComparison.OrdinalIgnoreCase) == true);
+            progress.TotalAlgorithmsTopics = allTopicsList
+                .Count(t => t.Category?.Name?.Equals("Algorithms", StringComparison.OrdinalIgnoreCase) == true);
+
+            // Recent solves (last 5)
+            progress.RecentSolves = solvedProblems
+                .OrderByDescending(s => s.SubmittedAt)
+                .Take(5)
+                .Select(s => new RecentSolveDTO
+                {
+                    ProblemTitle = s.Problem?.Title ?? "Unknown",
+                    ProblemSlug = s.Problem?.Slug ?? "",
+                    Difficulty = s.Problem?.Difficulty.ToString() ?? "Easy",
+                    SolvedAt = s.SubmittedAt
+                })
+                .ToList();
+
             CalculateStreak(acceptedSubmissions, progress);
 
             return progress;

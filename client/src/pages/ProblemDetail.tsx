@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Send, Clock, Database, ChevronLeft, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
@@ -35,6 +35,10 @@ interface SubmissionResult {
 const ProblemDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const fromPath = searchParams.get('fromPath');
+
   const [problem, setProblem] = useState<ProblemDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [language, setLanguage] = useState('cs');
@@ -61,6 +65,10 @@ const ProblemDetail = () => {
       if (pollingRef.current) window.clearInterval(pollingRef.current);
     };
   }, [slug]);
+
+  useEffect(() => {
+    document.title = problem ? `${problem.title} — DSA Visualizer` : 'Loading... — DSA Visualizer';
+  }, [problem]);
 
   const handleSubmit = async () => {
     if (!problem) return;
@@ -92,6 +100,12 @@ const ProblemDetail = () => {
           setSubmissionResult(data);
           setIsSubmitting(false);
           if (pollingRef.current) window.clearInterval(pollingRef.current);
+          
+          if (data.verdict === 'Accepted' && fromPath) {
+            setTimeout(() => {
+              navigate(`/paths/${fromPath}`);
+            }, 2500);
+          }
         }
       } catch (error) {
         console.error('Polling failed:', error);
@@ -107,8 +121,11 @@ const ProblemDetail = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 100px)', padding: '0 1rem' }}>
       <div style={{ padding: '1rem 0', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button onClick={() => navigate('/problems')} className="btn btn-secondary" style={{ padding: '0.5rem' }}>
-          <ChevronLeft size={20} />
+        <button onClick={() => {
+          if (fromPath) navigate(`/paths/${fromPath}`);
+          else navigate('/problems');
+        }} className="btn btn-secondary" style={{ padding: '0.5rem 1rem', display: 'flex', gap: '0.5rem' }}>
+          <ChevronLeft size={20} /> {fromPath ? 'Back to Path' : ''}
         </button>
         <h1 className="heading-lg" style={{ fontSize: '1.5rem' }}>{problem.title}</h1>
         <span style={{ 

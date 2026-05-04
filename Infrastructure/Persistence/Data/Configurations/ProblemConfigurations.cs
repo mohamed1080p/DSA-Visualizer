@@ -17,7 +17,7 @@ namespace Persistence.Data.Configurations
 
             builder.Property(p => p.Description)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.Property(p => p.Difficulty)
                 .IsRequired()

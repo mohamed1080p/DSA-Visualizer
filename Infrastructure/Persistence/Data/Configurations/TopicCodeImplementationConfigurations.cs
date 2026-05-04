@@ -16,11 +16,11 @@ namespace Persistence.Data.Configurations
 
             builder.Property(c => c.Code)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)");
+                ;
 
             builder.Property(c => c.StepsJson)
                 .IsRequired()
-                .HasColumnType("nvarchar(max)")
+                
                 .HasDefaultValue("[]");
 
             // One topic cannot have duplicate language implementations

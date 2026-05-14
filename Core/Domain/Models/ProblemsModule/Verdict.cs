@@ -1,4 +1,4 @@
-﻿
+
 namespace Domain.Models.ProblemsModule
 {
     public enum Verdict
@@ -11,3 +11,4 @@ namespace Domain.Models.ProblemsModule
         compilationError = 6
     }
 }
+

@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Persistence.Data.Migrations
+namespace Infrastructure.Persistence.Data.Migrations
 {
     /// <inheritdoc />
     public partial class FixingDataTypes2 : Migration

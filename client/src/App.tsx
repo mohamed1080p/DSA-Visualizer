@@ -1,41 +1,67 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ToastProvider } from './components/Toast';
-import Layout from './components/Layout';
-import Home from './pages/Home';
-import Auth from './pages/Auth';
-import Problems from './pages/Problems';
-import ProblemDetail from './pages/ProblemDetail';
-import Progress from './pages/Progress';
-import Chatbot from './pages/Chatbot';
-import Topics from './pages/Topics';
-import TopicDetail from './pages/TopicDetail';
-import LearningPaths from './pages/LearningPaths';
-import LearningPathDetail from './pages/LearningPathDetail';
-import NotFound from './pages/NotFound';
-import './index.css';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from '@/context/AuthProvider';
+import { SignalRProvider } from '@/context/SignalRContext';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import HomePage from '@/pages/HomePage';
+import TopicsPage from '@/pages/TopicsPage';
+import TopicDetailPage from '@/pages/TopicDetailPage';
+import ProblemsPage from '@/pages/ProblemsPage';
+import ProblemDetailPage from '@/pages/ProblemDetailPage';
+import VisualizerPage from '@/pages/VisualizerPage';
+import PathPage from '@/pages/PathPage';
+import PlaygroundPage from '@/pages/PlaygroundPage';
+import ProgressPage from '@/pages/DashboardPage';
+import LoginPage from '@/pages/LoginPage';
+import RegisterPage from '@/pages/RegisterPage';
+import CommunityPage from '@/pages/CommunityPage';
+import BattleArenaPage from '@/pages/BattleArenaPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
-function App() {
+export default function App() {
   return (
-    <ToastProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="auth" element={<Auth />} />
-            <Route path="problems" element={<Problems />} />
-            <Route path="problems/:slug" element={<ProblemDetail />} />
-            <Route path="progress" element={<Progress />} />
-            <Route path="chatbot" element={<Chatbot />} />
-            <Route path="topics" element={<Topics />} />
-            <Route path="topics/:slug" element={<TopicDetail />} />
-            <Route path="paths" element={<LearningPaths />} />
-            <Route path="paths/:slug" element={<LearningPathDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </ToastProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <SignalRProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/topics/:slug" element={<TopicDetailPage />} />
+            <Route path="/topics" element={<TopicsPage />} />
+            <Route path="/problems/:slug" element={<ProblemDetailPage />} />
+            <Route path="/problems" element={<ProblemsPage />} />
+            <Route path="/visualizer" element={<VisualizerPage />} />
+            <Route path="/path" element={<PathPage />} />
+            <Route path="/playground" element={<PlaygroundPage />} />
+            <Route
+              path="/progress"
+              element={
+                <ProtectedRoute>
+                  <ProgressPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/community"
+              element={
+                <ProtectedRoute>
+                  <CommunityPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/battle"
+              element={
+                <ProtectedRoute>
+                  <BattleArenaPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/dashboard" element={<Navigate to="/progress" replace />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </SignalRProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;

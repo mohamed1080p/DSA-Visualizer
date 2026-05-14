@@ -1,6 +1,7 @@
-﻿namespace Persistence.Data
+namespace Infrastructure.Persistence.Data
 {
     public class AssemblyReference
     {
     }
 }
+

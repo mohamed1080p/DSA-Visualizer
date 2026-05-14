@@ -1,6 +1,4 @@
-
 using Shared.DTOs.ProblemDTOs;
-
 namespace ServicesAbstraction
 {
     public interface IProblemService
@@ -9,3 +7,4 @@ namespace ServicesAbstraction
         Task<ProblemDetailDTO> GetBySlugAsync(string slug);
     }
 }
+

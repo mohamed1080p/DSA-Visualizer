@@ -1,0 +1,388 @@
+﻿# DSA-Visualizer: Full Repository File And Connection Guide
+
+This document provides a detailed architecture explanation and a per-file purpose catalog for all tracked files in the repository (excluding generated directories).
+
+## 1. Architecture Overview
+- Host layer: DSA-Visualizer configures runtime composition, middleware, authentication, observability, and endpoint mapping.
+- Presentation layer: Infrastructure/Presentation exposes REST APIs and SignalR hubs.
+- Application layer: Core/Services implements use-case orchestration behind Core/ServicesAbstraction interfaces.
+- Domain layer: Core/Domain defines entities, enums, repository contracts, and exceptions.
+- Persistence layer: Infrastructure/Persistence provides EF mappings, migrations, repositories, and seeding.
+- External infrastructure: Infrastructure/External provides Docker execution and Redis-backed caching/matchmaking with fallback modes.
+- Shared contracts: Shared/DTOs define transport payloads for API interactions.
+- Frontend: client app consumes REST/SignalR and renders learning/problem/community/battle experiences.
+
+## 2. Core Runtime Flows
+1. Frontend page calls API helper in client/src/lib/api-client.ts.
+2. Controller receives request and delegates to service abstraction.
+3. Service coordinates business rules, repositories, and external adapters.
+4. Persistence and/or external integrations execute work (DB, Redis, Docker, external AI).
+5. DTO response returns to client, while realtime scenarios use SignalR hub broadcasts.
+
+## 3. File By File Catalog
+- .env.example: Repository artifact supporting build/runtime/documentation workflows.
+- .gitattributes: Repository artifact supporting build/runtime/documentation workflows.
+- .github/workflows/ci.yml: CI/CD workflow configuration for repository automation.
+- .gitignore: Repository artifact supporting build/runtime/documentation workflows.
+- .vscode/launch.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- .vscode/settings.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- .vscode/tasks.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- API.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- Architecture.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- ARCHITECTURE_AUDIT.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- ARCHITECTURE_COMPLIANCE.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- ARCHITECTURE_IMPROVEMENTS.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- client/.env.example: Repository artifact supporting build/runtime/documentation workflows.
+- client/.gitignore: Repository artifact supporting build/runtime/documentation workflows.
+- client/eslint.config.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- client/index.html: Repository artifact supporting build/runtime/documentation workflows.
+- client/package.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- client/package-lock.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- client/public/favicon.svg: Repository artifact supporting build/runtime/documentation workflows.
+- client/public/icons.svg: Repository artifact supporting build/runtime/documentation workflows.
+- client/src/App.tsx: Top-level router that defines public and protected navigation paths across home, topics, problems, playground, dashboard, community, battle, and auth pages.
+- client/src/components/AppShell.tsx: Primary authenticated layout shell with navigation/header/footer plus battle challenge and chat notification surfaces.
+- client/src/components/PageTransition.tsx: Lightweight wrapper component applying route-level enter/exit animation transitions.
+- client/src/components/ProtectedRoute.tsx: Auth guard that redirects unauthenticated users to login while preserving intended destination route.
+- client/src/components/VictoryOverlay.tsx: Battle result modal with confetti canvas effects and contextual win/loss/draw messaging.
+- client/src/context/auth-context.ts: Auth context type/container declaration used by provider and hook to share current user/session actions.
+- client/src/context/AuthProvider.tsx: Authentication state provider handling login/register/logout/refresh flow, storage sync, and session-expired events.
+- client/src/context/SignalRContext.tsx: Realtime provider that connects to community/battle hubs, tracks chat/challenges/battle state, and exposes hub invoke helpers.
+- client/src/context/use-auth.ts: Typed convenience hook that reads AuthContext and throws if accessed outside provider scope.
+- client/src/lib/api-client.ts: Central fetch client with API URL resolution, bearer-token injection, automatic refresh-token retry, and normalized error handling.
+- client/src/lib/auth-storage.ts: LocalStorage helper for persisting auth payloads and broadcasting custom auth-change events across the app.
+- client/src/lib/sorting-engine.ts: Algorithm visualizer engine generating step-by-step snapshots for bubble/selection/insertion/merge sort animations.
+- client/src/lib/utils.ts: Tailwind class-merging helper (cn) used for conditional className composition.
+- client/src/main.tsx: Frontend entrypoint that mounts React App into the root DOM node under StrictMode and loads global styles.
+- client/src/motion-variants.ts: Shared Framer Motion variant presets (stagger/fade/scale) reused by pages and components for consistent animations.
+- client/src/pages/BattleArenaPage.tsx: Realtime battle arena UI that renders problems/opponent state, submits code, listens to hub updates, and shows victory overlay on completion.
+- client/src/pages/CommunityPage.tsx: Community dashboard for friend search/requests, private messaging, and direct battle challenge initiation.
+- client/src/pages/DashboardPage.tsx: User progress dashboard showing contribution heatmap, solve history trends, and navigation to learning/problem workflows.
+- client/src/pages/HomePage.tsx: Marketing/landing page presenting product value, feature highlights, topic cards, and entry CTAs.
+- client/src/pages/LoginPage.tsx: Sign-in screen handling credential login flow, redirect-after-login behavior, and social auth button presentation.
+- client/src/pages/NotFoundPage.tsx: Fallback 404 route component for unknown client-side paths.
+- client/src/pages/PathPage.tsx: Learning-path roadmap view for selecting paths, starting progress, completing levels, and tracking unlock/completion status.
+- client/src/pages/PlaygroundPage.tsx: Practice hub combining queue/matchmaking controls, leaderboard panels, and recent battle history tabs.
+- client/src/pages/ProblemDetailPage.tsx: Problem solving page with language templates, code editor, submission polling lifecycle, verdict display, and testcase/metrics feedback.
+- client/src/pages/ProblemsPage.tsx: Problem listing page with search/topic filtering and quick navigation into detailed challenge views.
+- client/src/pages/RegisterPage.tsx: User registration form for account creation and immediate authenticated onboarding.
+- client/src/pages/TopicDetailPage.tsx: Topic detail view rendering explanation, complexity, implementations, and completion action tied to user progress.
+- client/src/pages/TopicsPage.tsx: Topic catalog page with category breakdown, search filtering, and links to detailed topic content.
+- client/src/pages/VisualizerPage.tsx: Interactive data-structure/algorithm visual playground with animated array/linked-list and other operation demonstrations.
+- client/src/styles.css: Global Tailwind and design-token stylesheet defining theme variables, utility layers, and base visual system for the frontend.
+- client/src/vite-env.d.ts: TypeScript ambient declarations for Vite environment variables and ImportMeta typing.
+- client/tsconfig.app.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- client/tsconfig.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- client/tsconfig.node.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- client/vite.config.ts: Repository artifact supporting build/runtime/documentation workflows.
+- client/vite-dev.err.log: Text/log artifact captured from previous development runs.
+- client/vite-dev.log: Text/log artifact captured from previous development runs.
+- CONTRIBUTING.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- Core/Domain/Contracts/IGenericRepository.cs: Repository/unit-of-work abstraction for Generic Repository to decouple domain from persistence implementation.
+- Core/Domain/Contracts/ILeaderboardReadRepository.cs: Repository/unit-of-work abstraction for Leaderboard Read Repository to decouple domain from persistence implementation.
+- Core/Domain/Contracts/IProblemRepository.cs: Repository/unit-of-work abstraction for Problem Repository to decouple domain from persistence implementation.
+- Core/Domain/Contracts/IRefreshTokenRepository.cs: Repository/unit-of-work abstraction for Refresh Token Repository to decouple domain from persistence implementation.
+- Core/Domain/Contracts/ISubmissionRepository.cs: Repository/unit-of-work abstraction for Submission Repository to decouple domain from persistence implementation.
+- Core/Domain/Contracts/IUnitOfWork.cs: Repository/unit-of-work abstraction for Unit Of Work to decouple domain from persistence implementation.
+- Core/Domain/Domain.csproj: C# project file defining framework, dependencies, and project references.
+- Core/Domain/Exceptions/GlobalExceptionHandler.cs: Custom exception or global error handler for Global Exception Handler error semantics.
+- Core/Domain/Exceptions/InvalidCredentialsException.cs: Custom exception or global error handler for Invalid Credentials error semantics.
+- Core/Domain/Exceptions/NotFoundException.cs: Custom exception or global error handler for Not Found error semantics.
+- Core/Domain/Models/BattleModule/BattleMode.cs: Domain model or enum defining Battle Mode business data/state and relationships.
+- Core/Domain/Models/BattleModule/BattleParticipant.cs: Domain model or enum defining Battle Participant business data/state and relationships.
+- Core/Domain/Models/BattleModule/BattleProblem.cs: Domain model or enum defining Battle Problem business data/state and relationships.
+- Core/Domain/Models/BattleModule/BattleSession.cs: Domain model or enum defining Battle Session business data/state and relationships.
+- Core/Domain/Models/BattleModule/BattleStatus.cs: Domain model or enum defining Battle Status business data/state and relationships.
+- Core/Domain/Models/BattleModule/BattleSubmission.cs: Domain model or enum defining Battle Submission business data/state and relationships.
+- Core/Domain/Models/BattleModule/Friendship.cs: Domain model or enum defining Friendship business data/state and relationships.
+- Core/Domain/Models/BattleModule/FriendshipStatus.cs: Domain model or enum defining Friendship Status business data/state and relationships.
+- Core/Domain/Models/BattleModule/MatchmakingEntry.cs: Domain model or enum defining Matchmaking Entry business data/state and relationships.
+- Core/Domain/Models/BattleModule/MatchmakingStatus.cs: Domain model or enum defining Matchmaking Status business data/state and relationships.
+- Core/Domain/Models/BattleModule/PlayerStats.cs: Domain model or enum defining Player Stats business data/state and relationships.
+- Core/Domain/Models/IdentityModule/ApplicationUser.cs: Domain model or enum defining Application User business data/state and relationships.
+- Core/Domain/Models/IdentityModule/RefreshToken.cs: Domain model or enum defining Refresh Token business data/state and relationships.
+- Core/Domain/Models/LearningPathModule/LearningPath.cs: Domain model or enum defining Learning Path business data/state and relationships.
+- Core/Domain/Models/LearningPathModule/LearningPathLevel.cs: Domain model or enum defining Learning Path Level business data/state and relationships.
+- Core/Domain/Models/LearningPathModule/UserLearningPathProgress.cs: Domain model or enum defining User Learning Path Progress business data/state and relationships.
+- Core/Domain/Models/ProblemsModule/Problem.cs: Domain model or enum defining Problem business data/state and relationships.
+- Core/Domain/Models/ProblemsModule/Submission.cs: Domain model or enum defining Submission business data/state and relationships.
+- Core/Domain/Models/ProblemsModule/SubmissionStatus.cs: Domain model or enum defining Submission Status business data/state and relationships.
+- Core/Domain/Models/ProblemsModule/SubmissionTestResult.cs: Domain model or enum defining Submission Test Result business data/state and relationships.
+- Core/Domain/Models/ProblemsModule/TestCase.cs: Domain model or enum defining Test Case business data/state and relationships.
+- Core/Domain/Models/ProblemsModule/Verdict.cs: Domain model or enum defining Verdict business data/state and relationships.
+- Core/Domain/Models/TopicModule/Category.cs: Domain model or enum defining Category business data/state and relationships.
+- Core/Domain/Models/TopicModule/DifficultyLevel.cs: Domain model or enum defining Difficulty Level business data/state and relationships.
+- Core/Domain/Models/TopicModule/ProgrammingLanguage.cs: Domain model or enum defining Programming Language business data/state and relationships.
+- Core/Domain/Models/TopicModule/Topic.cs: Domain model or enum defining Topic business data/state and relationships.
+- Core/Domain/Models/TopicModule/TopicCodeImplementation.cs: Domain model or enum defining Topic Code Implementation business data/state and relationships.
+- Core/Domain/Models/TopicModule/TopicComplexity.cs: Domain model or enum defining Topic Complexity business data/state and relationships.
+- Core/Domain/Models/TopicModule/UserTopicProgress.cs: Domain model or enum defining User Topic Progress business data/state and relationships.
+- Core/Services/AI/ChatbotService.cs: Calls Ollama chat API through a named HttpClient, builds prompt history/messages, and returns normalized chatbot response DTOs.
+- Core/Services/Auth/AuthService.cs: Implements register/login/logout/refresh/external-login flows using ASP.NET Identity, refresh-token persistence, and token generation.
+- Core/Services/Auth/JwtTokenGenerator.cs: Builds signed JWT access tokens and cryptographically strong refresh tokens from configured issuer/audience/secret settings.
+- Core/Services/Battle/AntiCheatService.cs: Performs lightweight anti-cheat timing checks to flag suspiciously fast battle submissions.
+- Core/Services/Battle/BattleExecutionService.cs: Adapts generic code execution service into battle-specific execution responses for judged multiplayer submissions.
+- Core/Services/Battle/BattleSessionService.cs: Owns battle lifecycle state transitions: create/start/finish/abandon sessions, fetch details/history, and maintain player stats.
+- Core/Services/Battle/BattleSubmissionService.cs: Validates battle submissions, runs code, computes verdict/solved counts, and updates battle progression records.
+- Core/Services/Battle/EloRatingService.cs: Calculates rank point adjustments using Elo formulas and K-factor style winner/loser expectations.
+- Core/Services/CodeExecution/CodeExecutionHelpers.cs: Internal helper methods for runtime/memory limits, payload shaping, and normalization around code execution requests.
+- Core/Services/CodeExecution/CodeExecutionService.cs: Coordinates secure code execution (single and batch) by delegating to Docker runners and mapping raw outputs to result DTOs.
+- Core/Services/Community/FriendshipService.cs: Handles friend-request lifecycle, friend listing, pending requests, removal, and user search with relationship filtering.
+- Core/Services/Community/LeaderboardService.cs: Builds global/weekly/monthly/friends leaderboards with caching support and rank-point update/reset operations.
+- Core/Services/Infrastructure/ServiceManager.cs: Facade exposing grouped service interfaces through one dependency for consumers that need multi-service access.
+- Core/Services/Infrastructure/ServiceRegistrationExtensions.cs: Registers service implementations, SignalR battle dependencies, telemetry, and resilient HTTP client policies into DI.
+- Core/Services/Learning/LearningPathService.cs: Provides path listing/detail/start/complete-level logic and advances progression based on solved topics/problems.
+- Core/Services/Learning/TopicService.cs: Returns topic lists/details and marks topics complete while updating learning progression hooks.
+- Core/Services/Learning/UserProgressService.cs: Aggregates user progress metrics and recent solve data for dashboard/reporting endpoints.
+- Core/Services/Observability/TelemetryService.cs: Central tracing/metrics helper that records service operations and wraps Redis/database timing instrumentation.
+- Core/Services/Problems/ProblemService.cs: Implements problem query/filter by search/category and returns problem detail with visible sample test cases only.
+- Core/Services/Problems/SubmissionHelpers.cs: Utility methods for submission scoring/resource conversions and common submission-calculation helpers.
+- Core/Services/Problems/SubmissionProcessor.cs: Background processor that executes queued submissions and persists final verdict/test-case outcomes.
+- Core/Services/Problems/SubmissionService.cs: Submission orchestration service handling enqueue, per-problem/all-history retrieval, and result lookup with ownership checks.
+- Core/Services/Services.csproj: Application-services project definition referencing Domain, Shared DTOs, service abstractions, and external packages (including Hangfire and Polly).
+- Core/ServicesAbstraction/IAntiCheatService.cs: Service interface contract for Anti Cheat Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IAuthService.cs: Service interface contract for Auth Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IBattleExecutionService.cs: Service interface contract for Battle Execution Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IBattleMatchmakingService.cs: Service interface contract for Battle Matchmaking Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IBattleSessionService.cs: Service interface contract for Battle Session Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IBattleSubmissionService.cs: Service interface contract for Battle Submission Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IChatbotService.cs: Service interface contract for Chatbot Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ICodeExecutionService.cs: Service interface contract for Code Execution Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IDockerService.cs: Service interface contract for Docker Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IEloRatingService.cs: Service interface contract for Elo Rating Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IFriendshipService.cs: Service interface contract for Friendship Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ILeaderboardCache.cs: Service interface contract for Leaderboard Cache consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ILeaderboardService.cs: Service interface contract for Leaderboard Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ILearningPathService.cs: Service interface contract for Learning Path Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IProblemService.cs: Service interface contract for Problem Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IServiceManager.cs: Service interface contract for Service Manager consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ISubmissionService.cs: Service interface contract for Submission Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ITelemetryService.cs: Service interface contract for Telemetry Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ITokenGenerator.cs: Service interface contract for Token Generator consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/ITopicService.cs: Service interface contract for Topic Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/IUserProgressService.cs: Service interface contract for User Progress Service consumed by controllers/hubs and implemented in services/infrastructure.
+- Core/ServicesAbstraction/OllamaChatResponse.cs: Repository artifact supporting build/runtime/documentation workflows.
+- Core/ServicesAbstraction/OllamaMessage.cs: Repository artifact supporting build/runtime/documentation workflows.
+- Core/ServicesAbstraction/RunnerBatchItem.cs: Repository artifact supporting build/runtime/documentation workflows.
+- Core/ServicesAbstraction/ServicesAbstraction.csproj: C# project file defining framework, dependencies, and project references.
+- DockerSandbox/cpp/Dockerfile: Language sandbox container definition used by code execution service.
+- DockerSandbox/cpp/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
+- DockerSandbox/csharp/Dockerfile: Language sandbox container definition used by code execution service.
+- DockerSandbox/csharp/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
+- DockerSandbox/java/Dockerfile: Language sandbox container definition used by code execution service.
+- DockerSandbox/java/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
+- DockerSandbox/python/Dockerfile: Language sandbox container definition used by code execution service.
+- DockerSandbox/python/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
+- DSA-Visualizer.slnx: Repository artifact supporting build/runtime/documentation workflows.
+- DSA-Visualizer/appsettings.Development.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- DSA-Visualizer/appsettings.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- DSA-Visualizer/appsettings.Production.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- DSA-Visualizer/dotnet_log.txt: Text/log artifact captured from previous development runs.
+- DSA-Visualizer/DSA-Visualizer.csproj: C# project file defining framework, dependencies, and project references.
+- DSA-Visualizer/DSA-Visualizer.db: Local development database runtime artifact.
+- DSA-Visualizer/DSA-Visualizer.db-shm: Local development database runtime artifact.
+- DSA-Visualizer/DSA-Visualizer.db-wal: Local development database runtime artifact.
+- DSA-Visualizer/DSA-Visualizer.http: Repository artifact supporting build/runtime/documentation workflows.
+- DSA-Visualizer/error_log.txt: Text/log artifact captured from previous development runs.
+- DSA-Visualizer/Extensions/AuthenticationExtensions.cs: Host startup extension configuring Authentication concerns.
+- DSA-Visualizer/Extensions/BasicAuthAuthorizationFilter.cs: Host startup extension configuring Basic Auth Authorization Filter concerns.
+- DSA-Visualizer/Extensions/ObservabilityExtensions.cs: Host startup extension configuring Observability concerns.
+- DSA-Visualizer/Extensions/PresentationExtensions.cs: Host startup extension configuring Presentation concerns.
+- DSA-Visualizer/GetDbInfo.csx: Repository artifact supporting build/runtime/documentation workflows.
+- DSA-Visualizer/HealthChecks/DatabaseHealthCheck.cs: Health check module validating Database readiness/liveness state.
+- DSA-Visualizer/HealthChecks/DockerExecutorHealthCheck.cs: Health check module validating Docker Executor readiness/liveness state.
+- DSA-Visualizer/HealthChecks/HealthCheckResponseWriter.cs: Health check module validating Health Check Response Writer readiness/liveness state.
+- DSA-Visualizer/HealthChecks/OllamaHealthCheck.cs: Health check module validating Ollama readiness/liveness state.
+- DSA-Visualizer/HealthChecks/RedisHealthCheck.cs: Health check module validating Redis readiness/liveness state.
+- DSA-Visualizer/log.txt: Text/log artifact captured from previous development runs.
+- DSA-Visualizer/Middleware/CorrelationIdMiddleware.cs: Custom middleware implementing cross-cutting request behavior for Correlation Id Middleware.
+- DSA-Visualizer/Observability/HangfireCorrelationFilter.cs: Observability/correlation filter for Hangfire Correlation Filter runtime events.
+- DSA-Visualizer/Observability/SignalRTracingFilter.cs: Observability/correlation filter for Signal R Tracing Filter runtime events.
+- DSA-Visualizer/Program.cs: Application startup composition root wiring DI, middleware pipeline, auth, CORS, rate limiting, Hangfire, SignalR, health checks, and endpoint mapping.
+- DSA-Visualizer/Properties/launchSettings.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- E2EPractical.cs: Standalone E2E runtime validator script exercising key auth and API flows against a running backend.
+- E2ETest.cs: Standalone E2E runtime validator script exercising key auth and API flows against a running backend.
+- E2ETestClient.cs: Standalone E2E runtime validator script exercising key auth and API flows against a running backend.
+- E2ETestComplete.cs: Standalone E2E runtime validator script exercising key auth and API flows against a running backend.
+- extract.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- file_summary_report.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- fix_topicdetail.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- fix_topicdetail2.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- infra_files.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- Infrastructure/External/Common/InMemoryMatchmakingService.cs: In-memory fallback infrastructure implementation used when Redis is unavailable.
+- Infrastructure/External/Docker/DockerClientFactory.cs: Docker integration component for secure execution sandbox provisioning and command execution.
+- Infrastructure/External/Docker/DockerService.cs: Docker integration component for secure execution sandbox provisioning and command execution.
+- Infrastructure/External/ExternalServiceRegistration.cs: Registers Docker execution infrastructure and Redis-backed services with in-memory fallback when Redis is unavailable.
+- Infrastructure/External/Infrastructure.External.csproj: C# project file defining framework, dependencies, and project references.
+- Infrastructure/External/Redis/BattleMatchmakingService.cs: Redis infrastructure component for matchmaking, caching, and connection/access coordination.
+- Infrastructure/External/Redis/RedisConnectionAccessor.cs: Redis infrastructure component for matchmaking, caching, and connection/access coordination.
+- Infrastructure/External/Redis/RedisLeaderboardCache.cs: Redis infrastructure component for matchmaking, caching, and connection/access coordination.
+- Infrastructure/Persistence/Data/ApplicationDbContext.cs: Main EF Core DbContext defining all module DbSets and applying entity configurations for identity, learning, problems, and battle.
+- Infrastructure/Persistence/Data/ApplicationDbContextFactory.cs: Repository artifact supporting build/runtime/documentation workflows.
+- Infrastructure/Persistence/Data/AssemblyReference.cs: Repository artifact supporting build/runtime/documentation workflows.
+- Infrastructure/Persistence/Data/Configurations/Auth/RefreshTokenConfigurations.cs: EF Core fluent mapping configuration for Refresh Token table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Battle/BattleModuleConfigurations.cs: EF Core fluent mapping configuration for Battle Module table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Problems/ProblemConfigurations.cs: EF Core fluent mapping configuration for Problem table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Problems/SubmissionConfigurations.cs: EF Core fluent mapping configuration for Submission table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Problems/SubmissionTestResultConfigurations.cs: EF Core fluent mapping configuration for Submission Test Result table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Problems/TestcaseConfigurations.cs: EF Core fluent mapping configuration for Testcase table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Topics/CategoryConfigurations.cs: EF Core fluent mapping configuration for Category table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Topics/TopicCodeImplementationConfigurations.cs: EF Core fluent mapping configuration for Topic Code Implementation table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Topics/TopicComplexityConfigurations.cs: EF Core fluent mapping configuration for Topic Complexity table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Topics/TopicConfigurations.cs: EF Core fluent mapping configuration for Topic table schema and relationships.
+- Infrastructure/Persistence/Data/Configurations/Topics/UserTopicProgressConfigurations.cs: EF Core fluent mapping configuration for User Topic Progress table schema and relationships.
+- Infrastructure/Persistence/Data/Migrations/20260311191127_InitialCreate.cs: EF migration script introducing schema changes for 20260311191127  Initial Create.
+- Infrastructure/Persistence/Data/Migrations/20260311191127_InitialCreate.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260316214019_ExercisesModule.cs: EF migration script introducing schema changes for 20260316214019  Exercises Module.
+- Infrastructure/Persistence/Data/Migrations/20260316214019_ExercisesModule.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260414185259_FixingDataTypes.cs: EF migration script introducing schema changes for 20260414185259  Fixing Data Types.
+- Infrastructure/Persistence/Data/Migrations/20260414185259_FixingDataTypes.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260414201740_FixingDataTypes2.cs: EF migration script introducing schema changes for 20260414201740  Fixing Data Types2.
+- Infrastructure/Persistence/Data/Migrations/20260414201740_FixingDataTypes2.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260423192937_AddSubmissionStatus.cs: EF migration script introducing schema changes for 20260423192937  Add Submission Status.
+- Infrastructure/Persistence/Data/Migrations/20260423192937_AddSubmissionStatus.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260507110100_AddLearningPathsModule.cs: EF migration script introducing schema changes for 20260507110100  Add Learning Paths Module.
+- Infrastructure/Persistence/Data/Migrations/20260507110100_AddLearningPathsModule.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260508124915_AddBattleModule.cs: EF migration script introducing schema changes for 20260508124915  Add Battle Module.
+- Infrastructure/Persistence/Data/Migrations/20260508124915_AddBattleModule.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260510233755_AddPlayerStatsRankPointsIndex.cs: EF migration script introducing schema changes for 20260510233755  Add Player Stats Rank Points Index.
+- Infrastructure/Persistence/Data/Migrations/20260510233755_AddPlayerStatsRankPointsIndex.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/20260511043159_AddRowVersionColumns.cs: EF migration script introducing schema changes for 20260511043159  Add Row Version Columns.
+- Infrastructure/Persistence/Data/Migrations/20260511043159_AddRowVersionColumns.Designer.cs: Auto-generated EF migration metadata snapshot for this schema revision.
+- Infrastructure/Persistence/Data/Migrations/ApplicationDbContextModelSnapshot.cs: EF migration script introducing schema changes for Application Db Context Model Snapshot.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Array/count-even-numbers.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Array/reverse-array.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Array/second-largest-element.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Array/sum-of-all-elements.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BinaryTree/count-leaf-nodes.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BinaryTree/height-of-binary-tree.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BinaryTree/Inorder-traversal.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BinaryTree/level-order-traversal.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BST/lca-in-bst.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BST/search-in-bst.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/BST/validate-bst.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Graph/bfs-traversal-order.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Graph/count-connected-components.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Graph/detect-cycle-in-undirected-graph.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Graph/dfs-traversal-order.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Graph/level-of-each-node.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Graph/shortest-path-unweighted-graph.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/LinkedList/find-length-of-linked-list.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/LinkedList/find-middle-node.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/LinkedList/nth-node-from-end.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/LinkedList/remove-duplicates-from-sorted-linked-list.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/LinkedList/reverse-a-linked-list.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Queue/generate-binary-numbers.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Queue/reverse-a-queue.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Queue/simulate-queue-operations.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/count-selection-sort-swaps.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/count-shifts-in-insertion-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/count-swaps-in-bubble-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/insert-into-sorted-array.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/kth-smallest-element-using-quick-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/sort-array-ascending-bubble-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/sort-array-descending-bubble-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/sort-array-using-insertion-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/sort-array-using-selection-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Sorting/sort-using-quick-sort.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Stack/asteroid-collision.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Stack/simulate-stack-operations.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Problems/Stack/valid-parentheses.json: Seed problem definition JSON used to bootstrap coding challenges during database seeding.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/array.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/bfs.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/binary-search.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/binary-search-tree.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/binary-tree.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/bubble-sort.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/categories.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/dfs.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/insertion-sort.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/linked-list.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/queue.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/quick-sort.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/selection-sort.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeedFiles/Topics/Stack.json: Seed topic/category definition JSON used for initial learning content bootstrap.
+- Infrastructure/Persistence/Data/Seeds/DataSeeding.cs: Data seeding orchestrator that imports topic/problem JSON files and inserts missing records.
+- Infrastructure/Persistence/Observability/DatabaseCommandOperations.cs: Persistence telemetry component instrumenting database commands with trace/metric data.
+- Infrastructure/Persistence/Observability/DatabaseCommandTelemetryInterceptor.cs: Persistence telemetry component instrumenting database commands with trace/metric data.
+- Infrastructure/Persistence/Observability/PersistenceTelemetry.cs: Persistence telemetry component instrumenting database commands with trace/metric data.
+- Infrastructure/Persistence/Persistence.csproj: C# project file defining framework, dependencies, and project references.
+- Infrastructure/Persistence/PersistenceExtensions.cs: Configures SQL Server EF Core context, Identity, repository registrations, retries, and data seeding service wiring.
+- Infrastructure/Persistence/Repositories/Auth/RefreshTokenRepository.cs: Concrete repository implementation for Refresh Token queries and persistence commands.
+- Infrastructure/Persistence/Repositories/Common/GenericRepository.cs: Concrete repository implementation for Generic queries and persistence commands.
+- Infrastructure/Persistence/Repositories/Common/UnitOfWork.cs: Concrete repository implementation for Unit Of Work queries and persistence commands.
+- Infrastructure/Persistence/Repositories/Leaderboard/LeaderboardReadRepository.cs: Concrete repository implementation for Leaderboard Read queries and persistence commands.
+- Infrastructure/Persistence/Repositories/Problems/ProblemRepository.cs: Concrete repository implementation for Problem queries and persistence commands.
+- Infrastructure/Persistence/Repositories/Problems/SubmissionRepository.cs: Concrete repository implementation for Submission queries and persistence commands.
+- Infrastructure/Presentation/Controllers/AI/ChatbotController.cs: Exposes POST chatbot message endpoint that forwards user prompts to chatbot service and returns AI response DTO.
+- Infrastructure/Presentation/Controllers/Auth/AuthController.cs: Auth API surface for register/login/logout/refresh-token plus external-login callback flows.
+- Infrastructure/Presentation/Controllers/Battle/BattleController.cs: Battle REST endpoints for queue management, queue status, battle history/details, player stats, and bot-practice challenge creation.
+- Infrastructure/Presentation/Controllers/Community/FriendshipController.cs: Authenticated friendship endpoints for send/accept/decline requests, list friends/pending, remove friend, and user search.
+- Infrastructure/Presentation/Controllers/Community/LeaderboardController.cs: Leaderboard endpoints returning paginated global/weekly/monthly rankings and authenticated friends leaderboard.
+- Infrastructure/Presentation/Controllers/Learning/LearningPathsController.cs: Learning-path endpoints for listing paths, fetching path detail, starting a path, and completing a specific level.
+- Infrastructure/Presentation/Controllers/Learning/UserProgressController.cs: Authenticated endpoint returning consolidated user progress dashboard DTO.
+- Infrastructure/Presentation/Controllers/Problems/PlaygroundController.cs: Ad-hoc code execution endpoints for playground runs through the code execution service.
+- Infrastructure/Presentation/Controllers/Problems/ProblemsController.cs: Read endpoints for paginated/filterable problem catalog and single problem detail by slug.
+- Infrastructure/Presentation/Controllers/Problems/SubmissionsController.cs: Submission API for posting solutions, listing all/problem-specific history, and polling a specific submission result.
+- Infrastructure/Presentation/Controllers/Problems/TopicsController.cs: Topic APIs for listing/filtering, topic detail retrieval, completion marking, and development-only progression debug advance.
+- Infrastructure/Presentation/Hubs/Battle/BattleHub.cs: Realtime multiplayer hub handling queue/challenge/join/start/submit/surrender/typing events and broadcasting battle state/score/result updates.
+- Infrastructure/Presentation/Hubs/Community/CommunityHub.cs: Authenticated community messaging hub for private messages and simple presence broadcast notifications.
+- Infrastructure/Presentation/Presentation.csproj: Presentation-layer project definition exposing REST controllers and SignalR hubs while referencing service abstractions and shared DTOs.
+- LICENSE.txt: Text/log artifact captured from previous development runs.
+- loadtest.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- LoadTests/LoadTests.csproj: C# project file defining framework, dependencies, and project references.
+- LoadTests/Program.cs: NBomber load-test scenario runner for API throughput/latency validation.
+- package-lock.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- precise_extract.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- precise_extract_fix.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- PRODUCTION_RUNBOOKS.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- REPOSITORY_FILE_GUIDE.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- REPOSITORY_FILE_GUIDE_FULL.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- scratch/check_users.cs: Ad-hoc diagnostic utility used for local environment, endpoint, or data checks.
+- scratch/vite-5174.err.log: Text/log artifact captured from previous development runs.
+- scratch/vite-5174.out.log: Text/log artifact captured from previous development runs.
+- scripts/build-docker-sandboxes.ps1: PowerShell automation script for local build/infrastructure tasks.
+- scripts/generate-repo-guide.ps1: PowerShell automation script for local build/infrastructure tasks.
+- SERVICE_LAYER_FIXES_COMPLETE.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- Shared/DTOs/ChatbotDTOs/ChatMessageDTO.cs: DTO contract for Chat Message payloads exchanged between API and clients.
+- Shared/DTOs/ChatbotDTOs/ChatRequestDTO.cs: DTO contract for Chat Request payloads exchanged between API and clients.
+- Shared/DTOs/ChatbotDTOs/ChatResponseDTO.cs: DTO contract for Chat Response payloads exchanged between API and clients.
+- Shared/DTOs/IdentityDTOs/ExternalLoginDTO.cs: DTO contract for External Login payloads exchanged between API and clients.
+- Shared/DTOs/IdentityDTOs/LoginDTO.cs: DTO contract for Login payloads exchanged between API and clients.
+- Shared/DTOs/IdentityDTOs/RegisterDTO.cs: DTO contract for Register payloads exchanged between API and clients.
+- Shared/DTOs/IdentityDTOs/TokenRequestDTO.cs: DTO contract for Token Request payloads exchanged between API and clients.
+- Shared/DTOs/IdentityDTOs/UserDTO.cs: DTO contract for User payloads exchanged between API and clients.
+- Shared/DTOs/LearningPathDTOs/LearningPathDetailDTO.cs: DTO contract for Learning Path Detail payloads exchanged between API and clients.
+- Shared/DTOs/LearningPathDTOs/LearningPathDTO.cs: DTO contract for Learning Path payloads exchanged between API and clients.
+- Shared/DTOs/LearningPathDTOs/LearningPathLevelDTO.cs: DTO contract for Learning Path Level payloads exchanged between API and clients.
+- Shared/DTOs/ProblemDTOs/ProblemDetailDTO.cs: DTO contract for Problem Detail payloads exchanged between API and clients.
+- Shared/DTOs/ProblemDTOs/ProblemDTO.cs: DTO contract for Problem payloads exchanged between API and clients.
+- Shared/DTOs/ProblemDTOs/ProblemQueryParametersDTO.cs: DTO contract for Problem Query Parameters payloads exchanged between API and clients.
+- Shared/DTOs/ProblemDTOs/TestCaseDTO.cs: DTO contract for Test Case payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/BatchCodeExecutionRequest.cs: DTO contract for Batch Code Execution Request payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/CodeExecutionRequest.cs: DTO contract for Code Execution Request payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/CodeExecutionResult.cs: DTO contract for Code Execution Result payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/SubmissionHistoryDTO.cs: DTO contract for Submission History payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/SubmissionQueuedDTO.cs: DTO contract for Submission Queued payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/SubmissionResultDTO.cs: DTO contract for Submission Result payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/SubmissionTestCaseResultDTO.cs: DTO contract for Submission Test Case Result payloads exchanged between API and clients.
+- Shared/DTOs/SubmissionDTOs/SubmitProblemDTO.cs: DTO contract for Submit Problem payloads exchanged between API and clients.
+- Shared/DTOs/TopicsDTOs/TopicCodeImplementationDTO.cs: DTO contract for Topic Code Implementation payloads exchanged between API and clients.
+- Shared/DTOs/TopicsDTOs/TopicComplexityDTO.cs: DTO contract for Topic Complexity payloads exchanged between API and clients.
+- Shared/DTOs/TopicsDTOs/TopicDetailDTO.cs: DTO contract for Topic Detail payloads exchanged between API and clients.
+- Shared/DTOs/TopicsDTOs/TopicDTO.cs: DTO contract for Topic payloads exchanged between API and clients.
+- Shared/DTOs/TopicsDTOs/TopicQueryParametersDTO.cs: DTO contract for Topic Query Parameters payloads exchanged between API and clients.
+- Shared/DTOs/UserProgressDTOs/RecentSolveDTO.cs: DTO contract for Recent Solve payloads exchanged between API and clients.
+- Shared/DTOs/UserProgressDTOs/UserProgressDTO.cs: DTO contract for User Progress payloads exchanged between API and clients.
+- Shared/Shared.csproj: C# project file defining framework, dependencies, and project references.
+- Test.cs: Ad-hoc diagnostic utility used for local environment, endpoint, or data checks.
+- TestClient.cs: Ad-hoc diagnostic utility used for local environment, endpoint, or data checks.
+- TestEnv.cs: Ad-hoc diagnostic utility used for local environment, endpoint, or data checks.
+- Testing.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- tests/DSA.Visualizer.Tests/DSA.Visualizer.Tests.csproj: C# project file defining framework, dependencies, and project references.
+- tests/DSA.Visualizer.Tests/LeaderboardReadRepositoryTests.cs: Automated test suite validating Leaderboard Read Repository behavior and regressions.
+- tests/DSA.Visualizer.Tests/MatchmakingServiceTests.cs: Automated test suite validating Matchmaking Service behavior and regressions.
+- TestSql.csx: Repository artifact supporting build/runtime/documentation workflows.
+- VerifyDBTool/Program.cs: Database verification utility that tests SQL Server connectivity, DB existence, and table readiness.
+- VerifyDBTool/VerifyDB.csproj: C# project file defining framework, dependencies, and project references.
+- WEEK1_COMPLETION_REPORT.md: Project documentation/report covering architecture, operations, contribution, or progress details.

@@ -1,4 +1,4 @@
-﻿
+
 namespace Domain.Models.TopicModule
 {
     public enum ProgrammingLanguage
@@ -10,3 +10,4 @@ namespace Domain.Models.TopicModule
         Python = 5
     }
 }
+

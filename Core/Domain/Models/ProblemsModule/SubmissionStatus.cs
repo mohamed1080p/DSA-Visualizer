@@ -8,3 +8,4 @@ namespace Domain.Models.ProblemsModule
         Failed = 3
     }
 }
+

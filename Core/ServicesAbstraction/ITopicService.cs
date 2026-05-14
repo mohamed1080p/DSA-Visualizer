@@ -1,6 +1,4 @@
-
 using Shared.DTOs.TopicsDTOs;
-
 namespace ServicesAbstraction
 {
     public interface ITopicService
@@ -11,3 +9,4 @@ namespace ServicesAbstraction
         Task<int> MarkTopicAsCompletedAsync(string slug, string userId);
     }
 }
+

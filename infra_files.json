@@ -1,0 +1,606 @@
+﻿[
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Persistence.csproj",
+        "Lines":  22
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\PersistenceExtensions.cs",
+        "Lines":  73
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\bin\\Debug\\net10.0\\Domain.dll",
+        "Lines":  682
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\bin\\Debug\\net10.0\\Domain.pdb",
+        "Lines":  221
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\bin\\Debug\\net10.0\\Persistence.deps.json",
+        "Lines":  551
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\bin\\Debug\\net10.0\\Persistence.dll",
+        "Lines":  9252
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\bin\\Debug\\net10.0\\Persistence.pdb",
+        "Lines":  463
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\ApplicationDbContext.cs",
+        "Lines":  57
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\ApplicationDbContextFactory.cs",
+        "Lines":  17
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\AssemblyReference.cs",
+        "Lines":  6
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\BattleModuleConfigurations.cs",
+        "Lines":  57
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\CategoryConfigurations.cs",
+        "Lines":  20
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\ProblemConfigurations.cs",
+        "Lines":  40
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\RefreshTokenConfigurations.cs",
+        "Lines":  20
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\SubmissionConfigurations.cs",
+        "Lines":  48
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\SubmissionTestResultConfigurations.cs",
+        "Lines":  23
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\TestcaseConfigurations.cs",
+        "Lines":  22
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\TopicCodeImplementationConfigurations.cs",
+        "Lines":  26
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\TopicComplexityConfigurations.cs",
+        "Lines":  22
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\TopicConfigurations.cs",
+        "Lines":  35
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Configurations\\UserTopicProgressConfigurations.cs",
+        "Lines":  27
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeeding.cs",
+        "Lines":  246
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Array\\count-even-numbers.json",
+        "Lines":  85
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Array\\reverse-array.json",
+        "Lines":  60
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Array\\second-largest-element.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Array\\sum-of-all-elements.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BinaryTree\\count-leaf-nodes.json",
+        "Lines":  105
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BinaryTree\\height-of-binary-tree.json",
+        "Lines":  110
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BinaryTree\\Inorder-traversal.json",
+        "Lines":  105
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BinaryTree\\level-order-traversal.json",
+        "Lines":  105
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BST\\lca-in-bst.json",
+        "Lines":  85
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BST\\search-in-bst.json",
+        "Lines":  115
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\BST\\validate-bst.json",
+        "Lines":  115
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Graph\\bfs-traversal-order.json",
+        "Lines":  55
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Graph\\count-connected-components.json",
+        "Lines":  55
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Graph\\detect-cycle-in-undirected-graph.json",
+        "Lines":  70
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Graph\\dfs-traversal-order.json",
+        "Lines":  55
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Graph\\level-of-each-node.json",
+        "Lines":  65
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Graph\\shortest-path-unweighted-graph.json",
+        "Lines":  70
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\LinkedList\\find-length-of-linked-list.json",
+        "Lines":  70
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\LinkedList\\find-middle-node.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\LinkedList\\nth-node-from-end.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\LinkedList\\remove-duplicates-from-sorted-linked-list.json",
+        "Lines":  75
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\LinkedList\\reverse-a-linked-list.json",
+        "Lines":  75
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Queue\\generate-binary-numbers.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Queue\\reverse-a-queue.json",
+        "Lines":  75
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Queue\\simulate-queue-operations.json",
+        "Lines":  70
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\count-selection-sort-swaps.json",
+        "Lines":  95
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\count-shifts-in-insertion-sort.json",
+        "Lines":  95
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\count-swaps-in-bubble-sort.json",
+        "Lines":  100
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\insert-into-sorted-array.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\kth-smallest-element-using-quick-sort.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\sort-array-ascending-bubble-sort.json",
+        "Lines":  95
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\sort-array-descending-bubble-sort.json",
+        "Lines":  90
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\sort-array-using-insertion-sort.json",
+        "Lines":  90
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\sort-array-using-selection-sort.json",
+        "Lines":  90
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Sorting\\sort-using-quick-sort.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Stack\\asteroid-collision.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Stack\\simulate-stack-operations.json",
+        "Lines":  80
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Problems\\Stack\\valid-parentheses.json",
+        "Lines":  105
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\array.json",
+        "Lines":  19
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\bfs.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\binary-search-tree.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\binary-search.json",
+        "Lines":  47
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\binary-tree.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\bubble-sort.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\categories.json",
+        "Lines":  11
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\dfs.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\insertion-sort.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\linked-list.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\queue.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\quick-sort.json",
+        "Lines":  19
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\selection-sort.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Data\\Seeds\\DataSeedFiles\\Topics\\Stack.json",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Persistence.csproj.nuget.dgspec.json",
+        "Lines":  849
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Persistence.csproj.nuget.g.props",
+        "Lines":  19
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Persistence.csproj.nuget.g.targets",
+        "Lines":  8
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\project.assets.json",
+        "Lines":  2489
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\project.nuget.cache",
+        "Lines":  55
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+        "Lines":  4
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persiste.61C28332.Up2Date",
+        "Lines":  0
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.AssemblyInfo.cs",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.AssemblyInfoInputs.cache",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.assets.cache",
+        "Lines":  11
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.csproj.AssemblyReference.cache",
+        "Lines":  71
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.csproj.CoreCompileInputs.cache",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.csproj.FileListAbsolute.txt",
+        "Lines":  16
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.dll",
+        "Lines":  9252
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.GeneratedMSBuildEditorConfig.editorconfig",
+        "Lines":  17
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.GlobalUsings.g.cs",
+        "Lines":  8
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.pdb",
+        "Lines":  463
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\Persistence.sourcelink.json",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\ref\\Persistence.dll",
+        "Lines":  257
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Debug\\net10.0\\refint\\Persistence.dll",
+        "Lines":  257
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+        "Lines":  4
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\Persistence.AssemblyInfo.cs",
+        "Lines":  19
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\Persistence.AssemblyInfoInputs.cache",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\Persistence.assets.cache",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\Persistence.csproj.AssemblyReference.cache",
+        "Lines":  84
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\Persistence.GeneratedMSBuildEditorConfig.editorconfig",
+        "Lines":  17
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\obj\\Release\\net10.0\\Persistence.GlobalUsings.g.cs",
+        "Lines":  8
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Observability\\DatabaseCommandOperations.cs",
+        "Lines":  15
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Observability\\DatabaseCommandTelemetryInterceptor.cs",
+        "Lines":  166
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Observability\\PersistenceTelemetry.cs",
+        "Lines":  14
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Repositories\\GenericRepository.cs",
+        "Lines":  82
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Repositories\\LeaderboardReadRepository.cs",
+        "Lines":  81
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Repositories\\ProblemRepository.cs",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Repositories\\RefreshTokenRepository.cs",
+        "Lines":  26
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Repositories\\SubmissionRepository.cs",
+        "Lines":  34
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Persistence\\Repositories\\UnitOfWork.cs",
+        "Lines":  34
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Presentation.csproj",
+        "Lines":  13
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Domain.dll",
+        "Lines":  682
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Domain.pdb",
+        "Lines":  221
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Presentation.deps.json",
+        "Lines":  143
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Presentation.dll",
+        "Lines":  2247
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Presentation.pdb",
+        "Lines":  150
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\ServicesAbstraction.dll",
+        "Lines":  601
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\ServicesAbstraction.pdb",
+        "Lines":  78
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Shared.dll",
+        "Lines":  257
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\bin\\Debug\\net10.0\\Shared.pdb",
+        "Lines":  124
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\AuthController.cs",
+        "Lines":  95
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\BattleController.cs",
+        "Lines":  64
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\ChatbotController.cs",
+        "Lines":  31
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\FriendshipController.cs",
+        "Lines":  53
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\LeaderboardController.cs",
+        "Lines":  42
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\LearningPathsController.cs",
+        "Lines":  67
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\ProblemsController.cs",
+        "Lines":  28
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\SubmissionsController.cs",
+        "Lines":  51
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\TopicsController.cs",
+        "Lines":  52
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Controllers\\UserProgressController.cs",
+        "Lines":  32
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\Hubs\\BattleHub.cs",
+        "Lines":  174
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Presentation.csproj.nuget.dgspec.json",
+        "Lines":  1811
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Presentation.csproj.nuget.g.props",
+        "Lines":  19
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Presentation.csproj.nuget.g.targets",
+        "Lines":  2
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\project.assets.json",
+        "Lines":  708
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\project.nuget.cache",
+        "Lines":  14
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs",
+        "Lines":  4
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presenta.BC777DBE.Up2Date",
+        "Lines":  0
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.AssemblyInfo.cs",
+        "Lines":  18
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.AssemblyInfoInputs.cache",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.assets.cache",
+        "Lines":  9
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.csproj.AssemblyReference.cache",
+        "Lines":  42
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.csproj.CoreCompileInputs.cache",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.csproj.FileListAbsolute.txt",
+        "Lines":  20
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.dll",
+        "Lines":  2247
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.GeneratedMSBuildEditorConfig.editorconfig",
+        "Lines":  17
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.GlobalUsings.g.cs",
+        "Lines":  8
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.pdb",
+        "Lines":  150
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\Presentation.sourcelink.json",
+        "Lines":  1
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\ref\\Presentation.dll",
+        "Lines":  155
+    },
+    {
+        "File":  "D:\\Dev\\Projects\\dsa_final\\Infrastructure\\Presentation\\obj\\Debug\\net10.0\\refint\\Presentation.dll",
+        "Lines":  155
+    }
+]

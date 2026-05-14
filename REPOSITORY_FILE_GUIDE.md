@@ -1,0 +1,424 @@
+﻿# DSA-Visualizer: Full Repository File & Connection Guide
+
+This document is an exhaustive repository map generated from the current workspace state.
+It explains:
+- overall architecture and runtime request flow,
+- how projects depend on each other,
+- and what each tracked source/documentation/configuration file is for.
+
+Scope notes:
+- This catalog excludes generated/build directories: node_modules, bin, obj, .git, .vs, and wwwroot artifacts.
+- Some files (especially migrations, seed JSON, logs, and generated metadata) are explained as pattern-based roles.
+- For core runtime behavior and cross-layer connections, descriptions are based on direct code inspection of composition roots, service registration, controllers, hubs, services, and persistence setup.
+
+## 1. System Architecture (Detailed)
+
+### 1.1 Layered structure
+- Host/API: DSA-Visualizer project boots ASP.NET Core, registers all dependencies, middleware, auth, health checks, Hangfire, and SignalR hubs.
+- Presentation: Infrastructure/Presentation exposes REST controllers and SignalR hubs.
+- Application services: Core/Services implements use-cases and orchestrates domain + infra dependencies via interfaces in Core/ServicesAbstraction.
+- Domain: Core/Domain contains entities, enums, contracts, and domain exceptions.
+- Persistence: Infrastructure/Persistence provides EF Core DbContext, migrations, repository implementations, and startup seed data.
+- External infra: Infrastructure/External provides Docker execution integration and Redis-backed features with in-memory fallback.
+- Shared contracts: Shared/DTOs define request/response payload shapes across layers.
+- Frontend: client (Vite + React + TypeScript) consumes REST and SignalR endpoints.
+
+### 1.2 Runtime request flow (HTTP)
+1. Browser hits frontend routes in client/src/pages via router in client/src/App.tsx.
+2. Frontend calls backend through client/src/lib/api-client.ts.
+3. Request enters controller in Infrastructure/Presentation/Controllers/*.
+4. Controller calls service abstraction (Core/ServicesAbstraction interfaces).
+5. Concrete service in Core/Services executes business logic.
+6. Service accesses persistence through IUnitOfWork/repositories and/or external adapters (Docker/Redis/Ollama).
+7. DTOs from Shared/DTOs are returned to controller and then to frontend.
+
+### 1.3 Runtime request flow (Realtime battle/community)
+1. Frontend SignalR provider (client/src/context/SignalRContext.tsx) connects to /hubs/battle and /hubs/community.
+2. Hubs in Infrastructure/Presentation/Hubs process realtime commands/events.
+3. Battle hub delegates to matchmaking/session/submission services.
+4. Matchmaking resolves via Redis-backed or in-memory implementation registered in Infrastructure/External.
+5. Results are broadcast to groups (battle:* and user:* channels).
+
+### 1.4 Code execution pipeline
+1. Submission endpoint/hub call enters submission service.
+2. Core code execution service builds execution request/test case batches.
+3. Docker service selects language runner image from DockerSandbox/* contexts.
+4. Containerized run returns verdict/runtime/memory/test-case results.
+5. Submission results are persisted and surfaced to REST polling or SignalR events.
+
+### 1.5 Key connection points
+- DSA-Visualizer/Program.cs: central composition root.
+- Core/Services/Infrastructure/ServiceRegistrationExtensions.cs: binds service interfaces to implementations.
+- Infrastructure/Persistence/PersistenceExtensions.cs: DbContext + repositories.
+- Infrastructure/External/ExternalServiceRegistration.cs: Docker + Redis/fallback infra.
+- DSA-Visualizer/Extensions/*: auth, observability, rate-limiting, CORS, health endpoints.
+
+## 2. Project Dependency Graph
+- DSA-Visualizer references: Core/Services, Infrastructure/Persistence, Infrastructure/Presentation, Infrastructure/External.
+- Core/Services depends on: Core/Domain, Core/ServicesAbstraction, Shared.
+- Infrastructure/Persistence depends on: Core/Domain.
+- Infrastructure/Presentation depends on: Core/ServicesAbstraction, Shared.
+- Infrastructure/External depends on: Core/ServicesAbstraction and related contracts.
+- Frontend client is an independent artifact targeting backend HTTP/SignalR endpoints.
+
+## 3. Exhaustive File Catalog
+
+### All Files (Repository Inventory)
+- .env.example: Repository file
+- .gitattributes: Repository file
+- .github\workflows\ci.yml: CI workflow
+- .gitignore: Repository file
+- .vscode\launch.json: JSON config/data
+- .vscode\settings.json: JSON config/data
+- .vscode\tasks.json: JSON config/data
+- API.md: Documentation/report
+- Architecture.md: Documentation/report
+- ARCHITECTURE_AUDIT.md: Documentation/report
+- ARCHITECTURE_COMPLIANCE.md: Documentation/report
+- ARCHITECTURE_IMPROVEMENTS.md: Documentation/report
+- client\.env.example: Repository file
+- client\.gitignore: Repository file
+- client\eslint.config.js: JavaScript utility/script
+- client\index.html: Repository file
+- client\package.json: JSON config/data
+- client\package-lock.json: JSON config/data
+- client\public\favicon.svg: Repository file
+- client\public\icons.svg: Repository file
+- client\src\App.tsx: React route/component source
+- client\src\components\AppShell.tsx: React route/component source
+- client\src\components\PageTransition.tsx: React route/component source
+- client\src\components\ProtectedRoute.tsx: React route/component source
+- client\src\components\VictoryOverlay.tsx: React route/component source
+- client\src\context\auth-context.ts: TypeScript source/config
+- client\src\context\AuthProvider.tsx: React route/component source
+- client\src\context\SignalRContext.tsx: React route/component source
+- client\src\context\use-auth.ts: TypeScript source/config
+- client\src\lib\api-client.ts: TypeScript source/config
+- client\src\lib\auth-storage.ts: TypeScript source/config
+- client\src\lib\sorting-engine.ts: TypeScript source/config
+- client\src\lib\utils.ts: TypeScript source/config
+- client\src\main.tsx: React route/component source
+- client\src\motion-variants.ts: TypeScript source/config
+- client\src\pages\BattleArenaPage.tsx: React route/component source
+- client\src\pages\CommunityPage.tsx: React route/component source
+- client\src\pages\DashboardPage.tsx: React route/component source
+- client\src\pages\HomePage.tsx: React route/component source
+- client\src\pages\LoginPage.tsx: React route/component source
+- client\src\pages\PathPage.tsx: React route/component source
+- client\src\pages\PlaygroundPage.tsx: React route/component source
+- client\src\pages\ProblemDetailPage.tsx: React route/component source
+- client\src\pages\ProblemsPage.tsx: React route/component source
+- client\src\pages\RegisterPage.tsx: React route/component source
+- client\src\pages\TopicDetailPage.tsx: React route/component source
+- client\src\pages\TopicsPage.tsx: React route/component source
+- client\src\pages\VisualizerPage.tsx: React route/component source
+- client\src\styles.css: Repository file
+- client\src\vite-env.d.ts: TypeScript source/config
+- client\tsconfig.app.json: JSON config/data
+- client\tsconfig.json: JSON config/data
+- client\tsconfig.node.json: JSON config/data
+- client\vite.config.ts: TypeScript source/config
+- client\vite-dev.err.log: Repository file
+- client\vite-dev.log: Repository file
+- CONTRIBUTING.md: Documentation/report
+- Core\Domain\Contracts\IGenericRepository.cs: C# source file
+- Core\Domain\Contracts\ILeaderboardReadRepository.cs: C# source file
+- Core\Domain\Contracts\IProblemRepository.cs: C# source file
+- Core\Domain\Contracts\IRefreshTokenRepository.cs: C# source file
+- Core\Domain\Contracts\ISubmissionRepository.cs: C# source file
+- Core\Domain\Contracts\IUnitOfWork.cs: C# source file
+- Core\Domain\Domain.csproj: C# project definition
+- Core\Domain\Exceptions\GlobalExceptionHandler.cs: C# source file
+- Core\Domain\Exceptions\InvalidCredentialsException.cs: C# source file
+- Core\Domain\Exceptions\NotFoundException.cs: C# source file
+- Core\Domain\Models\BattleModule\BattleMode.cs: C# source file
+- Core\Domain\Models\BattleModule\BattleParticipant.cs: C# source file
+- Core\Domain\Models\BattleModule\BattleProblem.cs: C# source file
+- Core\Domain\Models\BattleModule\BattleSession.cs: C# source file
+- Core\Domain\Models\BattleModule\BattleStatus.cs: C# source file
+- Core\Domain\Models\BattleModule\BattleSubmission.cs: C# source file
+- Core\Domain\Models\BattleModule\Friendship.cs: C# source file
+- Core\Domain\Models\BattleModule\FriendshipStatus.cs: C# source file
+- Core\Domain\Models\BattleModule\MatchmakingEntry.cs: C# source file
+- Core\Domain\Models\BattleModule\MatchmakingStatus.cs: C# source file
+- Core\Domain\Models\BattleModule\PlayerStats.cs: C# source file
+- Core\Domain\Models\IdentityModule\ApplicationUser.cs: C# source file
+- Core\Domain\Models\IdentityModule\RefreshToken.cs: C# source file
+- Core\Domain\Models\LearningPathModule\LearningPath.cs: C# source file
+- Core\Domain\Models\LearningPathModule\LearningPathLevel.cs: C# source file
+- Core\Domain\Models\LearningPathModule\UserLearningPathProgress.cs: C# source file
+- Core\Domain\Models\ProblemsModule\Problem.cs: C# source file
+- Core\Domain\Models\ProblemsModule\Submission.cs: C# source file
+- Core\Domain\Models\ProblemsModule\SubmissionStatus.cs: C# source file
+- Core\Domain\Models\ProblemsModule\SubmissionTestResult.cs: C# source file
+- Core\Domain\Models\ProblemsModule\TestCase.cs: C# source file
+- Core\Domain\Models\ProblemsModule\Verdict.cs: C# source file
+- Core\Domain\Models\TopicModule\Category.cs: C# source file
+- Core\Domain\Models\TopicModule\DifficultyLevel.cs: C# source file
+- Core\Domain\Models\TopicModule\ProgrammingLanguage.cs: C# source file
+- Core\Domain\Models\TopicModule\Topic.cs: C# source file
+- Core\Domain\Models\TopicModule\TopicCodeImplementation.cs: C# source file
+- Core\Domain\Models\TopicModule\TopicComplexity.cs: C# source file
+- Core\Domain\Models\TopicModule\UserTopicProgress.cs: C# source file
+- Core\Services\AI\ChatbotService.cs: C# source file
+- Core\Services\Auth\AuthService.cs: C# source file
+- Core\Services\Auth\JwtTokenGenerator.cs: C# source file
+- Core\Services\Battle\AntiCheatService.cs: C# source file
+- Core\Services\Battle\BattleExecutionService.cs: C# source file
+- Core\Services\Battle\BattleSessionService.cs: C# source file
+- Core\Services\Battle\BattleSubmissionService.cs: C# source file
+- Core\Services\Battle\EloRatingService.cs: C# source file
+- Core\Services\CodeExecution\CodeExecutionHelpers.cs: C# source file
+- Core\Services\CodeExecution\CodeExecutionService.cs: C# source file
+- Core\Services\Community\FriendshipService.cs: C# source file
+- Core\Services\Community\LeaderboardService.cs: C# source file
+- Core\Services\Infrastructure\ServiceManager.cs: C# source file
+- Core\Services\Infrastructure\ServiceRegistrationExtensions.cs: C# source file
+- Core\Services\Learning\LearningPathService.cs: C# source file
+- Core\Services\Learning\TopicService.cs: C# source file
+- Core\Services\Learning\UserProgressService.cs: C# source file
+- Core\Services\Observability\TelemetryService.cs: C# source file
+- Core\Services\Problems\ProblemService.cs: C# source file
+- Core\Services\Problems\SubmissionHelpers.cs: C# source file
+- Core\Services\Problems\SubmissionProcessor.cs: C# source file
+- Core\Services\Problems\SubmissionService.cs: C# source file
+- Core\ServicesAbstraction\IBattleMatchmakingService.cs: C# source file
+- Core\ServicesAbstraction\IBattleSessionService.cs: C# source file
+- Core\ServicesAbstraction\IBattleSubmissionService.cs: C# source file
+- Core\ServicesAbstraction\IChatbotService.cs: C# source file
+- Core\ServicesAbstraction\ICodeExecutionService.cs: C# source file
+- Core\ServicesAbstraction\IDockerService.cs: C# source file
+- Core\ServicesAbstraction\IFriendshipService.cs: C# source file
+- Core\ServicesAbstraction\ILeaderboardCache.cs: C# source file
+- Core\ServicesAbstraction\ILeaderboardService.cs: C# source file
+- Core\ServicesAbstraction\ILearningPathService.cs: C# source file
+- Core\ServicesAbstraction\IProblemService.cs: C# source file
+- Core\ServicesAbstraction\IServiceManager.cs: C# source file
+- Core\ServicesAbstraction\ISubmissionService.cs: C# source file
+- Core\ServicesAbstraction\ITelemetryService.cs: C# source file
+- Core\ServicesAbstraction\ITokenGenerator.cs: C# source file
+- Core\ServicesAbstraction\ITopicService.cs: C# source file
+- Core\ServicesAbstraction\IUserProgressService.cs: C# source file
+- Core\ServicesAbstraction\OllamaChatResponse.cs: C# source file
+- Core\ServicesAbstraction\OllamaMessage.cs: C# source file
+- Core\ServicesAbstraction\RunnerBatchItem.cs: C# source file
+- Core\ServicesAbstraction\ServicesAbstraction.csproj: C# project definition
+- DockerSandbox\cpp\Dockerfile: Repository file
+- DockerSandbox\cpp\run.sh: Shell runner script
+- DockerSandbox\csharp\Dockerfile: Repository file
+- DockerSandbox\csharp\run.sh: Shell runner script
+- DockerSandbox\java\Dockerfile: Repository file
+- DockerSandbox\java\run.sh: Shell runner script
+- DockerSandbox\python\Dockerfile: Repository file
+- DockerSandbox\python\run.sh: Shell runner script
+- DSA-Visualizer.slnx: Repository file
+- DSA-Visualizer\appsettings.Development.json: JSON config/data
+- DSA-Visualizer\appsettings.json: JSON config/data
+- DSA-Visualizer\appsettings.Production.json: JSON config/data
+- DSA-Visualizer\dotnet_log.txt: Text/log artifact
+- DSA-Visualizer\DSA-Visualizer.csproj: C# project definition
+- DSA-Visualizer\DSA-Visualizer.db: Local DB runtime artifact
+- DSA-Visualizer\DSA-Visualizer.db-shm: Local DB runtime artifact
+- DSA-Visualizer\DSA-Visualizer.db-wal: Local DB runtime artifact
+- DSA-Visualizer\DSA-Visualizer.http: Repository file
+- DSA-Visualizer\error_log.txt: Text/log artifact
+- DSA-Visualizer\Extensions\AuthenticationExtensions.cs: C# source file
+- DSA-Visualizer\Extensions\BasicAuthAuthorizationFilter.cs: C# source file
+- DSA-Visualizer\Extensions\ObservabilityExtensions.cs: C# source file
+- DSA-Visualizer\Extensions\PresentationExtensions.cs: C# source file
+- DSA-Visualizer\GetDbInfo.csx: Repository file
+- DSA-Visualizer\HealthChecks\DatabaseHealthCheck.cs: C# source file
+- DSA-Visualizer\HealthChecks\DockerExecutorHealthCheck.cs: C# source file
+- DSA-Visualizer\HealthChecks\HealthCheckResponseWriter.cs: C# source file
+- DSA-Visualizer\HealthChecks\OllamaHealthCheck.cs: C# source file
+- DSA-Visualizer\HealthChecks\RedisHealthCheck.cs: C# source file
+- DSA-Visualizer\log.txt: Text/log artifact
+- DSA-Visualizer\Middleware\CorrelationIdMiddleware.cs: C# source file
+- DSA-Visualizer\Observability\HangfireCorrelationFilter.cs: C# source file
+- DSA-Visualizer\Observability\SignalRTracingFilter.cs: C# source file
+- DSA-Visualizer\Program.cs: C# source file
+- DSA-Visualizer\Properties\launchSettings.json: JSON config/data
+- E2EPractical.cs: C# source file
+- E2ETest.cs: C# source file
+- E2ETestClient.cs: C# source file
+- E2ETestComplete.cs: C# source file
+- extract.js: JavaScript utility/script
+- file_summary_report.json: JSON config/data
+- fix_topicdetail.js: JavaScript utility/script
+- fix_topicdetail2.js: JavaScript utility/script
+- infra_files.json: JSON config/data
+- Infrastructure\External\Common\InMemoryMatchmakingService.cs: C# source file
+- Infrastructure\External\Docker\DockerClientFactory.cs: C# source file
+- Infrastructure\External\Docker\DockerService.cs: C# source file
+- Infrastructure\External\ExternalServiceRegistration.cs: C# source file
+- Infrastructure\External\Infrastructure.External.csproj: C# project definition
+- Infrastructure\External\Redis\BattleMatchmakingService.cs: C# source file
+- Infrastructure\External\Redis\RedisConnectionAccessor.cs: C# source file
+- Infrastructure\External\Redis\RedisLeaderboardCache.cs: C# source file
+- Infrastructure\Persistence\Data\ApplicationDbContext.cs: C# source file
+- Infrastructure\Persistence\Data\ApplicationDbContextFactory.cs: C# source file
+- Infrastructure\Persistence\Data\AssemblyReference.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Auth\RefreshTokenConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Battle\BattleModuleConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Problems\ProblemConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Problems\SubmissionConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Problems\SubmissionTestResultConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Problems\TestcaseConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Topics\CategoryConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Topics\TopicCodeImplementationConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Topics\TopicComplexityConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Topics\TopicConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Configurations\Topics\UserTopicProgressConfigurations.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260311191127_InitialCreate.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260311191127_InitialCreate.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260316214019_ExercisesModule.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260316214019_ExercisesModule.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260414185259_FixingDataTypes.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260414185259_FixingDataTypes.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260414201740_FixingDataTypes2.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260414201740_FixingDataTypes2.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260423192937_AddSubmissionStatus.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260423192937_AddSubmissionStatus.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260507110100_AddLearningPathsModule.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260507110100_AddLearningPathsModule.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260508124915_AddBattleModule.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260508124915_AddBattleModule.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260510233755_AddPlayerStatsRankPointsIndex.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260510233755_AddPlayerStatsRankPointsIndex.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260511043159_AddRowVersionColumns.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\20260511043159_AddRowVersionColumns.Designer.cs: C# source file
+- Infrastructure\Persistence\Data\Migrations\ApplicationDbContextModelSnapshot.cs: C# source file
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\count-even-numbers.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\reverse-array.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\second-largest-element.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Array\sum-of-all-elements.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\count-leaf-nodes.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\height-of-binary-tree.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\Inorder-traversal.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BinaryTree\level-order-traversal.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BST\lca-in-bst.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BST\search-in-bst.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\BST\validate-bst.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\bfs-traversal-order.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\count-connected-components.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\detect-cycle-in-undirected-graph.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\dfs-traversal-order.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\level-of-each-node.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Graph\shortest-path-unweighted-graph.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\find-length-of-linked-list.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\find-middle-node.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\nth-node-from-end.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\remove-duplicates-from-sorted-linked-list.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\LinkedList\reverse-a-linked-list.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\generate-binary-numbers.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\reverse-a-queue.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Queue\simulate-queue-operations.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-selection-sort-swaps.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-shifts-in-insertion-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\count-swaps-in-bubble-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\insert-into-sorted-array.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\kth-smallest-element-using-quick-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-ascending-bubble-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-descending-bubble-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-using-insertion-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-array-using-selection-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Sorting\sort-using-quick-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\asteroid-collision.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\simulate-stack-operations.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems\Stack\valid-parentheses.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\array.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\bfs.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-search.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-search-tree.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\binary-tree.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\bubble-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\categories.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\dfs.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\insertion-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\linked-list.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\queue.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\quick-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\selection-sort.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics\Stack.json: JSON config/data
+- Infrastructure\Persistence\Data\Seeds\DataSeeding.cs: C# source file
+- Infrastructure\Persistence\Observability\DatabaseCommandOperations.cs: C# source file
+- Infrastructure\Persistence\Observability\DatabaseCommandTelemetryInterceptor.cs: C# source file
+- Infrastructure\Persistence\Observability\PersistenceTelemetry.cs: C# source file
+- Infrastructure\Persistence\Persistence.csproj: C# project definition
+- Infrastructure\Persistence\PersistenceExtensions.cs: C# source file
+- Infrastructure\Persistence\Repositories\Auth\RefreshTokenRepository.cs: C# source file
+- Infrastructure\Persistence\Repositories\Common\GenericRepository.cs: C# source file
+- Infrastructure\Persistence\Repositories\Common\UnitOfWork.cs: C# source file
+- Infrastructure\Persistence\Repositories\Leaderboard\LeaderboardReadRepository.cs: C# source file
+- Infrastructure\Persistence\Repositories\Problems\ProblemRepository.cs: C# source file
+- Infrastructure\Persistence\Repositories\Problems\SubmissionRepository.cs: C# source file
+- Infrastructure\Presentation\Controllers\AI\ChatbotController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Auth\AuthController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Battle\BattleController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Community\FriendshipController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Community\LeaderboardController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Learning\LearningPathsController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Learning\UserProgressController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Problems\PlaygroundController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Problems\ProblemsController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Problems\SubmissionsController.cs: C# source file
+- Infrastructure\Presentation\Controllers\Problems\TopicsController.cs: C# source file
+- Infrastructure\Presentation\Hubs\Battle\BattleHub.cs: C# source file
+- Infrastructure\Presentation\Hubs\Community\CommunityHub.cs: C# source file
+- Infrastructure\Presentation\Presentation.csproj: C# project definition
+- LICENSE.txt: Text/log artifact
+- loadtest.js: JavaScript utility/script
+- LoadTests\LoadTests.csproj: C# project definition
+- LoadTests\Program.cs: C# source file
+- package-lock.json: JSON config/data
+- precise_extract.js: JavaScript utility/script
+- precise_extract_fix.js: JavaScript utility/script
+- PRODUCTION_RUNBOOKS.md: Documentation/report
+- REPOSITORY_FILE_GUIDE.md: Documentation/report
+- scratch\check_users.cs: C# source file
+- scratch\vite-5174.err.log: Repository file
+- scratch\vite-5174.out.log: Repository file
+- scripts\build-docker-sandboxes.ps1: PowerShell automation script
+- SERVICE_LAYER_FIXES_COMPLETE.md: Documentation/report
+- Shared\DTOs\ChatbotDTOs\ChatMessageDTO.cs: C# source file
+- Shared\DTOs\ChatbotDTOs\ChatRequestDTO.cs: C# source file
+- Shared\DTOs\ChatbotDTOs\ChatResponseDTO.cs: C# source file
+- Shared\DTOs\IdentityDTOs\ExternalLoginDTO.cs: C# source file
+- Shared\DTOs\IdentityDTOs\LoginDTO.cs: C# source file
+- Shared\DTOs\IdentityDTOs\RegisterDTO.cs: C# source file
+- Shared\DTOs\IdentityDTOs\TokenRequestDTO.cs: C# source file
+- Shared\DTOs\IdentityDTOs\UserDTO.cs: C# source file
+- Shared\DTOs\LearningPathDTOs\LearningPathDetailDTO.cs: C# source file
+- Shared\DTOs\LearningPathDTOs\LearningPathDTO.cs: C# source file
+- Shared\DTOs\LearningPathDTOs\LearningPathLevelDTO.cs: C# source file
+- Shared\DTOs\ProblemDTOs\ProblemDetailDTO.cs: C# source file
+- Shared\DTOs\ProblemDTOs\ProblemDTO.cs: C# source file
+- Shared\DTOs\ProblemDTOs\ProblemQueryParametersDTO.cs: C# source file
+- Shared\DTOs\ProblemDTOs\TestCaseDTO.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\BatchCodeExecutionRequest.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\CodeExecutionRequest.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\CodeExecutionResult.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\SubmissionHistoryDTO.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\SubmissionQueuedDTO.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\SubmissionResultDTO.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\SubmissionTestCaseResultDTO.cs: C# source file
+- Shared\DTOs\SubmissionDTOs\SubmitProblemDTO.cs: C# source file
+- Shared\DTOs\TopicsDTOs\TopicCodeImplementationDTO.cs: C# source file
+- Shared\DTOs\TopicsDTOs\TopicComplexityDTO.cs: C# source file
+- Shared\DTOs\TopicsDTOs\TopicDetailDTO.cs: C# source file
+- Shared\DTOs\TopicsDTOs\TopicDTO.cs: C# source file
+- Shared\DTOs\TopicsDTOs\TopicQueryParametersDTO.cs: C# source file
+- Shared\DTOs\UserProgressDTOs\RecentSolveDTO.cs: C# source file
+- Shared\DTOs\UserProgressDTOs\UserProgressDTO.cs: C# source file
+- Shared\Shared.csproj: C# project definition
+- Test.cs: C# source file
+- TestClient.cs: C# source file
+- TestEnv.cs: C# source file
+- Testing.md: Documentation/report
+- tests\DSA.Visualizer.Tests\DSA.Visualizer.Tests.csproj: C# project definition
+- tests\DSA.Visualizer.Tests\LeaderboardReadRepositoryTests.cs: C# source file
+- tests\DSA.Visualizer.Tests\MatchmakingServiceTests.cs: C# source file
+- TestSql.csx: Repository file
+- VerifyDBTool\Program.cs: C# source file
+- VerifyDBTool\VerifyDB.csproj: C# project definition
+- WEEK1_COMPLETION_REPORT.md: Documentation/report

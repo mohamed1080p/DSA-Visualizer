@@ -1,5 +1,4 @@
 using Shared.DTOs.UserProgressDTOs;
-
 namespace ServicesAbstraction
 {
     public interface IUserProgressService
@@ -7,3 +6,4 @@ namespace ServicesAbstraction
         Task<UserProgressDTO> GetUserProgressAsync(string userId);
     }
 }
+

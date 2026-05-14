@@ -8,6 +8,9 @@
     <Project Path="Infrastructure/Persistence/Persistence.csproj" Id="3c830043-737f-464c-88c4-11c03347f45f" />
     <Project Path="Infrastructure/Presentation/Presentation.csproj" Id="a9b77e59-59e2-4b48-a87e-e0cefeaae786" />
   </Folder>
+  <Folder Name="/Infrastructure/External/">
+    <Project Path="Infrastructure/External/Infrastructure.External.csproj" />
+  </Folder>
   <Project Path="DSA-Visualizer/DSA-Visualizer.csproj" />
   <Project Path="Shared/Shared.csproj" Id="c7d373cd-d7ed-4fe3-a218-935934f0484d" />
 </Solution>

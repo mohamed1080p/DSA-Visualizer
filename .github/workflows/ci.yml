@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore and build API
+        run: dotnet build "DSA-Visualizer/DSA-Visualizer.csproj" -c Release
+
+      - name: Test
+        run: dotnet test "tests/DSA.Visualizer.Tests/DSA.Visualizer.Tests.csproj" -c Release
+
+      - name: Vulnerable package check (NuGet)
+        run: dotnet list "DSA-Visualizer/DSA-Visualizer.csproj" package --vulnerable --include-transitive
+        continue-on-error: true
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true

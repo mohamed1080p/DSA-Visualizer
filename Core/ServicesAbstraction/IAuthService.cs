@@ -1,6 +1,6 @@
-
 using Microsoft.AspNetCore.Authentication;
 using Shared.DTOs.IdentityDTOs;
+
 
 namespace ServicesAbstraction
 {
@@ -17,7 +17,7 @@ namespace ServicesAbstraction
 
         // refresh token
         Task<UserDTO> RefreshTokenAsync(TokenRequestDTO tokenRequestDTO);
-        
+
         // external login
         Task<UserDTO> ExternalLoginAsync(ExternalLoginDTO externalLoginDTO);
 
@@ -25,3 +25,4 @@ namespace ServicesAbstraction
 
     }
 }
+

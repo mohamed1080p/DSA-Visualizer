@@ -9,13 +9,11 @@ namespace DSA_Visualizer.Extensions
     {
         private readonly string _login;
         private readonly string _password;
-
         public BasicAuthAuthorizationFilter(string login, string password)
         {
             _login = login;
             _password = password;
         }
-
         public bool Authorize(DashboardContext context)
         {
             var httpContext = context.GetHttpContext();
@@ -38,7 +36,7 @@ namespace DSA_Visualizer.Extensions
                     }
                     catch
                     {
-                        
+
                     }
                 }
             }
@@ -49,3 +47,5 @@ namespace DSA_Visualizer.Extensions
         }
     }
 }
+
+

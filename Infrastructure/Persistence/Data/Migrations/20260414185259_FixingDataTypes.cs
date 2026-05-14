@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Persistence.Data.Migrations
+namespace Infrastructure.Persistence.Data.Migrations
 {
     /// <inheritdoc />
     public partial class FixingDataTypes : Migration
@@ -19,7 +19,6 @@ namespace Persistence.Data.Migrations
                 oldClrType: typeof(int),
                 oldType: "int",
                 oldNullable: true);
-
             migrationBuilder.AddColumn<long>(
                 name: "MemoryKb",
                 table: "SubmissionTestResults",
@@ -31,10 +30,7 @@ namespace Persistence.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MemoryKb",
-                table: "SubmissionTestResults");
-
+            migrationBuilder.DropColumn(name: "MemoryKb", table: "SubmissionTestResults");
             migrationBuilder.AlterColumn<int>(
                 name: "RuntimeMs",
                 table: "SubmissionTestResults",

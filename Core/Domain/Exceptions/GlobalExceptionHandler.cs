@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 namespace Domain.Exceptions;
@@ -29,9 +29,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         await httpContext.Response.WriteAsJsonAsync(new
         {
             StatusCode = statusCode,
-            Message = message
+            Message = message,
+            TraceId = httpContext.TraceIdentifier
         }, cancellationToken);
 
         return true;
     }
 }
+
+

@@ -1,5 +1,4 @@
 using Shared.DTOs.LearningPathDTOs;
-
 namespace ServicesAbstraction
 {
     public interface ILearningPathService
@@ -11,3 +10,4 @@ namespace ServicesAbstraction
         Task AdvanceIfCurrentLevelMatchesAsync(string userId, int? topicId = null, int? problemId = null);
     }
 }
+

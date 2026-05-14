@@ -3,13 +3,52 @@ namespace Shared.DTOs.SubmissionDTOs
 {
     public class SubmissionResultDTO
     {
-        public long Id { get; set; }
-        public string Status { get; set; } = string.Empty;
-        public string Verdict { get; set; } = string.Empty;
-        public string Language { get; set; } = string.Empty;
-        public long? RuntimeMs { get; set; }
-        public long? MemoryKb { get; set; }
-        public DateTime SubmittedAt { get; set; }
-        public IEnumerable<SubmissionTestCaseResultDTO> TestResults { get; set; } = new List<SubmissionTestCaseResultDTO>();
+        public long Id
+        {
+            get;
+            set;
+        }
+        public string Status
+        {
+            get;
+            set;
+        } = string.Empty;
+        public string Verdict
+        {
+            get;
+            set;
+        } = string.Empty;
+        public string FailureReason
+        {
+            get;
+            set;
+        } = string.Empty;
+        public string Language
+        {
+            get;
+            set;
+        } = string.Empty;
+        public long? RuntimeMs
+        {
+            get;
+            set;
+        }
+        public long? MemoryKb
+        {
+            get;
+            set;
+        }
+        public DateTime SubmittedAt
+        {
+            get;
+            set;
+        }
+        public IEnumerable<SubmissionTestCaseResultDTO> TestResults
+        {
+            get;
+            set;
+        } = new List<SubmissionTestCaseResultDTO>();
     }
 }
+
+

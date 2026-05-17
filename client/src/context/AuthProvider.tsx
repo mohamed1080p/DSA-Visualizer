@@ -22,15 +22,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const sync = () => setUser(readStoredAuth());
     window.addEventListener(AUTH_CHANGED_EVENT, sync);
-    window.addEventListener('algoscope:session-expired', sync);
     // Also sync when the token is silently refreshed by the api-client
     const onStorage = (e: StorageEvent) => {
-      if (e.key === 'algoscope_auth') sync();
+      if (e.key === 'dsa_visualizer_auth') sync();
     };
     window.addEventListener('storage', onStorage);
     return () => {
       window.removeEventListener(AUTH_CHANGED_EVENT, sync);
-      window.removeEventListener('algoscope:session-expired', sync);
       window.removeEventListener('storage', onStorage);
     };
   }, []);

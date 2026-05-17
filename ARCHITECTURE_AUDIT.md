@@ -61,7 +61,6 @@ ServicesAbstraction/
 ├── IAuthService.cs
 ├── IProblemService.cs
 ├── IServiceManager.cs (Facade pattern)
-└── OllamaMessage.cs (Supporting DTOs)
 ```
 
 **Recommendation:** ✅ Properly structured. All services depend on abstractions defined here.
@@ -81,7 +80,7 @@ ServicesAbstraction/
   - `Problems/` - Problem submission handling
   - `CodeExecution/` - Code execution orchestration
   - `Community/` - Community features
-  - `AI/` - Chatbot/Ollama integration
+  - `AI/` - Chatbot/Gemini integration
   - `Observability/` - Telemetry
 
 **Example (ProblemService):**
@@ -159,7 +158,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 - External service integrations isolated
 - Docker engine integration
 - Redis cache integration
-- Ollama LLM integration
+- Gemini LLM integration
 - External dependencies abstracted through Service interfaces
 
 **Recommendation:** ✅ Proper isolation of external dependencies.

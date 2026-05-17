@@ -12,14 +12,17 @@ namespace Services.Battle
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEloRatingService _eloService;
+        private readonly ILeaderboardService _leaderboardService;
         private readonly UserManager<ApplicationUser> _userManager;
         public BattleSessionService(
                     IUnitOfWork unitOfWork,
                     IEloRatingService eloService,
-                    UserManager<ApplicationUser> userManager)
+                    UserManager<ApplicationUser> userManager,
+                    ILeaderboardService leaderboardService)
         {
             _unitOfWork = unitOfWork;
             _eloService = eloService;
+            _leaderboardService = leaderboardService;
             _userManager = userManager;
         }
         public async Task<BattleSession> CreateBattleAsync(string player1Id, string player2Id, BattleMode mode)
@@ -294,6 +297,17 @@ namespace Services.Battle
             loserStats.CurrentStreak = 0;
 
             battle.WinnerUserId = winner.UserId;
+
+            // Update leaderboard cache so cached global leaderboard stays in sync
+            try
+            {
+                await _leaderboardService.UpdateLeaderboardAsync(winnerStats.UserId, winnerStats.RankPoints);
+                await _leaderboardService.UpdateLeaderboardAsync(loserStats.UserId, loserStats.RankPoints);
+            }
+            catch
+            {
+                // Ignore cache failures to avoid blocking the battle workflow
+            }
         }
     }
 }

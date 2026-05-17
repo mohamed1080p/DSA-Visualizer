@@ -64,14 +64,18 @@ public static class ObservabilityExtensions
 
         return services;
     }
-    public static IServiceCollection AddApplicationHealthChecks(this IServiceCollection services)
+    public static IServiceCollection AddApplicationHealthChecks(this IServiceCollection services, IWebHostEnvironment environment)
     {
-        services.AddHealthChecks()
+        var checks = services.AddHealthChecks()
             .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy(), tags: ["live"])
             .AddCheck<DatabaseHealthCheck>("database", tags: ["ready"])
             .AddCheck<RedisHealthCheck>("redis", tags: ["ready"])
-            .AddCheck<OllamaHealthCheck>("ollama", tags: ["ready"])
-            .AddCheck<DockerExecutorHealthCheck>("docker-executor", tags: ["ready"]);
+            .AddCheck<GeminiHealthCheck>("gemini", tags: ["ready"]);
+
+        if (!environment.IsDevelopment())
+        {
+            checks.AddCheck<DockerExecutorHealthCheck>("docker-executor", tags: ["ready"]);
+        }
 
         return services;
     }

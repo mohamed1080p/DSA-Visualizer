@@ -24,5 +24,10 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Data\Seeds\DataSeedFiles\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

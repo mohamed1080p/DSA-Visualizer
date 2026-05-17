@@ -7,8 +7,8 @@ export type StoredAuth = {
   displayName: string;
 };
 
-const KEY = 'algoscope_auth';
-export const AUTH_CHANGED_EVENT = 'algoscope:auth-changed';
+const KEY = 'dsa_visualizer_auth';
+export const AUTH_CHANGED_EVENT = 'dsa_visualizer:auth-changed';
 
 function notifyAuthChanged() {
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));

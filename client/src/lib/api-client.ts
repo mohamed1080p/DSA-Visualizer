@@ -1,8 +1,147 @@
 import { clearStoredAuth, readStoredAuth, writeStoredAuth } from '@/lib/auth-storage';
 import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
+const AUTH_EXPIRED_EVENT = 'dsa_visualizer:session-expired';
+
 
 const trimSlash = (s: string) => s.replace(/\/$/, '');
+type SubmissionRequestBody = { problemId?: string };
+
+function dispatchAuthExpired() {
+  globalThis.window?.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+}
+
+function buildRequestInit(opts: JsonOpts, authToken?: string): RequestInit {
+  const { json, headers: hdrs, ...rest } = opts;
+  const headers = new Headers(hdrs);
+  if (json !== undefined) headers.set('Content-Type', 'application/json');
+  if (authToken) headers.set('Authorization', `Bearer ${authToken}`);
+
+  const init: RequestInit = {
+    ...rest,
+    headers,
+  };
+
+  if (json !== undefined) {
+    init.body = JSON.stringify(json);
+  } else if (rest.body !== undefined) {
+    init.body = rest.body;
+  }
+
+  return init;
+}
+
+function shouldRefreshAuth(auth: boolean, storedToken?: string) {
+  return auth && !!storedToken && isAccessTokenExpiringSoon(storedToken);
+}
+
+function shouldTrackSubmission(path: string, method?: string) {
+  return path.includes('/api/Submissions') && method === 'POST';
+}
+
+function shouldTrackChatMessage(path: string, method?: string) {
+  return path.includes('/api/Chatbot/message') && method === 'POST';
+}
+
+function shouldTrackBattleQueue(path: string, method?: string) {
+  return path.includes('/api/Battle/queue') && method === 'POST';
+}
+
+function getSubmissionProblemId(json: unknown): string | undefined {
+  if (!json || typeof json !== 'object') return undefined;
+  return (json as SubmissionRequestBody).problemId;
+}
+
+function trackApiEvent(path: string, method: string | undefined, json: unknown) {
+  if (shouldTrackSubmission(path, method)) {
+    trackEvent(AnalyticsEvents.SUBMISSION_CREATED, { problemId: getSubmissionProblemId(json) });
+    return;
+  }
+
+  if (shouldTrackChatMessage(path, method)) {
+    trackEvent(AnalyticsEvents.AI_CHAT_MESSAGE);
+    return;
+  }
+
+  if (shouldTrackBattleQueue(path, method)) {
+    trackEvent(AnalyticsEvents.BATTLE_JOIN_QUEUE);
+  }
+}
+
+async function fetchWithDevRetry(url: string, init: RequestInit, path: string): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch {
+    if (getApiOrigin() || !path.startsWith('/api')) {
+      throw new ApiError(0, 'Network error. Check your connection and try again.');
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    try {
+      return await fetch(url, init);
+    } catch {
+      throw new ApiError(
+        0,
+        'Cannot reach the API. Make sure the backend is running on port 5258, then try again.',
+      );
+    }
+  }
+}
+
+async function handleUnauthorizedResponse(auth: boolean, refresh: () => Promise<boolean>) {
+  if (!auth) return false;
+
+  const refreshed = await refresh();
+  if (refreshed) return true;
+
+  clearStoredAuth();
+  dispatchAuthExpired();
+  return false;
+}
+
+async function handleExpiredAuth(auth: boolean) {
+  if (!auth) return;
+  clearStoredAuth();
+  dispatchAuthExpired();
+}
+
+async function refreshAuthIfNeeded(auth: boolean) {
+  if (!auth) return;
+
+  const stored = readStoredAuth();
+  if (!shouldRefreshAuth(auth, stored?.accessToken)) return;
+
+  const ok = await refreshStoredAuthToken();
+  if (!ok) {
+    clearStoredAuth();
+    dispatchAuthExpired();
+    throw new ApiError(401, 'Session expired. Please sign in again.');
+  }
+}
+
+async function getApiResponseData<T>(res: Response, auth: boolean): Promise<T> {
+  if (res.ok) {
+    if (res.status === 204) return undefined as T;
+    return (await res.json()) as T;
+  }
+
+  await handleExpiredAuth(res.status === 401 && auth);
+
+  let message = res.statusText;
+  try {
+    const body = (await res.json()) as { message?: string; Message?: string };
+    message = body.message ?? body.Message ?? message;
+  } catch {
+    /* ignore */
+  }
+
+  if ((res.status === 502 || res.status === 503) && !getApiOrigin()) {
+    message =
+      'Cannot reach the API (dev proxy). Start the backend on port 5258, e.g. `dotnet run --project DSA-Visualizer --urls http://localhost:5258`, then refresh this page.';
+  }
+
+  throw new ApiError(res.status, message);
+}
 
 /** Backend origin in production (e.g. https://api.example.com). In dev, leave unset so requests use /api and Vite proxy. */
 export function getApiOrigin(): string {
@@ -35,8 +174,8 @@ function isAccessTokenExpiringSoon(token: string, skewSeconds = 30) {
     const [, payload] = token.split('.');
     if (!payload) return true;
     const normalizedPayload = payload
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
+      .replaceAll('-', '+')
+      .replaceAll('_', '/')
       .padEnd(Math.ceil(payload.length / 4) * 4, '=');
     const parsed = JSON.parse(atob(normalizedPayload)) as { exp?: number };
     if (!parsed.exp) return true;
@@ -91,106 +230,33 @@ async function refreshStoredAuthTokenCore(): Promise<boolean> {
 }
 
 export async function refreshStoredAuthToken(): Promise<boolean> {
-  if (!refreshPromise) {
-    refreshPromise = refreshStoredAuthTokenCore().finally(() => {
-      refreshPromise = null;
-    });
-  }
+  refreshPromise ??= refreshStoredAuthTokenCore().finally(() => {
+    refreshPromise = null;
+  });
 
   return refreshPromise;
 }
 
 export async function apiJson<T>(path: string, opts: JsonOpts = {}): Promise<T> {
-  const { auth, json, headers: hdrs, ...rest } = opts;
-
-  function buildInit(): RequestInit {
-    const headers = new Headers(hdrs);
-    if (json !== undefined) headers.set('Content-Type', 'application/json');
-    if (auth) {
-      const t = readStoredAuth()?.accessToken;
-      if (t) headers.set('Authorization', `Bearer ${t}`);
-    }
-    return {
-      ...rest,
-      headers,
-      body: json !== undefined ? JSON.stringify(json) : rest.body,
-    };
-  }
+  const { auth = false, json } = opts;
+  const storedToken = auth ? readStoredAuth()?.accessToken : undefined;
+  const requestInit = buildRequestInit(opts, storedToken);
 
   const url = resolveApiUrl(path);
 
-  // If this request requires auth, proactively refresh if token is expiring soon
-  if (auth) {
-    const stored = readStoredAuth();
-    if (stored?.accessToken && isAccessTokenExpiringSoon(stored.accessToken)) {
-      const ok = await refreshStoredAuthToken();
-      if (!ok) {
-        clearStoredAuth();
-        window.dispatchEvent(new Event('algoscope:session-expired'));
-        throw new ApiError(401, 'Session expired. Please sign in again.');
-      }
-    }
-  }
+  await refreshAuthIfNeeded(auth);
+  trackApiEvent(path, opts.method, json);
 
-  if (path.includes('/api/Submissions') && opts.method === 'POST') {
-    trackEvent(AnalyticsEvents.SUBMISSION_CREATED, { problemId: (json as any)?.problemId });
-  } else if (path.includes('/api/Chatbot/message') && opts.method === 'POST') {
-    trackEvent(AnalyticsEvents.AI_CHAT_MESSAGE);
-  } else if (path.includes('/api/Battle/queue') && opts.method === 'POST') {
-    trackEvent(AnalyticsEvents.BATTLE_JOIN_QUEUE);
-  }
-
-
-  let res: Response;
-  try {
-    res = await fetch(url, buildInit());
-  } catch {
-    if (!getApiOrigin() && path.startsWith('/api')) {
-      await new Promise((resolve) => setTimeout(resolve, 700));
-      try {
-        res = await fetch(url, buildInit());
-      } catch {
-        throw new ApiError(
-          0,
-          'Cannot reach the API. Make sure the backend is running on port 5258, then try again.',
-        );
-      }
-    } else {
-      throw new ApiError(0, 'Network error. Check your connection and try again.');
-    }
-  }
+  let res = await fetchWithDevRetry(url, requestInit, path);
 
   // On 401 for authenticated requests, try to refresh the token and retry once
   if (res.status === 401 && auth) {
-    const refreshed = await refreshStoredAuthToken();
+    const refreshed = await handleUnauthorizedResponse(auth, refreshStoredAuthToken);
     if (refreshed) {
       // Retry the original request with the new token
-      res = await fetch(url, buildInit());
-    } else {
-      clearStoredAuth();
-      window.dispatchEvent(new Event('algoscope:session-expired'));
+      res = await fetch(url, buildRequestInit(opts, readStoredAuth()?.accessToken));
     }
   }
 
-  if (!res.ok) {
-    if (res.status === 401 && auth) {
-      clearStoredAuth();
-      window.dispatchEvent(new Event('algoscope:session-expired'));
-    }
-    let message = res.statusText;
-    try {
-      const body = (await res.json()) as { message?: string; Message?: string };
-      message = body.message ?? body.Message ?? message;
-    } catch {
-      /* ignore */
-    }
-    if ((res.status === 502 || res.status === 503) && !getApiOrigin()) {
-      message =
-        'Cannot reach the API (dev proxy). Start the backend on port 5258, e.g. `dotnet run --project DSA-Visualizer --urls http://localhost:5258`, then refresh this page.';
-    }
-    throw new ApiError(res.status, message);
-  }
-
-  if (res.status === 204) return undefined as T;
-  return (await res.json()) as T;
+  return getApiResponseData<T>(res, auth);
 }

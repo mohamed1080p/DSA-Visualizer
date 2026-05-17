@@ -1,7 +1,7 @@
 # Production Runbooks
 
 ## 1. Service Startup
-1. **Dependencies**: Ensure Docker is running. Ensure Redis is reachable (optional but recommended). Ensure SQL Server is online. Ensure Ollama is running.
+1. **Dependencies**: Ensure Docker is running. Ensure Redis is reachable (optional but recommended). Ensure SQL Server is online. Ensure a valid Gemini API key is configured via `GEMINI__APIKEY` environment variable.
 2. **Database Migration**: Run `dotnet ef database update --project Infrastructure/Persistence --startup-project DSA-Visualizer`.
 3. **Start Application**: Run `dotnet run --project DSA-Visualizer`.
 

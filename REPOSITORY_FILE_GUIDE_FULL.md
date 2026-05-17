@@ -20,6 +20,7 @@ This document provides a detailed architecture explanation and a per-file purpos
 5. DTO response returns to client, while realtime scenarios use SignalR hub broadcasts.
 
 ## 3. File By File Catalog
+- .dockerignore: Repository artifact supporting build/runtime/documentation workflows.
 - .env.example: Repository artifact supporting build/runtime/documentation workflows.
 - .gitattributes: Repository artifact supporting build/runtime/documentation workflows.
 - .github/workflows/ci.yml: CI/CD workflow configuration for repository automation.
@@ -34,43 +35,50 @@ This document provides a detailed architecture explanation and a per-file purpos
 - ARCHITECTURE_IMPROVEMENTS.md: Project documentation/report covering architecture, operations, contribution, or progress details.
 - client/.env.example: Repository artifact supporting build/runtime/documentation workflows.
 - client/.gitignore: Repository artifact supporting build/runtime/documentation workflows.
+- client/dist/assets/index-CZl0BC7D.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
+- client/dist/assets/index-DBhTh-_J.css: Repository artifact supporting build/runtime/documentation workflows.
+- client/dist/favicon.svg: Repository artifact supporting build/runtime/documentation workflows.
+- client/dist/icons.svg: Repository artifact supporting build/runtime/documentation workflows.
+- client/dist/index.html: Repository artifact supporting build/runtime/documentation workflows.
 - client/eslint.config.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
 - client/index.html: Repository artifact supporting build/runtime/documentation workflows.
 - client/package.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
 - client/package-lock.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
 - client/public/favicon.svg: Repository artifact supporting build/runtime/documentation workflows.
 - client/public/icons.svg: Repository artifact supporting build/runtime/documentation workflows.
-- client/src/App.tsx: Top-level router that defines public and protected navigation paths across home, topics, problems, playground, dashboard, community, battle, and auth pages.
-- client/src/components/AppShell.tsx: Primary authenticated layout shell with navigation/header/footer plus battle challenge and chat notification surfaces.
-- client/src/components/PageTransition.tsx: Lightweight wrapper component applying route-level enter/exit animation transitions.
-- client/src/components/ProtectedRoute.tsx: Auth guard that redirects unauthenticated users to login while preserving intended destination route.
-- client/src/components/VictoryOverlay.tsx: Battle result modal with confetti canvas effects and contextual win/loss/draw messaging.
-- client/src/context/auth-context.ts: Auth context type/container declaration used by provider and hook to share current user/session actions.
-- client/src/context/AuthProvider.tsx: Authentication state provider handling login/register/logout/refresh flow, storage sync, and session-expired events.
-- client/src/context/SignalRContext.tsx: Realtime provider that connects to community/battle hubs, tracks chat/challenges/battle state, and exposes hub invoke helpers.
-- client/src/context/use-auth.ts: Typed convenience hook that reads AuthContext and throws if accessed outside provider scope.
-- client/src/lib/api-client.ts: Central fetch client with API URL resolution, bearer-token injection, automatic refresh-token retry, and normalized error handling.
-- client/src/lib/auth-storage.ts: LocalStorage helper for persisting auth payloads and broadcasting custom auth-change events across the app.
-- client/src/lib/sorting-engine.ts: Algorithm visualizer engine generating step-by-step snapshots for bubble/selection/insertion/merge sort animations.
-- client/src/lib/utils.ts: Tailwind class-merging helper (cn) used for conditional className composition.
-- client/src/main.tsx: Frontend entrypoint that mounts React App into the root DOM node under StrictMode and loads global styles.
-- client/src/motion-variants.ts: Shared Framer Motion variant presets (stagger/fade/scale) reused by pages and components for consistent animations.
-- client/src/pages/BattleArenaPage.tsx: Realtime battle arena UI that renders problems/opponent state, submits code, listens to hub updates, and shows victory overlay on completion.
-- client/src/pages/CommunityPage.tsx: Community dashboard for friend search/requests, private messaging, and direct battle challenge initiation.
-- client/src/pages/DashboardPage.tsx: User progress dashboard showing contribution heatmap, solve history trends, and navigation to learning/problem workflows.
-- client/src/pages/HomePage.tsx: Marketing/landing page presenting product value, feature highlights, topic cards, and entry CTAs.
-- client/src/pages/LoginPage.tsx: Sign-in screen handling credential login flow, redirect-after-login behavior, and social auth button presentation.
-- client/src/pages/NotFoundPage.tsx: Fallback 404 route component for unknown client-side paths.
-- client/src/pages/PathPage.tsx: Learning-path roadmap view for selecting paths, starting progress, completing levels, and tracking unlock/completion status.
-- client/src/pages/PlaygroundPage.tsx: Practice hub combining queue/matchmaking controls, leaderboard panels, and recent battle history tabs.
-- client/src/pages/ProblemDetailPage.tsx: Problem solving page with language templates, code editor, submission polling lifecycle, verdict display, and testcase/metrics feedback.
-- client/src/pages/ProblemsPage.tsx: Problem listing page with search/topic filtering and quick navigation into detailed challenge views.
-- client/src/pages/RegisterPage.tsx: User registration form for account creation and immediate authenticated onboarding.
-- client/src/pages/TopicDetailPage.tsx: Topic detail view rendering explanation, complexity, implementations, and completion action tied to user progress.
-- client/src/pages/TopicsPage.tsx: Topic catalog page with category breakdown, search filtering, and links to detailed topic content.
-- client/src/pages/VisualizerPage.tsx: Interactive data-structure/algorithm visual playground with animated array/linked-list and other operation demonstrations.
-- client/src/styles.css: Global Tailwind and design-token stylesheet defining theme variables, utility layers, and base visual system for the frontend.
-- client/src/vite-env.d.ts: TypeScript ambient declarations for Vite environment variables and ImportMeta typing.
+- client/src/App.tsx: Top-level router defining public/protected routes for home, learning, problems, progress, community, and battle experiences.
+- client/src/components/AIChatBot.tsx: Reusable React component for A I Chat Bot presentation/interaction behavior.
+- client/src/components/AppShell.tsx: Reusable React component for App Shell presentation/interaction behavior.
+- client/src/components/PageTransition.tsx: Reusable React component for Page Transition presentation/interaction behavior.
+- client/src/components/ProtectedRoute.tsx: Reusable React component for Protected Route presentation/interaction behavior.
+- client/src/components/VictoryOverlay.tsx: Reusable React component for Victory Overlay presentation/interaction behavior.
+- client/src/context/auth-context.ts: Frontend shared context/provider/hook module for auth context state management.
+- client/src/context/AuthProvider.tsx: Frontend shared context/provider/hook module for Auth Provider state management.
+- client/src/context/SignalRContext.tsx: Realtime provider managing community/battle hub connections, incoming events, and client invoke helpers.
+- client/src/context/use-auth.ts: Frontend shared context/provider/hook module for use auth state management.
+- client/src/lib/analytics.ts: Frontend utility module for analytics logic reused across pages/components.
+- client/src/lib/api-client.ts: Centralized API request layer handling base URL resolution, auth headers, token refresh, retries, and normalized API errors.
+- client/src/lib/auth-storage.ts: Frontend utility module for auth storage logic reused across pages/components.
+- client/src/lib/sorting-engine.ts: Frontend utility module for sorting engine logic reused across pages/components.
+- client/src/lib/utils.ts: Frontend utility module for utils logic reused across pages/components.
+- client/src/main.tsx: Repository artifact supporting build/runtime/documentation workflows.
+- client/src/motion-variants.ts: Repository artifact supporting build/runtime/documentation workflows.
+- client/src/pages/BattleArenaPage.tsx: Route page component implementing the Battle Arena Page screen UI and interactions.
+- client/src/pages/CommunityPage.tsx: Route page component implementing the Community Page screen UI and interactions.
+- client/src/pages/DashboardPage.tsx: Route page component implementing the Dashboard Page screen UI and interactions.
+- client/src/pages/HomePage.tsx: Route page component implementing the Home Page screen UI and interactions.
+- client/src/pages/LoginPage.tsx: Route page component implementing the Login Page screen UI and interactions.
+- client/src/pages/NotFoundPage.tsx: Route page component implementing the Not Found Page screen UI and interactions.
+- client/src/pages/PathPage.tsx: Route page component implementing the Path Page screen UI and interactions.
+- client/src/pages/PlaygroundPage.tsx: Route page component implementing the Playground Page screen UI and interactions.
+- client/src/pages/ProblemDetailPage.tsx: Route page component implementing the Problem Detail Page screen UI and interactions.
+- client/src/pages/ProblemsPage.tsx: Route page component implementing the Problems Page screen UI and interactions.
+- client/src/pages/RegisterPage.tsx: Route page component implementing the Register Page screen UI and interactions.
+- client/src/pages/TopicDetailPage.tsx: Route page component implementing the Topic Detail Page screen UI and interactions.
+- client/src/pages/TopicsPage.tsx: Route page component implementing the Topics Page screen UI and interactions.
+- client/src/pages/VisualizerPage.tsx: Route page component implementing the Visualizer Page screen UI and interactions.
+- client/src/styles.css: Repository artifact supporting build/runtime/documentation workflows.
+- client/src/vite-env.d.ts: Repository artifact supporting build/runtime/documentation workflows.
 - client/tsconfig.app.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
 - client/tsconfig.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
 - client/tsconfig.node.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
@@ -117,29 +125,29 @@ This document provides a detailed architecture explanation and a per-file purpos
 - Core/Domain/Models/TopicModule/TopicCodeImplementation.cs: Domain model or enum defining Topic Code Implementation business data/state and relationships.
 - Core/Domain/Models/TopicModule/TopicComplexity.cs: Domain model or enum defining Topic Complexity business data/state and relationships.
 - Core/Domain/Models/TopicModule/UserTopicProgress.cs: Domain model or enum defining User Topic Progress business data/state and relationships.
-- Core/Services/AI/ChatbotService.cs: Calls Ollama chat API through a named HttpClient, builds prompt history/messages, and returns normalized chatbot response DTOs.
-- Core/Services/Auth/AuthService.cs: Implements register/login/logout/refresh/external-login flows using ASP.NET Identity, refresh-token persistence, and token generation.
-- Core/Services/Auth/JwtTokenGenerator.cs: Builds signed JWT access tokens and cryptographically strong refresh tokens from configured issuer/audience/secret settings.
-- Core/Services/Battle/AntiCheatService.cs: Performs lightweight anti-cheat timing checks to flag suspiciously fast battle submissions.
-- Core/Services/Battle/BattleExecutionService.cs: Adapts generic code execution service into battle-specific execution responses for judged multiplayer submissions.
-- Core/Services/Battle/BattleSessionService.cs: Owns battle lifecycle state transitions: create/start/finish/abandon sessions, fetch details/history, and maintain player stats.
-- Core/Services/Battle/BattleSubmissionService.cs: Validates battle submissions, runs code, computes verdict/solved counts, and updates battle progression records.
-- Core/Services/Battle/EloRatingService.cs: Calculates rank point adjustments using Elo formulas and K-factor style winner/loser expectations.
-- Core/Services/CodeExecution/CodeExecutionHelpers.cs: Internal helper methods for runtime/memory limits, payload shaping, and normalization around code execution requests.
-- Core/Services/CodeExecution/CodeExecutionService.cs: Coordinates secure code execution (single and batch) by delegating to Docker runners and mapping raw outputs to result DTOs.
-- Core/Services/Community/FriendshipService.cs: Handles friend-request lifecycle, friend listing, pending requests, removal, and user search with relationship filtering.
-- Core/Services/Community/LeaderboardService.cs: Builds global/weekly/monthly/friends leaderboards with caching support and rank-point update/reset operations.
-- Core/Services/Infrastructure/ServiceManager.cs: Facade exposing grouped service interfaces through one dependency for consumers that need multi-service access.
-- Core/Services/Infrastructure/ServiceRegistrationExtensions.cs: Registers service implementations, SignalR battle dependencies, telemetry, and resilient HTTP client policies into DI.
-- Core/Services/Learning/LearningPathService.cs: Provides path listing/detail/start/complete-level logic and advances progression based on solved topics/problems.
-- Core/Services/Learning/TopicService.cs: Returns topic lists/details and marks topics complete while updating learning progression hooks.
-- Core/Services/Learning/UserProgressService.cs: Aggregates user progress metrics and recent solve data for dashboard/reporting endpoints.
-- Core/Services/Observability/TelemetryService.cs: Central tracing/metrics helper that records service operations and wraps Redis/database timing instrumentation.
-- Core/Services/Problems/ProblemService.cs: Implements problem query/filter by search/category and returns problem detail with visible sample test cases only.
-- Core/Services/Problems/SubmissionHelpers.cs: Utility methods for submission scoring/resource conversions and common submission-calculation helpers.
-- Core/Services/Problems/SubmissionProcessor.cs: Background processor that executes queued submissions and persists final verdict/test-case outcomes.
-- Core/Services/Problems/SubmissionService.cs: Submission orchestration service handling enqueue, per-problem/all-history retrieval, and result lookup with ownership checks.
-- Core/Services/Services.csproj: Application-services project definition referencing Domain, Shared DTOs, service abstractions, and external packages (including Hangfire and Polly).
+- Core/Services/AI/ChatbotService.cs: Application service module for Chatbot business workflow orchestration.
+- Core/Services/Auth/AuthService.cs: Application service module for Auth business workflow orchestration.
+- Core/Services/Auth/JwtTokenGenerator.cs: Application service module for Jwt Token Generator business workflow orchestration.
+- Core/Services/Battle/AntiCheatService.cs: Application service module for Anti Cheat business workflow orchestration.
+- Core/Services/Battle/BattleExecutionService.cs: Application service module for Battle Execution business workflow orchestration.
+- Core/Services/Battle/BattleSessionService.cs: Application service module for Battle Session business workflow orchestration.
+- Core/Services/Battle/BattleSubmissionService.cs: Application service module for Battle Submission business workflow orchestration.
+- Core/Services/Battle/EloRatingService.cs: Application service module for Elo Rating business workflow orchestration.
+- Core/Services/CodeExecution/CodeExecutionHelpers.cs: Application service module for Code Execution  Helper business workflow orchestration.
+- Core/Services/CodeExecution/CodeExecutionService.cs: Application service module for Code Execution business workflow orchestration.
+- Core/Services/Community/FriendshipService.cs: Application service module for Friendship business workflow orchestration.
+- Core/Services/Community/LeaderboardService.cs: Application service module for Leaderboard business workflow orchestration.
+- Core/Services/Infrastructure/ServiceManager.cs: Application service module for Service Manager business workflow orchestration.
+- Core/Services/Infrastructure/ServiceRegistrationExtensions.cs: Registers application and battle service implementations for DI, including resilient HTTP client setup for AI provider calls.
+- Core/Services/Learning/LearningPathService.cs: Application service module for Learning Path business workflow orchestration.
+- Core/Services/Learning/TopicService.cs: Application service module for Topic business workflow orchestration.
+- Core/Services/Learning/UserProgressService.cs: Application service module for User Progress business workflow orchestration.
+- Core/Services/Observability/TelemetryService.cs: Application service module for Telemetry business workflow orchestration.
+- Core/Services/Problems/ProblemService.cs: Application service module for Problem business workflow orchestration.
+- Core/Services/Problems/SubmissionHelpers.cs: Application service module for Submission  Helper business workflow orchestration.
+- Core/Services/Problems/SubmissionProcessor.cs: Application service module for Submission  Processor business workflow orchestration.
+- Core/Services/Problems/SubmissionService.cs: Application service module for Submission business workflow orchestration.
+- Core/Services/Services.csproj: C# project file defining framework, dependencies, and project references.
 - Core/ServicesAbstraction/IAntiCheatService.cs: Service interface contract for Anti Cheat Service consumed by controllers/hubs and implemented in services/infrastructure.
 - Core/ServicesAbstraction/IAuthService.cs: Service interface contract for Auth Service consumed by controllers/hubs and implemented in services/infrastructure.
 - Core/ServicesAbstraction/IBattleExecutionService.cs: Service interface contract for Battle Execution Service consumed by controllers/hubs and implemented in services/infrastructure.
@@ -161,10 +169,12 @@ This document provides a detailed architecture explanation and a per-file purpos
 - Core/ServicesAbstraction/ITokenGenerator.cs: Service interface contract for Token Generator consumed by controllers/hubs and implemented in services/infrastructure.
 - Core/ServicesAbstraction/ITopicService.cs: Service interface contract for Topic Service consumed by controllers/hubs and implemented in services/infrastructure.
 - Core/ServicesAbstraction/IUserProgressService.cs: Service interface contract for User Progress Service consumed by controllers/hubs and implemented in services/infrastructure.
-- Core/ServicesAbstraction/OllamaChatResponse.cs: Repository artifact supporting build/runtime/documentation workflows.
-- Core/ServicesAbstraction/OllamaMessage.cs: Repository artifact supporting build/runtime/documentation workflows.
+
 - Core/ServicesAbstraction/RunnerBatchItem.cs: Repository artifact supporting build/runtime/documentation workflows.
 - Core/ServicesAbstraction/ServicesAbstraction.csproj: C# project file defining framework, dependencies, and project references.
+- debug.log: Text/log artifact captured from previous development runs.
+- DEPLOYMENT.md: Project documentation/report covering architecture, operations, contribution, or progress details.
+- docker-compose.demo.yml: CI/CD workflow configuration for repository automation.
 - DockerSandbox/cpp/Dockerfile: Language sandbox container definition used by code execution service.
 - DockerSandbox/cpp/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
 - DockerSandbox/csharp/Dockerfile: Language sandbox container definition used by code execution service.
@@ -173,10 +183,12 @@ This document provides a detailed architecture explanation and a per-file purpos
 - DockerSandbox/java/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
 - DockerSandbox/python/Dockerfile: Language sandbox container definition used by code execution service.
 - DockerSandbox/python/run.sh: Language sandbox runtime script invoked in container to compile/run user code.
+- dsa_visualizer_technical_documentation.md: Project documentation/report covering architecture, operations, contribution, or progress details.
 - DSA-Visualizer.slnx: Repository artifact supporting build/runtime/documentation workflows.
 - DSA-Visualizer/appsettings.Development.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
 - DSA-Visualizer/appsettings.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
 - DSA-Visualizer/appsettings.Production.json: Configuration/data artifact used by runtime startup, build tooling, or seeded content.
+- DSA-Visualizer/Dockerfile: Repository artifact supporting build/runtime/documentation workflows.
 - DSA-Visualizer/dotnet_log.txt: Text/log artifact captured from previous development runs.
 - DSA-Visualizer/DSA-Visualizer.csproj: C# project file defining framework, dependencies, and project references.
 - DSA-Visualizer/DSA-Visualizer.db: Local development database runtime artifact.
@@ -192,7 +204,7 @@ This document provides a detailed architecture explanation and a per-file purpos
 - DSA-Visualizer/HealthChecks/DatabaseHealthCheck.cs: Health check module validating Database readiness/liveness state.
 - DSA-Visualizer/HealthChecks/DockerExecutorHealthCheck.cs: Health check module validating Docker Executor readiness/liveness state.
 - DSA-Visualizer/HealthChecks/HealthCheckResponseWriter.cs: Health check module validating Health Check Response Writer readiness/liveness state.
-- DSA-Visualizer/HealthChecks/OllamaHealthCheck.cs: Health check module validating Ollama readiness/liveness state.
+
 - DSA-Visualizer/HealthChecks/RedisHealthCheck.cs: Health check module validating Redis readiness/liveness state.
 - DSA-Visualizer/log.txt: Text/log artifact captured from previous development runs.
 - DSA-Visualizer/Middleware/CorrelationIdMiddleware.cs: Custom middleware implementing cross-cutting request behavior for Correlation Id Middleware.
@@ -314,20 +326,20 @@ This document provides a detailed architecture explanation and a per-file purpos
 - Infrastructure/Persistence/Repositories/Leaderboard/LeaderboardReadRepository.cs: Concrete repository implementation for Leaderboard Read queries and persistence commands.
 - Infrastructure/Persistence/Repositories/Problems/ProblemRepository.cs: Concrete repository implementation for Problem queries and persistence commands.
 - Infrastructure/Persistence/Repositories/Problems/SubmissionRepository.cs: Concrete repository implementation for Submission queries and persistence commands.
-- Infrastructure/Presentation/Controllers/AI/ChatbotController.cs: Exposes POST chatbot message endpoint that forwards user prompts to chatbot service and returns AI response DTO.
-- Infrastructure/Presentation/Controllers/Auth/AuthController.cs: Auth API surface for register/login/logout/refresh-token plus external-login callback flows.
-- Infrastructure/Presentation/Controllers/Battle/BattleController.cs: Battle REST endpoints for queue management, queue status, battle history/details, player stats, and bot-practice challenge creation.
-- Infrastructure/Presentation/Controllers/Community/FriendshipController.cs: Authenticated friendship endpoints for send/accept/decline requests, list friends/pending, remove friend, and user search.
-- Infrastructure/Presentation/Controllers/Community/LeaderboardController.cs: Leaderboard endpoints returning paginated global/weekly/monthly rankings and authenticated friends leaderboard.
-- Infrastructure/Presentation/Controllers/Learning/LearningPathsController.cs: Learning-path endpoints for listing paths, fetching path detail, starting a path, and completing a specific level.
-- Infrastructure/Presentation/Controllers/Learning/UserProgressController.cs: Authenticated endpoint returning consolidated user progress dashboard DTO.
-- Infrastructure/Presentation/Controllers/Problems/PlaygroundController.cs: Ad-hoc code execution endpoints for playground runs through the code execution service.
-- Infrastructure/Presentation/Controllers/Problems/ProblemsController.cs: Read endpoints for paginated/filterable problem catalog and single problem detail by slug.
-- Infrastructure/Presentation/Controllers/Problems/SubmissionsController.cs: Submission API for posting solutions, listing all/problem-specific history, and polling a specific submission result.
-- Infrastructure/Presentation/Controllers/Problems/TopicsController.cs: Topic APIs for listing/filtering, topic detail retrieval, completion marking, and development-only progression debug advance.
-- Infrastructure/Presentation/Hubs/Battle/BattleHub.cs: Realtime multiplayer hub handling queue/challenge/join/start/submit/surrender/typing events and broadcasting battle state/score/result updates.
-- Infrastructure/Presentation/Hubs/Community/CommunityHub.cs: Authenticated community messaging hub for private messages and simple presence broadcast notifications.
-- Infrastructure/Presentation/Presentation.csproj: Presentation-layer project definition exposing REST controllers and SignalR hubs while referencing service abstractions and shared DTOs.
+- Infrastructure/Presentation/Controllers/AI/ChatbotController.cs: HTTP API controller for Chatbot feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Auth/AuthController.cs: HTTP API controller for Auth feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Battle/BattleController.cs: HTTP API controller for Battle feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Community/FriendshipController.cs: HTTP API controller for Friendship feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Community/LeaderboardController.cs: HTTP API controller for Leaderboard feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Learning/LearningPathsController.cs: HTTP API controller for Learning Paths feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Learning/UserProgressController.cs: HTTP API controller for User Progress feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Problems/PlaygroundController.cs: HTTP API controller for Playground feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Problems/ProblemsController.cs: HTTP API controller for Problems feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Problems/SubmissionsController.cs: HTTP API controller for Submissions feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Controllers/Problems/TopicsController.cs: HTTP API controller for Topics feature endpoints and request/response orchestration.
+- Infrastructure/Presentation/Hubs/Battle/BattleHub.cs: SignalR hub handling realtime Battle events, connection groups, and client method invokes.
+- Infrastructure/Presentation/Hubs/Community/CommunityHub.cs: SignalR hub handling realtime Community events, connection groups, and client method invokes.
+- Infrastructure/Presentation/Presentation.csproj: C# project file defining framework, dependencies, and project references.
 - LICENSE.txt: Text/log artifact captured from previous development runs.
 - loadtest.js: JavaScript utility script for extraction/fixes/load generation in development workflows.
 - LoadTests/LoadTests.csproj: C# project file defining framework, dependencies, and project references.

@@ -18,6 +18,6 @@ This project follows a modern Clean Architecture style with Domain-Driven Design
 - **Frontend**: A React/TypeScript application utilizing Vite, featuring Framer Motion for high-quality animations and Monaco Editor for code input.
 
 ## Resilience
-- HTTP Clients use Polly for circuit-breaking and retries (e.g., Ollama integration).
+- HTTP Clients use Polly for circuit-breaking and retries (e.g., Gemini integration).
 - EF Core configured with `EnableRetryOnFailure`.
 - Docker containers have hard resource and time constraints to prevent fork bombs and DOS.

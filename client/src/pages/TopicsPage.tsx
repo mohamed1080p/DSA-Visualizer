@@ -68,11 +68,22 @@ export default function TopicsPage() {
     return [{ name: 'All Topics', count: allTopics.length }, ...sorted.map(([name, count]) => ({ name, count }))];
   }, [allTopics]);
 
+  const normalizeDifficulty = (d: string | number) => {
+    const val = String(d);
+    if (val === '1' || val.toLowerCase() === 'easy') return 'Easy';
+    if (val === '2' || val.toLowerCase() === 'medium') return 'Medium';
+    if (val === '3' || val.toLowerCase() === 'hard') return 'Hard';
+    return val;
+  };
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return allTopics.filter((t) => {
-      if (active !== 'All Topics' && t.categoryName !== active) return false;
-      if (difficulty !== 'All' && t.difficulty !== difficulty) return false;
+      const topicCategory = t.categoryName?.trim() || 'General';
+      const topicDifficulty = normalizeDifficulty(t.difficulty);
+
+      if (active !== 'All Topics' && topicCategory.toLowerCase() !== active.toLowerCase()) return false;
+      if (difficulty !== 'All' && topicDifficulty !== difficulty) return false;
       if (q && !t.title.toLowerCase().includes(q) && !t.description.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -188,10 +199,10 @@ export default function TopicsPage() {
                         <span
                           className={cn(
                             'rounded border px-2 py-1 font-mono text-[10px] uppercase tracking-wider',
-                            LEVEL_COLOR[t.difficulty] ?? 'border-border bg-background',
+                            LEVEL_COLOR[normalizeDifficulty(t.difficulty)] ?? 'border-border bg-background',
                           )}
                         >
-                          {t.difficulty}
+                          {normalizeDifficulty(t.difficulty)}
                         </span>
                       </div>
                       <p className="mt-3 flex-1 text-sm text-muted-foreground">{t.description}</p>

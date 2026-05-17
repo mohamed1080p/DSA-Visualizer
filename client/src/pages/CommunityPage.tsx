@@ -54,6 +54,7 @@ export default function CommunityPage() {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const [showInviteModal, setShowInviteModal] = useState<Friend | null>(null);
+  const [friendScores, setFriendScores] = useState<Record<string, number>>({});
 
   const fetchData = async () => {
     setLoading(true);
@@ -64,6 +65,15 @@ export default function CommunityPage() {
       ]);
       setFriends(f);
       setPending(p);
+      // Also fetch friends' leaderboard scores so UI shows authoritative RankPoints
+      try {
+        const lb = await apiJson<Array<{ userId: string; rankPoints: number }>>('/api/Leaderboard/friends', { auth: true });
+        const map: Record<string, number> = {};
+        lb.forEach((e) => { map[e.userId] = e.rankPoints; });
+        setFriendScores(map);
+      } catch {
+        // ignore leaderboard fetch failures — keep placeholders
+      }
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Failed to load community data.');
     } finally {
@@ -278,7 +288,7 @@ export default function CommunityPage() {
                           <div>
                             <div className="font-semibold">{f.displayName}</div>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Trophy className="h-3 w-3 text-warning" /> 1,200 pts
+                              <Trophy className="h-3 w-3 text-warning" /> {friendScores[f.userId] ? `${friendScores[f.userId].toLocaleString()} pts` : '— pts'}
                             </div>
                           </div>
                         </div>

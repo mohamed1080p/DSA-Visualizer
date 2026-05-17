@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.resolve(__dirname, 'src');
 
 /** Must match DSA-Visualizer `launchSettings.json` HTTP URL (avoid `localhost` → IPv6 issues on Windows). */
-const apiDevTarget = 'http://127.0.0.1:1574';
+const apiDevTarget = 'http://127.0.0.1:5258';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],

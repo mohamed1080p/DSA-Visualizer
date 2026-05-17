@@ -45,10 +45,29 @@ public class LeaderboardService(
                 foreach (var entry in entries)
                 {
                     rowByUser.TryGetValue(entry.UserId, out var row);
+                    // Prefer authoritative DB value for RankPoints when available.
+                    var rankPoints = row?.RankPoints ?? (int)entry.Score;
                     result.Add(new LeaderboardEntry(
                         rank++, entry.UserId, row?.DisplayName ?? "Player",
-                        (int)entry.Score, row?.Level ?? 1, row?.WinCount ?? 0,
+                        rankPoints, row?.Level ?? 1, row?.WinCount ?? 0,
                         row?.LossCount ?? 0, row?.CurrentStreak ?? 0, row?.WinRate ?? 0));
+
+                    // If cache has a stale score, correct it asynchronously so the
+                    // cached global leaderboard stays in sync with the DB.
+                    if (row != null && (double)row.RankPoints != entry.Score)
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await cache.UpdateScoreAsync(key, entry.UserId, row.RankPoints);
+                            }
+                            catch
+                            {
+                                // best-effort; ignore cache update failures
+                            }
+                        });
+                    }
                 }
                 return result;
             }

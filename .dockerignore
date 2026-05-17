@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/node_modules/
+client/dist/
+.git/
+.vs/
+.vscode/
+*.log
+*.db
+*.db-shm
+*.db-wal

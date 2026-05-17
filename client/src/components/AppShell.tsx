@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/use-auth';
 import { useSignalR } from '@/context/SignalRContext';
 import { AnimatePresence } from 'framer-motion';
+import { AIChatBot } from './AIChatBot';
 
 const NAV = [
   { to: '/topics', label: 'Topics' },
@@ -34,6 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <ChatNotification />
       <ChallengeNotification />
+      <AIChatBot />
       <Footer />
     </div>
   );
@@ -159,7 +161,7 @@ function Header({ pathname }: { pathname: string }) {
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
           </span>
           <span className="font-display text-lg font-bold tracking-tight">
-            Algo<span className="text-primary">Scope</span>
+            DSA <span className="text-primary">Visualizer</span>
           </span>
         </Link>
 
@@ -247,7 +249,7 @@ function Footer() {
       <div className="mx-auto flex max-w-[1600px] flex-col items-center justify-between gap-4 px-6 py-8 text-sm text-muted-foreground md:flex-row">
         <div className="flex items-center gap-2">
           <Command className="h-3.5 w-3.5 text-primary" />
-          <span className="font-mono">algoscope.dev</span>
+          <span className="font-mono">dsa-visualizer.dev</span>
           <span className="text-border">/</span>
           <span>v1.0.0-edge</span>
         </div>

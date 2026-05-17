@@ -23,6 +23,7 @@ import { AppShell } from '@/components/AppShell';
 import { PageTransition } from '@/components/PageTransition';
 import { cn } from '@/lib/utils';
 import { generateSteps, type SortStep } from '@/lib/sorting-engine';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 // ── TOPIC METADATA DEFINITIONS ───────────────────────────────────────────────
 
@@ -2051,6 +2052,14 @@ export default function VisualizerPage() {
   const activeTopicMeta = useMemo(() => {
     return TOPICS_DATA.find((t) => t.slug === activeSlug) ?? TOPICS_DATA[4];
   }, [activeSlug]);
+
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.TOPIC_VIEWED, {
+      slug: activeTopicMeta.slug,
+      category: activeTopicMeta.category,
+      title: activeTopicMeta.title
+    });
+  }, [activeTopicMeta]);
 
   const selectCategory = (cat: string) => {
     setActiveCategory(cat);

@@ -9,6 +9,7 @@ import { useAuth } from '@/context/use-auth';
 import { cn } from '@/lib/utils';
 import { ApiError, apiJson } from '@/lib/api-client';
 import VictoryOverlay from '@/components/VictoryOverlay';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 // Reuse components from ProblemDetailPage or local equivalents
 const LANGUAGES = [
@@ -102,14 +103,26 @@ export default function BattleArenaPage() {
   const battleOutcome = useMemo<'win' | 'loss' | 'draw' | null>(() => {
     if (!battleResult) return null;
     const winnerId = battleResult.winnerUserId;
-    if (!winnerId) return 'draw';
-    if (winnerId === user?.userId) return 'win';
-    return 'loss';
+    let outcome: 'win' | 'loss' | 'draw' = 'draw';
+    if (winnerId) {
+      outcome = winnerId === user?.userId ? 'win' : 'loss';
+    }
+    
+    trackEvent(AnalyticsEvents.BATTLE_COMPLETED, { 
+      outcome,
+      winnerId
+    });
+    
+    return outcome;
   }, [battleResult, user?.userId]);
 
   useEffect(() => {
     if (!currentBattle && !battleResult) {
       navigate('/playground');
+    } else if (currentBattle) {
+      trackEvent(AnalyticsEvents.BATTLE_STARTED, { 
+        battleId: (currentBattle as any).battleId ?? (currentBattle as any).id 
+      });
     }
   }, [currentBattle, battleResult, navigate]);
 
@@ -189,6 +202,10 @@ export default function BattleArenaPage() {
         json: { problemOrder, code, language },
       });
       setVerdict(result);
+      trackEvent(AnalyticsEvents.BATTLE_SUBMISSION, { 
+        battleId, 
+        isCorrect: result.isCorrect ?? result.IsCorrect 
+      });
     } catch (error) {
       setVerdict({ error: error instanceof ApiError ? error.message : error instanceof Error ? error.message : 'Submission failed' });
     } finally {

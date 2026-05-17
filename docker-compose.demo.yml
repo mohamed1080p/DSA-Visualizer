@@ -1,0 +1,58 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Str0ng!DemoPassw0rd123"
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: DSA-Visualizer/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=db,1433;Database=DSA_Visualizer_DB;User Id=sa;Password=Str0ng!DemoPassw0rd123;TrustServerCertificate=True;MultipleActiveResultSets=true
+      ConnectionStrings__Redis: localhost:6379
+      Redis__Enabled: "false"
+      Redis__Required: "false"
+      Cors__AllowAnyOrigin: "true"
+      JwtSettings__SecretKey: "ThisIsADefinitelyLongEnoughSecretForDemo123!"
+      JwtSettings__Issuer: DSA-Visualizer
+      JwtSettings__Audience: DSA-Visualizer
+      ExternalAuth__Google__ClientId: demo-google-client-id
+      ExternalAuth__Google__ClientSecret: demo-google-client-secret
+      ExternalAuth__GitHub__ClientId: demo-github-client-id
+      ExternalAuth__GitHub__ClientSecret: demo-github-client-secret
+      Hangfire__Dashboard__Users__0__Login: admin
+      Hangfire__Dashboard__Users__0__PasswordClear: admin123!
+      Ollama__BaseUrl: http://ollama:11434
+      OpenTelemetry__OtlpEndpoint: ""
+    restart: unless-stopped
+    depends_on:
+      - db
+    command:
+      - bash
+      - -lc
+      - |
+        until bash -c '</dev/tcp/db/1433' >/dev/null 2>&1; do
+          echo "Waiting for SQL Server..."
+          sleep 2
+        done
+        exec dotnet DSA-Visualizer.dll
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    command:
+      - tunnel
+      - --no-autoupdate
+      - --url
+      - http://app:8080
+    restart: unless-stopped
+    depends_on:
+      - app

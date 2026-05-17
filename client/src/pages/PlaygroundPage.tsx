@@ -81,14 +81,6 @@ function formatMode(mode: string | number) {
   return String(mode);
 }
 
-function formatStatus(status: string | number) {
-  if (status === 1 || status === '1') return 'Waiting';
-  if (status === 2 || status === '2') return 'In progress';
-  if (status === 3 || status === '3') return 'Finished';
-  if (status === 4 || status === '4') return 'Cancelled';
-  if (status === 5 || status === '5') return 'Abandoned';
-  return String(status);
-}
 
 function formatWhen(iso: string) {
   const d = new Date(iso);

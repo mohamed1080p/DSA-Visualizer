@@ -53,12 +53,23 @@ export default function ProblemsPage() {
 
   const topics = useMemo(() => ['All', ...Array.from(new Set(problems.map((p) => p.topicName))).sort()], [problems]);
 
+  const normalizeDifficulty = (d: string | number) => {
+    const val = String(d);
+    if (val === '1' || val.toLowerCase() === 'easy') return 'Easy';
+    if (val === '2' || val.toLowerCase() === 'medium') return 'Medium';
+    if (val === '3' || val.toLowerCase() === 'hard') return 'Hard';
+    return val;
+  };
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return problems.filter((p) => {
-      if (difficulty !== 'All' && p.difficulty !== difficulty) return false;
-      if (topic !== 'All' && p.topicName !== topic) return false;
-      if (q && !p.title.toLowerCase().includes(q) && !p.topicName.toLowerCase().includes(q)) return false;
+      const probDifficulty = normalizeDifficulty(p.difficulty);
+      const probTopic = p.topicName?.trim() || 'General';
+
+      if (difficulty !== 'All' && probDifficulty !== difficulty) return false;
+      if (topic !== 'All' && probTopic.toLowerCase() !== topic.toLowerCase()) return false;
+      if (q && !p.title.toLowerCase().includes(q) && !probTopic.toLowerCase().includes(q)) return false;
       return true;
     });
   }, [difficulty, problems, search, topic]);
@@ -147,8 +158,8 @@ export default function ProblemsPage() {
                     <span className="truncate">{p.title}</span>
                   </Link>
                   <div>
-                    <span className={cn('rounded border px-2 py-1 font-mono text-[10px] uppercase', LEVEL_COLOR[p.difficulty] ?? 'border-border bg-background')}>
-                      {p.difficulty}
+                    <span className={cn('rounded border px-2 py-1 font-mono text-[10px] uppercase', LEVEL_COLOR[normalizeDifficulty(p.difficulty)] ?? 'border-border bg-background')}>
+                      {normalizeDifficulty(p.difficulty)}
                     </span>
                   </div>
                   <div className="truncate text-muted-foreground">{p.topicName}</div>

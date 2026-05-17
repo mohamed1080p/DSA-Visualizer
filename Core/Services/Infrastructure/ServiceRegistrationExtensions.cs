@@ -21,11 +21,11 @@ public static class ServiceRegistrationExtensions
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpClient();
-        services.AddHttpClient("ollama", (_, client) =>
+        services.AddHttpClient("Gemini", (_, client) =>
         {
-            var baseUrl = (configuration["Ollama:BaseUrl"] ?? "http://localhost:11434").TrimEnd('/');
+            var baseUrl = (configuration["Gemini:BaseUrl"] ?? "https://generativelanguage.googleapis.com").TrimEnd('/');
             client.BaseAddress = new Uri(baseUrl + "/");
-            var timeoutSeconds = configuration.GetValue("Ollama:RequestTimeoutSeconds", 120);
+            var timeoutSeconds = configuration.GetValue("Gemini:RequestTimeoutSeconds", 120);
             client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
         })
         .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))))

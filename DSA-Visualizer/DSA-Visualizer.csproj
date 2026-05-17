@@ -34,4 +34,15 @@
     <ProjectReference Include="..\Infrastructure\External\Infrastructure.External.csproj" />
   </ItemGroup>
 
+  <Target Name="BuildClientApp" BeforeTargets="Publish" Condition="'$(SkipClientBuild)' != 'true'">
+    <Exec WorkingDirectory="..\client" Command="npm run build" />
+    <ItemGroup>
+      <ClientDistFiles Include="..\client\dist\**\*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(ClientDistFiles)"
+      DestinationFiles="@(ClientDistFiles->'$(PublishDir)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

@@ -101,7 +101,8 @@ function wait(ms: number) {
 }
 
 function isFinalStatus(status: string) {
-  return status === 'Completed' || status === 'Failed';
+  const s = status?.trim();
+  return s === 'Completed' || s === 'Failed';
 }
 
 function verdictClass(verdict: string) {
@@ -159,12 +160,15 @@ export default function ProblemDetailPage() {
       });
       setSubmitMsg(`Submission #${queued.submissionId} queued.`);
 
-      for (let i = 0; i < 12; i += 1) {
-        await wait(i < 3 ? 900 : 1600);
+      // Poll for results up to 100 times (~2.5 minutes)
+      for (let i = 0; i < 100; i += 1) {
+        await wait(i < 5 ? 1000 : 2000);
         const next = await apiJson<SubmissionResult>(`/api/Submissions/${queued.submissionId}`, { auth: true });
+        const cleanStatus = next.status?.trim();
+        const cleanVerdict = next.verdict?.trim();
         setResult(next);
-        setSubmitMsg(`Submission #${queued.submissionId}: ${next.status}${next.verdict ? ` / ${next.verdict}` : ''}`);
-        if (isFinalStatus(next.status)) break;
+        setSubmitMsg(`Submission #${queued.submissionId}: ${cleanStatus}${cleanVerdict ? ` / ${cleanVerdict}` : ''}`);
+        if (isFinalStatus(cleanStatus)) break;
       }
 
     } catch (e) {

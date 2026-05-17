@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, ArrowLeft } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
+import { OAuthButtons } from '@/components/OAuthButtons';
 import { useAuth } from '@/context/use-auth';
 import { ApiError } from '@/lib/api-client';
 
@@ -15,19 +16,6 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    try {
-      await register({ email, password, userName, displayName });
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Registration failed.');
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="flex min-h-screen">
@@ -46,21 +34,38 @@ export default function RegisterPage() {
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
               </span>
               <span className="font-display text-xl font-bold">
-                Algo<span className="text-primary">Scope</span>
+                DSA <span className="text-primary">Visualizer</span>
               </span>
             </div>
             <h1 className="font-display text-3xl font-bold">Create account</h1>
             <p className="mt-2 text-sm text-muted-foreground">Start learning with a free account.</p>
 
-            <form className="mt-8 space-y-4" onSubmit={onSubmit}>
+            <form
+              className="mt-8 space-y-4"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setError(null);
+                setLoading(true);
+                try {
+                  await register({ email, password, userName, displayName });
+                } catch (err) {
+                  setError(err instanceof ApiError ? err.message : 'Registration failed.');
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
               {error && (
                 <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   {error}
                 </div>
               )}
               <div>
-                <label className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Display name</label>
+                <label htmlFor="register-display-name" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  Display name
+                </label>
                 <input
+                  id="register-display-name"
                   required
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
@@ -68,8 +73,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Username</label>
+                <label htmlFor="register-user-name" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  Username
+                </label>
                 <input
+                  id="register-user-name"
                   required
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
@@ -77,8 +85,11 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Email</label>
+                <label htmlFor="register-email" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  Email
+                </label>
                 <input
+                  id="register-email"
                   required
                   type="email"
                   value={email}
@@ -87,9 +98,12 @@ export default function RegisterPage() {
                 />
               </div>
               <div>
-                <label className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Password</label>
+                <label htmlFor="register-password" className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                  Password
+                </label>
                 <div className="relative mt-1.5">
                   <input
+                    id="register-password"
                     required
                     type={showPwd ? 'text' : 'password'}
                     value={password}
@@ -116,6 +130,19 @@ export default function RegisterPage() {
               >
                 <Mail className="h-4 w-4" /> {loading ? 'Creating…' : 'Sign up'}
               </motion.button>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 font-mono text-muted-foreground">or continue with</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <OAuthButtons />
+              </div>
             </form>
 
             <p className="mt-8 text-center text-sm text-muted-foreground">

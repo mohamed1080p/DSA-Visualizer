@@ -9,8 +9,9 @@ namespace Infrastructure.Persistence.Data.Seeds
 {
     public class DataSeeding(ApplicationDbContext _dbContext, ILogger<DataSeeding> _logger)
     {
-        private const string TopicsSeedPath = @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Topics";
-        private const string ProblemsSeedPath = @"..\Infrastructure\Persistence\Data\Seeds\DataSeedFiles\Problems";
+        private static string BasePath => AppDomain.CurrentDomain.BaseDirectory;
+        private static string TopicsSeedPath => Path.Combine(BasePath, "Data", "Seeds", "DataSeedFiles", "Topics");
+        private static string ProblemsSeedPath => Path.Combine(BasePath, "Data", "Seeds", "DataSeedFiles", "Problems");
         public async Task SeedAsync()
         {
             try
@@ -44,8 +45,8 @@ namespace Infrastructure.Persistence.Data.Seeds
                     Id = botId,
                     UserName = "aichallenger",
                     NormalizedUserName = "AICHALLENGER",
-                    Email = "bot@algoscope.local",
-                    NormalizedEmail = "BOT@ALGOSCOPE.LOCAL",
+                    Email = "bot@dsa-visualizer.local",
+                    NormalizedEmail = "BOT@DSA-VISUALIZER.LOCAL",
                     DisplayName = "AI Challenger",
                     CreatedAt = DateTime.UtcNow,
                     LastLoginAt = DateTime.UtcNow,
@@ -157,29 +158,67 @@ namespace Infrastructure.Persistence.Data.Seeds
         private async Task SeedProblemsAsync()
         {
             if (!Directory.Exists(ProblemsSeedPath))
+            {
+                _logger.LogWarning("Problems seed directory not found: {Path}", ProblemsSeedPath);
                 return;
+            }
 
+            var allTopics = await _dbContext.Topics.ToListAsync();
             var problemFiles = Directory.GetFiles(ProblemsSeedPath, "*.json", SearchOption.AllDirectories);
+            
             foreach (var filePath in problemFiles)
             {
-                using var stream = File.OpenRead(filePath);
-                var problem = await JsonSerializer.DeserializeAsync<Problem>(stream,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                if (problem is not null)
+                try 
                 {
-                    var existing = await _dbContext.Problems.FirstOrDefaultAsync(p => p.Title == problem.Title);
-                    if (existing == null)
+                    // Resolve topic slug from parent directory name or mapping
+                    var directoryName = Path.GetFileName(Path.GetDirectoryName(filePath));
+                    var fileName = Path.GetFileNameWithoutExtension(filePath).ToLower();
+                    
+                    var topicSlug = directoryName?.ToLower() switch
                     {
-                        if (string.IsNullOrWhiteSpace(problem.Slug))
-                            problem.Slug = problem.Title.ToLower().Replace(" ", "-");
+                        "bst" => "binary-search-tree",
+                        "binarytree" => "binary-tree",
+                        "graph" => fileName.Contains("bfs") ? "bfs" : "dfs",
+                        "sorting" => fileName.Contains("bubble") ? "bubble-sort" : 
+                                     fileName.Contains("insertion") ? "insertion-sort" :
+                                     fileName.Contains("selection") ? "selection-sort" :
+                                     fileName.Contains("quick") ? "quick-sort" : "bubble-sort",
+                        "linkedlist" => "linked-list",
+                        _ => directoryName?.ToLower()
+                    };
 
-                        _logger.LogInformation("Adding seeded problem. ProblemSlug={ProblemSlug} ProblemTitle={ProblemTitle}", problem.Slug, problem.Title);
-                        await _dbContext.Problems.AddAsync(problem);
+                    var topic = allTopics.FirstOrDefault(t => t.Slug == topicSlug);
+
+                    using var stream = File.OpenRead(filePath);
+                    var problem = await JsonSerializer.DeserializeAsync<Problem>(stream,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    if (problem is not null)
+                    {
+                        if (topic == null)
+                        {
+                            _logger.LogWarning("Skipping problem because topic was not found. ProblemTitle={ProblemTitle} FolderName={FolderName}", problem.Title, directoryName);
+                            continue;
+                        }
+
+                        var existing = await _dbContext.Problems.FirstOrDefaultAsync(p => p.Title == problem.Title);
+                        if (existing == null)
+                        {
+                            problem.TopicId = topic.Id;
+                            // Clear navigation property to avoid EF insertion issues
+                            problem.Topic = null!; 
+                            
+                            if (string.IsNullOrWhiteSpace(problem.Slug))
+                                problem.Slug = problem.Title.ToLower().Replace(" ", "-");
+
+                            _logger.LogInformation("Adding seeded problem. ProblemSlug={ProblemSlug} Topic={TopicSlug}", problem.Slug, topic.Slug);
+                            await _dbContext.Problems.AddAsync(problem);
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to seed problem file: {Path}", filePath);
                 }
             }
             await _dbContext.SaveChangesAsync();

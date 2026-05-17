@@ -55,7 +55,6 @@ public static class AuthenticationExtensions
         {
             var allowedHosts = configuration["AllowedHosts"];
             if (string.IsNullOrWhiteSpace(allowedHosts)
-                || allowedHosts == "*"
                 || allowedHosts.Contains("REPLACE", StringComparison.OrdinalIgnoreCase)
                 || allowedHosts.Contains("__", StringComparison.Ordinal))
                 missingSecrets.Add("AllowedHosts (set explicit API hostnames for production)");
@@ -136,6 +135,8 @@ public static class AuthenticationExtensions
     // Private helpers
 
     private static bool IsPlaceholder(string? value)
-        => string.IsNullOrWhiteSpace(value) || value.StartsWith("__SET_VIA_ENV__", StringComparison.OrdinalIgnoreCase);
+        => string.IsNullOrWhiteSpace(value)
+           || value.StartsWith("__SET_VIA_ENV__", StringComparison.OrdinalIgnoreCase)
+           || value.StartsWith("dummy-", StringComparison.OrdinalIgnoreCase);
 }
 

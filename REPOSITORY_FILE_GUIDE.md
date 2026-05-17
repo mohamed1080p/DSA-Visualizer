@@ -29,7 +29,7 @@ Scope notes:
 3. Request enters controller in Infrastructure/Presentation/Controllers/*.
 4. Controller calls service abstraction (Core/ServicesAbstraction interfaces).
 5. Concrete service in Core/Services executes business logic.
-6. Service accesses persistence through IUnitOfWork/repositories and/or external adapters (Docker/Redis/Ollama).
+6. Service accesses persistence through IUnitOfWork/repositories and/or external adapters (Docker/Redis/Gemini).
 7. DTOs from Shared/DTOs are returned to controller and then to frontend.
 
 ### 1.3 Runtime request flow (Realtime battle/community)
@@ -199,8 +199,7 @@ Scope notes:
 - Core\ServicesAbstraction\ITokenGenerator.cs: C# source file
 - Core\ServicesAbstraction\ITopicService.cs: C# source file
 - Core\ServicesAbstraction\IUserProgressService.cs: C# source file
-- Core\ServicesAbstraction\OllamaChatResponse.cs: C# source file
-- Core\ServicesAbstraction\OllamaMessage.cs: C# source file
+
 - Core\ServicesAbstraction\RunnerBatchItem.cs: C# source file
 - Core\ServicesAbstraction\ServicesAbstraction.csproj: C# project definition
 - DockerSandbox\cpp\Dockerfile: Repository file
@@ -230,7 +229,7 @@ Scope notes:
 - DSA-Visualizer\HealthChecks\DatabaseHealthCheck.cs: C# source file
 - DSA-Visualizer\HealthChecks\DockerExecutorHealthCheck.cs: C# source file
 - DSA-Visualizer\HealthChecks\HealthCheckResponseWriter.cs: C# source file
-- DSA-Visualizer\HealthChecks\OllamaHealthCheck.cs: C# source file
+
 - DSA-Visualizer\HealthChecks\RedisHealthCheck.cs: C# source file
 - DSA-Visualizer\log.txt: Text/log artifact
 - DSA-Visualizer\Middleware\CorrelationIdMiddleware.cs: C# source file

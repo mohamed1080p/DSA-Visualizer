@@ -42,7 +42,7 @@
 :root {
   --radius: 0.5rem;
 
-  /* AlgoScope dark terminal palette */
+  /* DSA Visualizer dark terminal palette */
   --background: oklch(0.18 0.012 160);
   --foreground: oklch(0.95 0.01 150);
 

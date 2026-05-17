@@ -8,16 +8,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Configuration;
 using ServicesAbstraction;
 using Shared.DTOs.IdentityDTOs;
 using System.Security.Claims;
+using System.Text.Json;
 
 
 namespace Infrastructure.Presentation.Controllers.Auth
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IAuthService authService) : ControllerBase
+    public class AuthController(IAuthService authService, IConfiguration configuration) : ControllerBase
     {
         [HttpPost("register")]
         [EnableRateLimiting("auth-policy")]
@@ -82,7 +84,7 @@ namespace Infrastructure.Presentation.Controllers.Auth
         }
 
         [HttpGet("external-login-callback")]
-        public async Task<ActionResult<UserDTO>> ExternalLoginCallback()
+        public async Task<IActionResult> ExternalLoginCallback()
         {
             var authenticateResult = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
 
@@ -110,8 +112,35 @@ namespace Infrastructure.Presentation.Controllers.Auth
             // Clean up the external cookie
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            return Ok(result);
+                        var payload = JsonSerializer.Serialize(result, new JsonSerializerOptions
+                        {
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        });
+
+            var frontendOrigin = configuration["Cors:Origins:0"]?.TrimEnd('/')
+                ?? $"{Request.Scheme}://{Request.Host}";
+
+                        var html = $$"""
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Signing in...</title>
+    </head>
+    <body>
+        <script>
+            const auth = {{payload}};
+            window.location.replace('{{frontendOrigin}}/auth/external-callback#auth=' + encodeURIComponent(JSON.stringify(auth)));
+        </script>
+    </body>
+</html>
+""";
+
+                        return Content(html, "text/html");
         }
+
+        
     }
 }
 

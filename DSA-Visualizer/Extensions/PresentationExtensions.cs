@@ -27,9 +27,10 @@ public static class PresentationExtensions
     /// </summary>
     public static void AddCorsPolicies(this IServiceCollection services, IConfiguration configuration)
     {
+        var allowAnyOrigin = configuration.GetValue("Cors:AllowAnyOrigin", false);
         var origins = configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
-        if (origins.Length == 0
-            || origins.Any(o => string.IsNullOrWhiteSpace(o) || o.StartsWith("__", StringComparison.Ordinal)))
+        if (!allowAnyOrigin && (origins.Length == 0
+            || origins.Any(o => string.IsNullOrWhiteSpace(o) || o.StartsWith("__", StringComparison.Ordinal))))
         {
             throw new InvalidOperationException(
                 "Cors:Origins must list real browser origins (e.g. https://app.example.com). " +
@@ -40,10 +41,20 @@ public static class PresentationExtensions
         {
             options.AddPolicy("AllowFrontend", builder =>
             {
-                builder.WithOrigins(origins)
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .AllowCredentials();
+                if (allowAnyOrigin)
+                {
+                    builder.SetIsOriginAllowed(_ => true)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                }
+                else
+                {
+                    builder.WithOrigins(origins)
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                }
             });
         });
     }

@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      MSSQL_PID: Developer
+    restart: unless-stopped
+    volumes:
+      - dsa_sql_data:/var/opt/mssql
+
+  # ollama: (disabled to free disk space; can be re-enabled later if needed)
+  #   image: ollama/ollama:latest
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+
+  app:
+    build:
+      context: .
+      dockerfile: DSA-Visualizer/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=db,1433;Database=DSA_Visualizer_DB;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
+      JwtSettings__SecretKey: ${JWT_SECRET}
+      JwtSettings__Issuer: DSA-Visualizer
+      JwtSettings__Audience: DSA-Visualizer
+      ExternalAuth__Google__ClientId: ${GOOGLE_CLIENT_ID}
+      ExternalAuth__Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
+      ExternalAuth__GitHub__ClientId: ${GITHUB_CLIENT_ID}
+      ExternalAuth__GitHub__ClientSecret: ${GITHUB_CLIENT_SECRET}
+      Hangfire__Dashboard__EnableInNonDevelopment: "true"
+      Hangfire__Dashboard__Users__0__Login: ${HANGFIRE_LOGIN}
+      Hangfire__Dashboard__Users__0__PasswordClear: ${HANGFIRE_PASSWORD}
+      Gemini__ApiKey: ${GEMINI__APIKEY}
+      Gemini__SystemPrompt: ${GEMINI__SYSTEMPROMPT}
+      AI__Required: ${AI__REQUIRED}
+      AllowedHosts: ${ALLOWED_HOSTS}
+      Cors__Origins__0: ${APP_ORIGIN}
+      DockerExecutor__Required: "true"
+
+volumes:
+  dsa_sql_data:
+  # ollama_data: (removed - using Gemini API instead)

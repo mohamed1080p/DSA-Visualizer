@@ -6,7 +6,7 @@ namespace Services.Observability
 {
     public class TelemetryService : ITelemetryService
     {
-        public const string ServiceName = "AlgoScope.API";
+        public const string ServiceName = "DSAVisualizer.API";
         public static readonly ActivitySource StaticActivitySource = new(ServiceName);
         public static readonly Meter StaticMeter = new(ServiceName);
         public ActivitySource ActivitySource => StaticActivitySource;

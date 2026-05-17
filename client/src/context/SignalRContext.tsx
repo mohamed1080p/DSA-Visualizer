@@ -124,19 +124,27 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
       return;
     }
 
-    const communityConn = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/community', {
-        accessTokenFactory: () => getSignalRAccessToken(token)
-      })
-      .withAutomaticReconnect()
-      .build();
+    let isActive = true;
+    let communityConnRef: signalR.HubConnection | null = null;
+    let battleConnRef: signalR.HubConnection | null = null;
 
-    const battleConn = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/battle', {
-        accessTokenFactory: () => getSignalRAccessToken(token)
-      })
-      .withAutomaticReconnect()
-      .build();
+    const init = async () => {
+      const sigToken = await getSignalRAccessToken(token);
+
+      if (!isActive) return;
+
+      const communityConn = new signalR.HubConnectionBuilder()
+        .withUrl(`/hubs/community?access_token=${encodeURIComponent(sigToken)}`)
+        .withAutomaticReconnect()
+        .build();
+
+      const battleConn = new signalR.HubConnectionBuilder()
+        .withUrl(`/hubs/battle?access_token=${encodeURIComponent(sigToken)}`)
+        .withAutomaticReconnect()
+        .build();
+
+      communityConnRef = communityConn;
+      battleConnRef = battleConn;
 
     communityConn.on('ReceivePrivateMessage', (msg: any) => {
       console.log('SignalR: Received private message', msg);
@@ -199,23 +207,29 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
       setCurrentBattle(null);
     });
 
-    communityConn.start()
-      .then(() => {
-        console.log('SignalR: CommunityHub connected');
-        setCommunityConnection(communityConn);
-      })
-      .catch(err => console.error('SignalR: CommunityHub connection failed', err));
+      communityConn.start()
+        .then(() => {
+          if (!isActive) return;
+          console.log('SignalR: CommunityHub connected');
+          setCommunityConnection(communityConn);
+        })
+        .catch(err => console.error('SignalR: CommunityHub connection failed', err));
 
-    battleConn.start()
-      .then(() => {
-        console.log('SignalR: BattleHub connected');
-        setBattleConnection(battleConn);
-      })
-      .catch(err => console.error('SignalR: BattleHub connection failed', err));
+      battleConn.start()
+        .then(() => {
+          if (!isActive) return;
+          console.log('SignalR: BattleHub connected');
+          setBattleConnection(battleConn);
+        })
+        .catch(err => console.error('SignalR: BattleHub connection failed', err));
+    };
+
+    init();
 
     return () => {
-      communityConn.stop();
-      battleConn.stop();
+      isActive = false;
+      if (communityConnRef) communityConnRef.stop();
+      if (battleConnRef) battleConnRef.stop();
     };
   }, [isAuthenticated, token]);
 

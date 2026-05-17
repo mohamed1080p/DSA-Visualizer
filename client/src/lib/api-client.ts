@@ -1,4 +1,6 @@
 import { clearStoredAuth, readStoredAuth, writeStoredAuth } from '@/lib/auth-storage';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
+
 
 const trimSlash = (s: string) => s.replace(/\/$/, '');
 
@@ -27,6 +29,22 @@ type JsonOpts = RequestInit & { auth?: boolean; json?: unknown };
 
 /** Prevents concurrent refresh attempts — only one refresh at a time. */
 let refreshPromise: Promise<boolean> | null = null;
+
+function isAccessTokenExpiringSoon(token: string, skewSeconds = 30) {
+  try {
+    const [, payload] = token.split('.');
+    if (!payload) return true;
+    const normalizedPayload = payload
+      .replace(/-/g, '+')
+      .replace(/_/g, '/')
+      .padEnd(Math.ceil(payload.length / 4) * 4, '=');
+    const parsed = JSON.parse(atob(normalizedPayload)) as { exp?: number };
+    if (!parsed.exp) return true;
+    return parsed.exp * 1000 <= Date.now() + skewSeconds * 1000;
+  } catch {
+    return true;
+  }
+}
 
 /**
  * Attempt to refresh the access token using the stored refresh token.
@@ -101,6 +119,28 @@ export async function apiJson<T>(path: string, opts: JsonOpts = {}): Promise<T> 
 
   const url = resolveApiUrl(path);
 
+  // If this request requires auth, proactively refresh if token is expiring soon
+  if (auth) {
+    const stored = readStoredAuth();
+    if (stored?.accessToken && isAccessTokenExpiringSoon(stored.accessToken)) {
+      const ok = await refreshStoredAuthToken();
+      if (!ok) {
+        clearStoredAuth();
+        window.dispatchEvent(new Event('algoscope:session-expired'));
+        throw new ApiError(401, 'Session expired. Please sign in again.');
+      }
+    }
+  }
+
+  if (path.includes('/api/Submissions') && opts.method === 'POST') {
+    trackEvent(AnalyticsEvents.SUBMISSION_CREATED, { problemId: (json as any)?.problemId });
+  } else if (path.includes('/api/Chatbot/message') && opts.method === 'POST') {
+    trackEvent(AnalyticsEvents.AI_CHAT_MESSAGE);
+  } else if (path.includes('/api/Battle/queue') && opts.method === 'POST') {
+    trackEvent(AnalyticsEvents.BATTLE_JOIN_QUEUE);
+  }
+
+
   let res: Response;
   try {
     res = await fetch(url, buildInit());
@@ -112,7 +152,7 @@ export async function apiJson<T>(path: string, opts: JsonOpts = {}): Promise<T> 
       } catch {
         throw new ApiError(
           0,
-          'Cannot reach the API. Make sure the backend is running on port 1574, then try again.',
+          'Cannot reach the API. Make sure the backend is running on port 5258, then try again.',
         );
       }
     } else {
@@ -126,6 +166,9 @@ export async function apiJson<T>(path: string, opts: JsonOpts = {}): Promise<T> 
     if (refreshed) {
       // Retry the original request with the new token
       res = await fetch(url, buildInit());
+    } else {
+      clearStoredAuth();
+      window.dispatchEvent(new Event('algoscope:session-expired'));
     }
   }
 
@@ -143,7 +186,7 @@ export async function apiJson<T>(path: string, opts: JsonOpts = {}): Promise<T> 
     }
     if ((res.status === 502 || res.status === 503) && !getApiOrigin()) {
       message =
-        'Cannot reach the API (dev proxy). Start the backend on port 1574, e.g. `dotnet run --project DSA-Visualizer --launch-profile http`, then refresh this page.';
+        'Cannot reach the API (dev proxy). Start the backend on port 5258, e.g. `dotnet run --project DSA-Visualizer --urls http://localhost:5258`, then refresh this page.';
     }
     throw new ApiError(res.status, message);
   }

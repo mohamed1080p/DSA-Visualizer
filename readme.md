@@ -268,7 +268,7 @@ AI assistance runs entirely locally via **Ollama**, keeping user code and progre
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/DSA-Visualizer.git
+git clone https://github.com/mohamed1080p/DSA-Visualizer.git
 cd DSA-Visualizer
 ```
 
@@ -308,7 +308,7 @@ dotnet run
 ### 4. Start the frontend
 
 ```bash
-cd frontend   # (React app directory)
+cd Client   # (React app directory)
 npm install
 npm run dev
 ```

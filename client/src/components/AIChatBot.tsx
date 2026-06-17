@@ -110,7 +110,7 @@ export function AIChatBot() {
                 </div>
                 <div>
                   <h3 className="font-display text-sm font-bold">DSA Visualizer AI</h3>
-                  <p className="text-[10px] text-muted-foreground">Powered by Gemini</p>
+
                 </div>
               </div>
               <button

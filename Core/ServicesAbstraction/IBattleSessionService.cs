@@ -11,6 +11,7 @@ namespace ServicesAbstraction
         Task FinishBattleAsync(Guid battleId);
         Task AbandonBattleAsync(Guid battleId, string userId);
         Task<BattleDetailDto?> GetBattleDetailAsync(Guid battleId, string userId);
+        Task<Guid?> GetActiveBattleIdForUserAsync(string userId);
         Task<List<BattleDetailDto>> GetUserBattleHistoryAsync(string userId, int page = 1, int pageSize = 20);
         Task<PlayerStats> GetOrCreatePlayerStatsAsync(string userId);
     }

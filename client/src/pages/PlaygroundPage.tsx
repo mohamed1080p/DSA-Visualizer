@@ -23,6 +23,7 @@ import { PageTransition } from '@/components/PageTransition';
 import { fadeUp, stagger } from '@/motion-variants';
 import { cn } from '@/lib/utils';
 import { ApiError, apiJson } from '@/lib/api-client';
+import { getBattleStatus, isActiveBattleStatus } from '@/lib/battle';
 import { useAuth } from '@/context/use-auth';
 import { useSignalR } from '@/context/SignalRContext';
 import VictoryOverlay from '@/components/VictoryOverlay';
@@ -135,6 +136,12 @@ async function refreshBattleFromQueueState(
   }
 
   const battle = await apiJson<any>(`/api/Battle/${queueState.battleId}`, { auth: true });
+  if (!isActiveBattleStatus(getBattleStatus(battle))) {
+    setSearching(false);
+    setBattleId(null);
+    return;
+  }
+
   setBattle(battle);
   setBattleId(queueState.battleId);
 }
@@ -233,7 +240,9 @@ function MatchmakingPanel() {
             setSearching(q.queued);
             if (q.battleId) {
               const battle = await apiJson<any>(`/api/Battle/${q.battleId}`, { auth: true });
-              setBattle(battle);
+              if (isActiveBattleStatus(getBattleStatus(battle))) {
+                setBattle(battle);
+              }
             }
           }
         } catch (e) {

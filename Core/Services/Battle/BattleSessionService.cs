@@ -78,7 +78,7 @@ namespace Services.Battle
         public async Task<BattleSession> StartBattleAsync(Guid battleId, string actorUserId)
         {
             var repo = _unitOfWork.GetRepository<BattleSession, Guid>();
-            var battle = await repo.GetByIdAsync(battleId)
+            var battle = await repo.GetByIdAsync(battleId, b => b.Participants, b => b.Problems)
                 ?? throw new InvalidOperationException("Battle not found");
 
             if (!battle.Participants.Any(p => p.UserId == actorUserId))
@@ -99,7 +99,7 @@ namespace Services.Battle
             }
             catch (DbUpdateConcurrencyException)
             {
-                var reloaded = await repo.GetByIdAsync(battleId);
+                var reloaded = await repo.GetByIdAsync(battleId, b => b.Participants, b => b.Problems);
                 if (reloaded?.Status == BattleStatus.InProgress)
                     return reloaded;
                 throw;
@@ -110,7 +110,7 @@ namespace Services.Battle
         public async Task FinishBattleAsync(Guid battleId)
         {
             var repo = _unitOfWork.GetRepository<BattleSession, Guid>();
-            var battle = await repo.GetByIdAsync(battleId)
+            var battle = await repo.GetByIdAsync(battleId, b => b.Participants, b => b.Problems)
                 ?? throw new InvalidOperationException("Battle not found");
 
             if (battle.Status != BattleStatus.InProgress) return;
@@ -149,10 +149,10 @@ namespace Services.Battle
         public async Task AbandonBattleAsync(Guid battleId, string userId)
         {
             var repo = _unitOfWork.GetRepository<BattleSession, Guid>();
-            var battle = await repo.GetByIdAsync(battleId)
+            var battle = await repo.GetByIdAsync(battleId, b => b.Participants, b => b.Problems)
                 ?? throw new InvalidOperationException("Battle not found");
 
-            if (battle.Status != BattleStatus.InProgress) return;
+            if (battle.Status is BattleStatus.Finished or BattleStatus.Cancelled or BattleStatus.Abandoned) return;
 
             var abandoner = battle.Participants.FirstOrDefault(p => p.UserId == userId)
                 ?? throw new UnauthorizedAccessException("You are not a participant in this battle.");
@@ -164,11 +164,12 @@ namespace Services.Battle
             if (opponent != null)
             {
                 battle.WinnerUserId = opponent.UserId;
+                var startedAt = battle.StartedAt ?? battle.CreatedAt;
                 await ApplyBattleOutcomeAsync(
                     battle,
                     opponent,
                     abandoner,
-                    battle.FinishedAt.Value - battle.StartedAt!.Value,
+                    battle.FinishedAt.Value - startedAt,
                     perfectAccuracy: false);
             }
 
@@ -178,13 +179,41 @@ namespace Services.Battle
         public async Task<BattleDetailDto?> GetBattleDetailAsync(Guid battleId, string userId)
         {
             var repo = _unitOfWork.GetRepository<BattleSession, Guid>();
-            var battle = await repo.GetByIdAsync(battleId);
+            var battle = await repo.GetByIdAsync(battleId, b => b.Participants, b => b.Problems);
             if (battle == null) return null;
 
             if (!battle.Participants.Any(p => p.UserId == userId))
                 throw new UnauthorizedAccessException("You do not have access to this battle.");
 
             return MapToDto(battle);
+        }
+
+        public async Task<Guid?> GetActiveBattleIdForUserAsync(string userId)
+        {
+            var repo = _unitOfWork.GetRepository<BattleParticipant, int>();
+            var rows = await repo.GetAllAsync(
+                predicate: p =>
+                    p.UserId == userId &&
+                    (p.BattleSession.Status == BattleStatus.WaitingForPlayers || p.BattleSession.Status == BattleStatus.InProgress),
+                orderBy: q => q.OrderByDescending(p => p.BattleSession.CreatedAt),
+                includes: p => p.BattleSession);
+
+            var match = rows.FirstOrDefault();
+            if (match == null) return null;
+
+            // Auto-abandon stale battles (sitting idle for > 30 min)
+            var age = DateTime.UtcNow - match.BattleSession.CreatedAt;
+            if (age.TotalMinutes > 30)
+            {
+                var battleRepo = _unitOfWork.GetRepository<BattleSession, Guid>();
+                match.BattleSession.Status = BattleStatus.Abandoned;
+                match.BattleSession.FinishedAt = DateTime.UtcNow;
+                battleRepo.Update(match.BattleSession);
+                await _unitOfWork.SaveChangesAsync();
+                return null;
+            }
+
+            return match.BattleSessionId;
         }
         public async Task<List<BattleDetailDto>> GetUserBattleHistoryAsync(string userId, int page = 1, int pageSize = 20)
         {

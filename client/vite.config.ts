@@ -16,6 +16,7 @@ export default defineConfig({
     alias: [{ find: /^@\//, replacement: `${srcDir}/` }],
   },
   server: {
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: apiDevTarget,
@@ -24,11 +25,16 @@ export default defineConfig({
       '/hubs': {
         target: apiDevTarget,
         ws: true,
+        changeOrigin: true,
+      },
+      '/signin-': {
+        target: apiDevTarget,
         changeOrigin: true,
       },
     },
   },
   preview: {
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: apiDevTarget,
@@ -37,6 +43,10 @@ export default defineConfig({
       '/hubs': {
         target: apiDevTarget,
         ws: true,
+        changeOrigin: true,
+      },
+      '/signin-': {
+        target: apiDevTarget,
         changeOrigin: true,
       },
     },

@@ -111,19 +111,6 @@ export default function TopicsPage() {
                 <span className="font-mono text-xs">{c.count}</span>
               </button>
             ))}
-            <div className="relative mt-6 overflow-hidden rounded-xl border border-primary/30 bg-gradient-surface p-4">
-              <div className="absolute inset-0 bg-[var(--gradient-glow)] opacity-40" />
-              <div className="relative">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold">Live API</span>
-                  <span className="rounded bg-primary px-1.5 py-0.5 font-mono text-[10px] text-primary-foreground">DATA</span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Topics load from <span className="font-mono text-primary">GET /api/Topics</span>. Run the API on port 5258 or set{' '}
-                  <span className="font-mono">VITE_API_BASE_URL</span>.
-                </p>
-              </div>
-            </div>
           </aside>
 
           <div>

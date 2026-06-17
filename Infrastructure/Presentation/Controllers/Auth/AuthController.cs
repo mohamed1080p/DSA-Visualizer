@@ -66,7 +66,12 @@ namespace Infrastructure.Presentation.Controllers.Auth
             }
 
             string callbackUrl;
-            if (string.IsNullOrWhiteSpace(redirectUrl))
+            var appOrigin = configuration["APP_ORIGIN"]?.TrimEnd('/');
+            if (!string.IsNullOrEmpty(appOrigin))
+            {
+                callbackUrl = $"{appOrigin}/api/Auth/external-login-callback";
+            }
+            else if (string.IsNullOrWhiteSpace(redirectUrl))
             {
                 callbackUrl = Url.Action("ExternalLoginCallback", "Auth", values: null, protocol: Request.Scheme)!;
             }
@@ -117,7 +122,8 @@ namespace Infrastructure.Presentation.Controllers.Auth
                                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                         });
 
-            var frontendOrigin = configuration["Cors:Origins:0"]?.TrimEnd('/')
+            var frontendOrigin = configuration["APP_ORIGIN"]?.TrimEnd('/')
+                ?? configuration["Cors:Origins:0"]?.TrimEnd('/')
                 ?? $"{Request.Scheme}://{Request.Host}";
 
                         var html = $$"""

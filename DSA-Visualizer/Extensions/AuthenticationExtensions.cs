@@ -23,17 +23,21 @@ public static class AuthenticationExtensions
         if (IsPlaceholder(configuration["JwtSettings:SecretKey"]))
             missingSecrets.Add("JwtSettings:SecretKey");
 
-        if (IsPlaceholder(configuration["ExternalAuth:Google:ClientId"]))
-            missingSecrets.Add("ExternalAuth:Google:ClientId");
+        // Only validate external auth secrets in non-development environments
+        if (!environment.IsDevelopment())
+        {
+            if (IsPlaceholder(configuration["ExternalAuth:Google:ClientId"]))
+                missingSecrets.Add("ExternalAuth:Google:ClientId");
 
-        if (IsPlaceholder(configuration["ExternalAuth:Google:ClientSecret"]))
-            missingSecrets.Add("ExternalAuth:Google:ClientSecret");
+            if (IsPlaceholder(configuration["ExternalAuth:Google:ClientSecret"]))
+                missingSecrets.Add("ExternalAuth:Google:ClientSecret");
 
-        if (IsPlaceholder(configuration["ExternalAuth:GitHub:ClientId"]))
-            missingSecrets.Add("ExternalAuth:GitHub:ClientId");
+            if (IsPlaceholder(configuration["ExternalAuth:GitHub:ClientId"]))
+                missingSecrets.Add("ExternalAuth:GitHub:ClientId");
 
-        if (IsPlaceholder(configuration["ExternalAuth:GitHub:ClientSecret"]))
-            missingSecrets.Add("ExternalAuth:GitHub:ClientSecret");
+            if (IsPlaceholder(configuration["ExternalAuth:GitHub:ClientSecret"]))
+                missingSecrets.Add("ExternalAuth:GitHub:ClientSecret");
+        }
 
         if (IsPlaceholder(configuration["Hangfire:Dashboard:Users:0:Login"]))
             missingSecrets.Add("Hangfire:Dashboard:Users:0:Login");
@@ -74,7 +78,7 @@ public static class AuthenticationExtensions
     {
         var jwtSettings = configuration.GetSection("JwtSettings");
 
-        services.AddAuthentication(options =>
+        var authBuilder = services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -118,18 +122,31 @@ public static class AuthenticationExtensions
                     });
                 }
             };
-        })
-        .AddGoogle(googleOptions =>
-        {
-            googleOptions.ClientId = configuration["ExternalAuth:Google:ClientId"]!;
-            googleOptions.ClientSecret = configuration["ExternalAuth:Google:ClientSecret"]!;
-        })
-        .AddGitHub(githubOptions =>
-        {
-            githubOptions.ClientId = configuration["ExternalAuth:GitHub:ClientId"]!;
-            githubOptions.ClientSecret = configuration["ExternalAuth:GitHub:ClientSecret"]!;
-            githubOptions.Scope.Add("user:email");
         });
+
+        // Only add external auth providers when credentials are configured
+        var googleClientId = configuration["ExternalAuth:Google:ClientId"];
+        var googleClientSecret = configuration["ExternalAuth:Google:ClientSecret"];
+        if (!IsPlaceholder(googleClientId) && !IsPlaceholder(googleClientSecret))
+        {
+            authBuilder.AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = googleClientId!;
+                googleOptions.ClientSecret = googleClientSecret!;
+            });
+        }
+
+        var githubClientId = configuration["ExternalAuth:GitHub:ClientId"];
+        var githubClientSecret = configuration["ExternalAuth:GitHub:ClientSecret"];
+        if (!IsPlaceholder(githubClientId) && !IsPlaceholder(githubClientSecret))
+        {
+            authBuilder.AddGitHub(githubOptions =>
+            {
+                githubOptions.ClientId = githubClientId!;
+                githubOptions.ClientSecret = githubClientSecret!;
+                githubOptions.Scope.Add("user:email");
+            });
+        }
     }
 
     // Private helpers

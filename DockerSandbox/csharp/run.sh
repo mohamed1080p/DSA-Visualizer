@@ -18,12 +18,16 @@ cat <<EOF > app.csproj
 </Project>
 EOF
 
-# Build project
-dotnet build -c Release > build_output.txt 2>&1
+# Build project with timeout (30 seconds max)
+timeout 30s dotnet build -c Release > build_output.txt 2>&1
+build_exit=$?
 
-if [ $? -ne 0 ]; then
+if [ $build_exit -eq 124 ]; then
+    echo "Build timeout exceeded (30 seconds)"
+    exit 124
+elif [ $build_exit -ne 0 ]; then
     cat build_output.txt
-    exit 1
+    exit $build_exit
 fi
 
 if [ -n "$BATCH_INPUTS" ]; then
@@ -63,5 +67,6 @@ fi
 # Decode input
 echo "$INPUT" | base64 -d > input.txt
 
-# Run compiled app without triggering a second build
-dotnet /tmp/app/bin/Release/net8.0/app.dll < input.txt
+# Run compiled app with timeout wrapper (convert TIME_LIMIT_MS to seconds, add 2s buffer)
+TIME_LIMIT_SEC=$(awk "BEGIN {printf \"%.3f\", (${TIME_LIMIT_MS:-5000} + 2000)/1000}")
+timeout "${TIME_LIMIT_SEC}s" dotnet /tmp/app/bin/Release/net8.0/app.dll < input.txt 2>&1

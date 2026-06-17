@@ -270,9 +270,32 @@ namespace Infrastructure.External.Redis
                 return new BattleQueueState(true, null);
             }
 
-            return Guid.TryParse(value, out var battleId)
-                ? new BattleQueueState(false, battleId)
-                : new BattleQueueState(false, null);
+            if (!Guid.TryParse(value, out var battleId))
+            {
+                await _telemetry.MeasureRedisAsync("KeyDelete player", () => db.KeyDeleteAsync(GetPlayerKey(userId)));
+                return new BattleQueueState(false, null);
+            }
+
+            if (await IsBattleActiveForUserAsync(battleId, userId))
+            {
+                return new BattleQueueState(false, battleId);
+            }
+
+            await LeaveQueueAsync(userId);
+            return new BattleQueueState(false, null);
+        }
+
+        private async Task<bool> IsBattleActiveForUserAsync(Guid battleId, string userId)
+        {
+            try
+            {
+                var detail = await _battleService.GetBattleDetailAsync(battleId, userId);
+                return detail is { Status: BattleStatus.WaitingForPlayers or BattleStatus.InProgress };
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
 
         private static string GetQueueKey(BattleMode mode) => $"battle:queue:{mode}";

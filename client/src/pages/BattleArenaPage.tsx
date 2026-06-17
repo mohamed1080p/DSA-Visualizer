@@ -88,7 +88,7 @@ function pickOpponent(
 }
 
 export default function BattleArenaPage() {
-  const { currentBattle, surrenderBattle, joinBattle, battleConnection } = useSignalR();
+  const { currentBattle, surrenderBattle, joinBattle, battleConnection, battleStateReady } = useSignalR();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeProblemIdx, setActiveProblemIdx] = useState(0);
@@ -117,6 +117,7 @@ export default function BattleArenaPage() {
   }, [battleResult, user?.userId]);
 
   useEffect(() => {
+    if (!battleStateReady) return;
     if (!currentBattle && !battleResult) {
       navigate('/playground');
     } else if (currentBattle) {
@@ -124,7 +125,7 @@ export default function BattleArenaPage() {
         battleId: (currentBattle as any).battleId ?? (currentBattle as any).id 
       });
     }
-  }, [currentBattle, battleResult, navigate]);
+  }, [battleStateReady, currentBattle, battleResult, navigate]);
 
   useEffect(() => {
     setTimeLeft(currentBattle?.timeLimitSeconds ?? 600);
@@ -219,6 +220,9 @@ export default function BattleArenaPage() {
 
     try {
       await surrenderBattle(battleId);
+      // Navigate to playground — the BattleFinished event will fire and
+      // set battleResult so PlaygroundPage can show the defeat overlay.
+      navigate('/playground');
     } catch (error) {
       setVerdict({ error: error instanceof Error ? error.message : 'Surrender failed' });
     }

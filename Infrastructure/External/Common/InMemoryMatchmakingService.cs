@@ -210,21 +210,44 @@ namespace Infrastructure.External.Common
             return Task.FromResult(_playerState.TryGetValue(userId, out var state) && state == "queuing");
         }
 
-        public Task<BattleQueueState> GetQueueStateAsync(string userId)
+        public async Task<BattleQueueState> GetQueueStateAsync(string userId)
         {
             if (!_playerState.TryGetValue(userId, out var state))
             {
-                return Task.FromResult(new BattleQueueState(false, null));
+                return new BattleQueueState(false, null);
             }
 
             if (state == "queuing")
             {
-                return Task.FromResult(new BattleQueueState(true, null));
+                return new BattleQueueState(true, null);
             }
 
-            return Task.FromResult(Guid.TryParse(state, out var battleId)
-                ? new BattleQueueState(false, battleId)
-                : new BattleQueueState(false, null));
+            if (!Guid.TryParse(state, out var battleId))
+            {
+                _playerState.TryRemove(userId, out _);
+                return new BattleQueueState(false, null);
+            }
+
+            if (await IsBattleActiveForUserAsync(battleId, userId))
+            {
+                return new BattleQueueState(false, battleId);
+            }
+
+            _playerState.TryRemove(userId, out _);
+            return new BattleQueueState(false, null);
+        }
+
+        private async Task<bool> IsBattleActiveForUserAsync(Guid battleId, string userId)
+        {
+            try
+            {
+                var detail = await _battleService.GetBattleDetailAsync(battleId, userId);
+                return detail is { Status: BattleStatus.WaitingForPlayers or BattleStatus.InProgress };
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
         }
 
         public static int GetQueueSize() => _queue.Count;

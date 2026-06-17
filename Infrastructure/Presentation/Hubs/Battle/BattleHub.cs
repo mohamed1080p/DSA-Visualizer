@@ -38,8 +38,8 @@ namespace Infrastructure.Presentation.Hubs.Battle
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            // Remove from queue on disconnect
-            await _matchmaking.LeaveQueueAsync(UserId);
+            // Do not leave queue or clear active battle on transient disconnects (page refresh/reconnect).
+            // Explicit LeaveQueue / battle cleanup handles those cases.
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user:{UserId}");
             await base.OnDisconnectedAsync(exception);
         }

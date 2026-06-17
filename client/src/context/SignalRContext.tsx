@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import * as signalR from '@microsoft/signalr';
 import { useAuth } from './use-auth';
 import { readStoredAuth } from '@/lib/auth-storage';
-import { refreshStoredAuthToken } from '@/lib/api-client';
+import { apiJson, refreshStoredAuthToken } from '@/lib/api-client';
+import { getBattleStatus, isActiveBattleStatus } from '@/lib/battle';
 
 interface ChatMessage {
   fromUserId: string;
@@ -49,6 +50,11 @@ interface BattleResult {
   participants?: { userId: string; displayName: string; solvedCount?: number }[];
 }
 
+interface QueueStatus {
+  queued: boolean;
+  battleId?: string | null;
+}
+
 interface ChatNotification {
   id: string;
   fromUserId: string;
@@ -64,6 +70,7 @@ interface SignalRContextType {
   challenges: FriendChallenge[];
   currentBattle: BattleSessionView | null;
   battleResult: BattleResult | null;
+  battleStateReady: boolean;
   chatNotifications: ChatNotification[];
   sendPrivateMessage: (toUserId: string, message: string) => Promise<void>;
   challengeFriend: (friendUserId: string, mode: number) => Promise<void>;
@@ -114,6 +121,7 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
   const [challenges, setChallenges] = useState<FriendChallenge[]>([]);
   const [currentBattle, setCurrentBattle] = useState<BattleSessionView | null>(null);
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
+  const [battleStateReady, setBattleStateReady] = useState(false);
   const [chatNotifications, setChatNotifications] = useState<ChatNotification[]>([]);
 
   useEffect(() => {
@@ -121,14 +129,30 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
       if (communityConnection) communityConnection.stop();
       if (battleConnection) battleConnection.stop();
       setCurrentBattle(null);
+      setBattleStateReady(true);
       return;
     }
 
+    setBattleStateReady(false);
     let isActive = true;
     let communityConnRef: signalR.HubConnection | null = null;
     let battleConnRef: signalR.HubConnection | null = null;
 
     const init = async () => {
+      try {
+        const queueState = await apiJson<QueueStatus>('/api/Battle/queue/status', { auth: true });
+        if (isActive && queueState.battleId) {
+          const activeBattle = await apiJson<BattleSessionView>(`/api/Battle/${queueState.battleId}`, { auth: true });
+          if (isActive && isActiveBattleStatus(getBattleStatus(activeBattle as Record<string, unknown>))) {
+            setCurrentBattle(activeBattle);
+          }
+        }
+      } catch {
+        // Best effort restore: continue with hub setup even if this fetch fails.
+      } finally {
+        if (isActive) setBattleStateReady(true);
+      }
+
       const sigToken = await getSignalRAccessToken(token);
 
       if (!isActive) return;
@@ -197,6 +221,7 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
     battleConn.on('MatchFound', (battle: BattleSessionView) => {
       console.log('SignalR: Match found!', battle);
       setCurrentBattle(battle);
+      setBattleStateReady(true);
     });
 
     battleConn.on('BattleFinished', (battle: any) => {
@@ -268,7 +293,25 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
     }
 
     await battleConnection.invoke('SurrenderBattle', battleId);
-    setCurrentBattle(null);
+    // Don't clear currentBattle here — the hub broadcasts BattleFinished to the
+    // group (which includes us). The BattleFinished handler sets battleResult
+    // and clears currentBattle atomically, avoiding the race where currentBattle
+    // becomes null before battleResult is set (which causes premature navigation).
+    // Fallback: if BattleFinished never arrives (e.g. disconnection), force-clear
+    // after a short delay so the user isn't stuck forever.
+    setTimeout(() => {
+      setCurrentBattle((prev) => {
+        // Only clear if still pointing at the same battle
+        if (prev) {
+          const raw = prev as Record<string, unknown>;
+          const id = String(raw.battleId ?? raw.id ?? '');
+          if (id === battleId) {
+            return null;
+          }
+        }
+        return prev;
+      });
+    }, 2000);
   };
 
   const joinBattle = async (battleId: string) => {
@@ -306,6 +349,7 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
     challenges,
     currentBattle,
     battleResult,
+    battleStateReady,
     chatNotifications,
     sendPrivateMessage,
     challengeFriend,
@@ -325,6 +369,7 @@ export function SignalRProvider({ children }: Readonly<{ children: React.ReactNo
     challenges,
     currentBattle,
     battleResult,
+    battleStateReady,
     chatNotifications,
     sendPrivateMessage,
     challengeFriend,

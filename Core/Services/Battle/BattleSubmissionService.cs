@@ -42,7 +42,7 @@ public class BattleSubmissionService : IBattleSubmissionService
         activity?.SetTag("code.language", language.ToString());
 
         var battleRepo = _unitOfWork.GetRepository<BattleSession, Guid>();
-        var battle = await battleRepo.GetByIdAsync(battleId)
+        var battle = await battleRepo.GetByIdAsync(battleId, b => b.Participants, b => b.Problems)
             ?? throw new InvalidOperationException("Battle not found");
 
         if (battle.Status != BattleStatus.InProgress)

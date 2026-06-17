@@ -43,10 +43,11 @@ namespace Infrastructure.Presentation.Controllers.Battle
         public async Task<IActionResult> GetQueueStatus()
         {
             var state = await _matchmakingService.GetQueueStateAsync(UserId);
+            var battleId = state.ActiveBattleId ?? await _battleSessionService.GetActiveBattleIdForUserAsync(UserId);
             return Ok(new
             {
                 queued = state.IsQueued,
-                battleId = state.ActiveBattleId
+                battleId
             });
         }
 
@@ -56,16 +57,24 @@ namespace Infrastructure.Presentation.Controllers.Battle
             try
             {
                 var state = await _matchmakingService.GetQueueStateAsync(UserId);
+                var dbActiveBattleId = await _battleSessionService.GetActiveBattleIdForUserAsync(UserId);
                 
-                if (state.ActiveBattleId.HasValue)
+                if (state.ActiveBattleId.HasValue || dbActiveBattleId.HasValue)
                 {
-                    _logger.LogInformation("Active battle found. Returning existing battle. BattleId={BattleId} UserId={UserId}", state.ActiveBattleId, UserId);
-                    return Ok(new
+                    var activeId = state.ActiveBattleId ?? dbActiveBattleId;
+                    var activeBattle = await _battleSessionService.GetBattleDetailAsync(activeId!.Value, UserId);
+                    if (activeBattle is { Status: BattleStatus.WaitingForPlayers or BattleStatus.InProgress })
                     {
-                        queued = false,
-                        battleId = state.ActiveBattleId,
-                        mode = request.Mode.ToString()
-                    });
+                        _logger.LogInformation("Active battle found. Returning existing battle. BattleId={BattleId} UserId={UserId}", activeId, UserId);
+                        return Ok(new
+                        {
+                            queued = false,
+                            battleId = activeId,
+                            mode = request.Mode.ToString()
+                        });
+                    }
+
+                    await _matchmakingService.LeaveQueueAsync(UserId);
                 }
 
                 if (!state.IsQueued)
@@ -74,6 +83,11 @@ namespace Infrastructure.Presentation.Controllers.Battle
                 }
 
                 var battleId = await _matchmakingService.TryMatchAsync(UserId);
+                if (battleId.HasValue)
+                {
+                    await NotifyMatchFoundAsync(battleId.Value);
+                }
+
                 return Ok(new
                 {
                     queued = !battleId.HasValue,
@@ -260,6 +274,21 @@ namespace Infrastructure.Presentation.Controllers.Battle
             foreach (var participant in battle.Participants)
             {
                 await _matchmakingService.LeaveQueueAsync(participant.UserId);
+            }
+        }
+
+        private async Task NotifyMatchFoundAsync(Guid battleId)
+        {
+            var battle = await _battleSessionService.GetBattleDetailAsync(battleId, UserId);
+            if (battle == null) return;
+
+            foreach (var participant in battle.Participants)
+            {
+                var participantView = await _battleSessionService.GetBattleDetailAsync(battleId, participant.UserId);
+                if (participantView != null)
+                {
+                    await _battleHubContext.Clients.Group($"user:{participant.UserId}").SendAsync("MatchFound", participantView);
+                }
             }
         }
     }

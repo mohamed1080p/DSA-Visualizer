@@ -23,9 +23,14 @@ internal static class CodeExecutionHelpers
     {
         var timeoutMs = request.TimeLimitMs + 2000;
 
-        if (request.Language.Equals("csharp", StringComparison.OrdinalIgnoreCase) ||
-            request.Language.Equals("java", StringComparison.OrdinalIgnoreCase) ||
-            request.Language.Equals("cpp", StringComparison.OrdinalIgnoreCase))
+        if (request.Language.Equals("csharp", StringComparison.OrdinalIgnoreCase))
+        {
+            // C# runner includes 30s build timeout + execution timeout
+            timeoutMs += 32000;  // 30s build + 2s buffer
+            timeoutMs = Math.Max(timeoutMs, 35000);
+        }
+        else if (request.Language.Equals("java", StringComparison.OrdinalIgnoreCase) ||
+                 request.Language.Equals("cpp", StringComparison.OrdinalIgnoreCase))
         {
             timeoutMs += 10000;
             timeoutMs = Math.Max(timeoutMs, 15000);

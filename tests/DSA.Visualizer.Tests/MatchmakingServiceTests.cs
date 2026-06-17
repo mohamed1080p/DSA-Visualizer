@@ -131,7 +131,34 @@ public sealed class MatchmakingServiceTests : IDisposable
         public Task<BattleSession> StartBattleAsync(Guid battleId, string actorUserId) => throw new NotImplementedException();
         public Task FinishBattleAsync(Guid battleId) => Task.CompletedTask;
         public Task AbandonBattleAsync(Guid battleId, string userId) => Task.CompletedTask;
-        public Task<BattleDetailDto?> GetBattleDetailAsync(Guid battleId, string userId) => Task.FromResult<BattleDetailDto?>(null);
+        public Task<BattleDetailDto?> GetBattleDetailAsync(Guid battleId, string userId)
+        {
+            var battle = CreatedBattles.FirstOrDefault(b => b.Id == battleId);
+            if (battle == null || battle.Participants.All(p => p.UserId != userId))
+            {
+                return Task.FromResult<BattleDetailDto?>(null);
+            }
+
+            var dto = new BattleDetailDto(
+                battle.Id,
+                battle.Mode,
+                battle.Status,
+                DateTime.UtcNow,
+                null,
+                null,
+                600,
+                3,
+                null,
+                battle.Participants
+                    .Select(p => new BattleParticipantDto(p.UserId, "Player", 0, 0))
+                    .ToList(),
+                battle.Problems
+                    .Select(p => new BattleProblemDto(p.Order, p.ProblemId, "", "", "Easy", null))
+                    .ToList());
+
+            return Task.FromResult<BattleDetailDto?>(dto);
+        }
+        public Task<Guid?> GetActiveBattleIdForUserAsync(string userId) => Task.FromResult<Guid?>(null);
         public Task<List<BattleDetailDto>> GetUserBattleHistoryAsync(string userId, int page = 1, int pageSize = 20) => Task.FromResult(new List<BattleDetailDto>());
         public Task<PlayerStats> GetOrCreatePlayerStatsAsync(string userId) => Task.FromResult(new PlayerStats { UserId = userId, RankPoints = 1000 });
     }

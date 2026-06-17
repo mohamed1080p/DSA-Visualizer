@@ -69,17 +69,49 @@ function trackApiEvent(path: string, method: string | undefined, json: unknown) 
 }
 
 async function fetchWithDevRetry(url: string, init: RequestInit, path: string): Promise<Response> {
+  const isSubmission = path.includes('/api/Submissions') || path.includes('/api/Battle');
+  // Submissions can take up to 60 seconds (build + execution)
+  const timeoutMs = isSubmission ? 65000 : 30000;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
   try {
-    return await fetch(url, init);
-  } catch {
+    const response = await fetch(url, {
+      ...init,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError(0, isSubmission 
+        ? 'Submission timed out after 60 seconds. Try a simpler solution or check server logs.'
+        : 'Request timed out. Check your connection and try again.');
+    }
+
     if (getApiOrigin() || !path.startsWith('/api')) {
       throw new ApiError(0, 'Network error. Check your connection and try again.');
     }
 
     await new Promise((resolve) => setTimeout(resolve, 700));
+    const retryController = new AbortController();
+    const retryTimeoutId = setTimeout(() => retryController.abort(), timeoutMs);
+
     try {
-      return await fetch(url, init);
-    } catch {
+      const response = await fetch(url, {
+        ...init,
+        signal: retryController.signal,
+      });
+      clearTimeout(retryTimeoutId);
+      return response;
+    } catch (retryError) {
+      clearTimeout(retryTimeoutId);
+      if (retryError instanceof Error && retryError.name === 'AbortError') {
+        throw new ApiError(0, 'API request timed out. Check that the backend is running.');
+      }
       throw new ApiError(
         0,
         'Cannot reach the API. Make sure the backend is running on port 5258, then try again.',

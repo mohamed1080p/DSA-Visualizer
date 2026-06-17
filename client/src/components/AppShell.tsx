@@ -5,6 +5,7 @@ import { Search, Command, Bell, ChevronRight, LogOut, User, Swords, MessageSquar
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/use-auth';
 import { useSignalR } from '@/context/SignalRContext';
+import { getBattleStatus, isActiveBattleStatus } from '@/lib/battle';
 import { AnimatePresence } from 'framer-motion';
 import { AIChatBot } from './AIChatBot';
 
@@ -25,7 +26,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (currentBattle && location.pathname !== '/battle') {
-      navigate('/battle');
+      // Only redirect to /battle if the battle is actually active.
+      // After surrender the BattleFinished event may briefly leave
+      // currentBattle set with an Abandoned/Finished status before it
+      // is cleared; redirecting in that state causes a loop.
+      const status = getBattleStatus(currentBattle as Record<string, unknown>);
+      if (isActiveBattleStatus(status)) {
+        navigate('/battle');
+      }
     }
   }, [currentBattle, location.pathname, navigate]);
 

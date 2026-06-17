@@ -1,6 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+# Install Node.js (v20) to enable building the client SPA during dotnet publish
+RUN apt-get update && apt-get install -y curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
 COPY DSA-Visualizer.slnx ./
 COPY DSA-Visualizer/DSA-Visualizer.csproj DSA-Visualizer/
 COPY Core/Domain/Domain.csproj Core/Domain/
